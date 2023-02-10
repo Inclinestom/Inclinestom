@@ -8,12 +8,12 @@ import org.jetbrains.annotations.NotNull;
 import static net.minestom.server.network.NetworkBuffer.INT;
 
 public record PingPacket(int id) implements ServerPacket {
-    public PingPacket(@NotNull NetworkBuffer reader) {
+    public PingPacket(NetworkBuffer reader) {
         this(reader.read(INT));
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(INT, id);
     }
 

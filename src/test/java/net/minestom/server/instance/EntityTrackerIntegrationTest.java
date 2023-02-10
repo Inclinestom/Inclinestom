@@ -132,12 +132,12 @@ public class EntityTrackerIntegrationTest {
     private Player createTestPlayer() {
         return new Player(UUID.randomUUID(), "TestPlayer", new PlayerConnection() {
             @Override
-            public void sendPacket(@NotNull SendablePacket packet) {
+            public void sendPacket(SendablePacket packet) {
                 // nothing
             }
 
             @Override
-            public @NotNull SocketAddress getRemoteAddress() {
+            public SocketAddress getRemoteAddress() {
                 return null;
             }
         });

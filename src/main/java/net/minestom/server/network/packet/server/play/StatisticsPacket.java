@@ -10,17 +10,17 @@ import java.util.List;
 
 import static net.minestom.server.network.NetworkBuffer.VAR_INT;
 
-public record StatisticsPacket(@NotNull List<Statistic> statistics) implements ServerPacket {
+public record StatisticsPacket(List<Statistic> statistics) implements ServerPacket {
     public StatisticsPacket {
         statistics = List.copyOf(statistics);
     }
 
-    public StatisticsPacket(@NotNull NetworkBuffer reader) {
+    public StatisticsPacket(NetworkBuffer reader) {
         this(reader.readCollection(Statistic::new));
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.writeCollection(statistics);
     }
 
@@ -29,15 +29,15 @@ public record StatisticsPacket(@NotNull List<Statistic> statistics) implements S
         return ServerPacketIdentifier.STATISTICS;
     }
 
-    public record Statistic(@NotNull StatisticCategory category,
+    public record Statistic(StatisticCategory category,
                             int statisticId, int value) implements NetworkBuffer.Writer {
-        public Statistic(@NotNull NetworkBuffer reader) {
+        public Statistic(NetworkBuffer reader) {
             this(reader.readEnum(StatisticCategory.class),
                     reader.read(VAR_INT), reader.read(VAR_INT));
         }
 
         @Override
-        public void write(@NotNull NetworkBuffer writer) {
+        public void write(NetworkBuffer writer) {
             writer.write(VAR_INT, category.ordinal());
             writer.write(VAR_INT, statisticId);
             writer.write(VAR_INT, value);

@@ -14,7 +14,7 @@ public class FireballMeta extends ItemContainingMeta implements ObjectDataProvid
 
     private Entity shooter;
 
-    public FireballMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
+    public FireballMeta(Entity entity, Metadata metadata) {
         super(entity, metadata, Material.AIR);
     }
 

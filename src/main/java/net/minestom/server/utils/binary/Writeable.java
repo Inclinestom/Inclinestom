@@ -12,6 +12,6 @@ public interface Writeable {
      *
      * @param writer the writer to write to
      */
-    void write(@NotNull BinaryWriter writer);
+    void write(BinaryWriter writer);
 
 }

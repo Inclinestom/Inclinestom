@@ -52,7 +52,7 @@ public class BlockIterator implements Iterator<Point> {
      *                    trace. Setting this value above 140 may lead to problems with
      *                    unloaded chunks. A value of 0 indicates no limit
      */
-    public BlockIterator(@NotNull Vec start, @NotNull Vec direction, double yOffset, double maxDistance, boolean smooth) {
+    public BlockIterator(Vec start, Vec direction, double yOffset, double maxDistance, boolean smooth) {
         start = start.add(0, yOffset, 0);
         end = start.add(direction.normalize().mul(maxDistance));
         if (direction.isZero()) this.foundEnd = true;
@@ -105,7 +105,7 @@ public class BlockIterator implements Iterator<Point> {
      *                    trace. Setting this value above 140 may lead to problems with
      *                    unloaded chunks. A value of 0 indicates no limit
      */
-    public BlockIterator(@NotNull Vec start, @NotNull Vec direction, double yOffset, double maxDistance) {
+    public BlockIterator(Vec start, Vec direction, double yOffset, double maxDistance) {
         this(start, direction, yOffset, maxDistance, false);
     }
 
@@ -122,7 +122,7 @@ public class BlockIterator implements Iterator<Point> {
      *                    unloaded chunks. A value of 0 indicates no limit
      */
 
-    public BlockIterator(@NotNull Pos pos, double yOffset, int maxDistance) {
+    public BlockIterator(Pos pos, double yOffset, int maxDistance) {
         this(pos.asVec(), pos.direction(), yOffset, maxDistance, false);
     }
 
@@ -136,7 +136,7 @@ public class BlockIterator implements Iterator<Point> {
      *                by this value
      */
 
-    public BlockIterator(@NotNull Pos pos, double yOffset) {
+    public BlockIterator(Pos pos, double yOffset) {
         this(pos.asVec(), pos.direction(), yOffset, 0, false);
     }
 
@@ -148,7 +148,7 @@ public class BlockIterator implements Iterator<Point> {
      * @param pos The position for the start of the ray trace
      */
 
-    public BlockIterator(@NotNull Pos pos) {
+    public BlockIterator(Pos pos) {
         this(pos, 0f);
     }
 
@@ -163,7 +163,7 @@ public class BlockIterator implements Iterator<Point> {
      *                    unloaded chunks. A value of 0 indicates no limit
      */
 
-    public BlockIterator(@NotNull Entity entity, int maxDistance) {
+    public BlockIterator(Entity entity, int maxDistance) {
         this(entity.getPosition(), entity.getEyeHeight(), maxDistance);
     }
 
@@ -175,7 +175,7 @@ public class BlockIterator implements Iterator<Point> {
      * @param entity Information from the entity is used to set up the trace
      */
 
-    public BlockIterator(@NotNull Entity entity) {
+    public BlockIterator(Entity entity) {
         this(entity, 0);
     }
 

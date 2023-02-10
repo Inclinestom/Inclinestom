@@ -18,5 +18,5 @@ public interface ChunkSupplier {
      * @param chunkZ   the chunk Z
      * @return a newly {@link Chunk} object, cannot be null
      */
-    @NotNull Chunk createChunk(@NotNull Instance instance, int chunkX, int chunkZ);
+    Chunk createChunk(Instance instance, int chunkX, int chunkZ);
 }

@@ -19,7 +19,7 @@ public class SaveCommand extends Command {
         addSyntax(this::execute);
     }
 
-    private void execute(@NotNull CommandSender commandSender, @NotNull CommandContext commandContext) {
+    private void execute(CommandSender commandSender, CommandContext commandContext) {
         for(var instance : MinecraftServer.getInstanceManager().getInstances()) {
             CompletableFuture<Void> instanceSave = instance.saveInstance().thenCompose(v -> instance.saveChunksToStorage());
             try {

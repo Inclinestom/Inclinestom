@@ -8,12 +8,12 @@ import org.jetbrains.annotations.NotNull;
 import static net.minestom.server.network.NetworkBuffer.BYTE;
 
 public record HeldItemChangePacket(byte slot) implements ServerPacket {
-    public HeldItemChangePacket(@NotNull NetworkBuffer reader) {
+    public HeldItemChangePacket(NetworkBuffer reader) {
         this(reader.read(BYTE));
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(BYTE, slot);
     }
 

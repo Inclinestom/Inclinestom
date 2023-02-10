@@ -11,8 +11,8 @@ import java.util.UUID;
 import static net.minestom.server.network.NetworkBuffer.STRING;
 
 @ApiStatus.Experimental
-public record GameProfile(@NotNull UUID uuid, @NotNull String name,
-                          @NotNull List<@NotNull Property> properties) implements NetworkBuffer.Writer {
+public record GameProfile(UUID uuid, String name,
+                          List<Property> properties) implements NetworkBuffer.Writer {
     public GameProfile {
         if (name.isBlank())
             throw new IllegalArgumentException("Name cannot be blank");
@@ -21,30 +21,30 @@ public record GameProfile(@NotNull UUID uuid, @NotNull String name,
         properties = List.copyOf(properties);
     }
 
-    public GameProfile(@NotNull NetworkBuffer reader) {
+    public GameProfile(NetworkBuffer reader) {
         this(reader.read(NetworkBuffer.UUID), reader.read(STRING), reader.readCollection(Property::new));
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(NetworkBuffer.UUID, uuid);
         writer.write(STRING, name);
         writer.writeCollection(properties);
     }
 
-    public record Property(@NotNull String name, @NotNull String value,
+    public record Property(String name, String value,
                            @Nullable String signature) implements NetworkBuffer.Writer {
-        public Property(@NotNull String name, @NotNull String value) {
+        public Property(String name, String value) {
             this(name, value, null);
         }
 
-        public Property(@NotNull NetworkBuffer reader) {
+        public Property(NetworkBuffer reader) {
             this(reader.read(STRING), reader.read(STRING),
                     reader.readOptional(STRING));
         }
 
         @Override
-        public void write(@NotNull NetworkBuffer writer) {
+        public void write(NetworkBuffer writer) {
             writer.write(STRING, name);
             writer.write(STRING, value);
             writer.writeOptional(STRING, signature);

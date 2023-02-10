@@ -18,7 +18,7 @@ public class PlayerUseItemEvent implements PlayerInstanceEvent, ItemEvent, Cance
 
     private boolean cancelled;
 
-    public PlayerUseItemEvent(@NotNull Player player, @NotNull Player.Hand hand, @NotNull ItemStack itemStack) {
+    public PlayerUseItemEvent(Player player, Player.Hand hand, ItemStack itemStack) {
         this.player = player;
         this.hand = hand;
         this.itemStack = itemStack;
@@ -55,7 +55,7 @@ public class PlayerUseItemEvent implements PlayerInstanceEvent, ItemEvent, Cance
     }
 
     @Override
-    public @NotNull Player getPlayer() {
+    public Player getPlayer() {
         return player;
     }
 }

@@ -9,7 +9,7 @@ public class ThrownExperienceBottleMeta extends ItemContainingMeta {
     public static final byte OFFSET = ItemContainingMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 0;
 
-    public ThrownExperienceBottleMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
+    public ThrownExperienceBottleMeta(Entity entity, Metadata metadata) {
         super(entity, metadata, Material.EXPERIENCE_BOTTLE);
     }
 

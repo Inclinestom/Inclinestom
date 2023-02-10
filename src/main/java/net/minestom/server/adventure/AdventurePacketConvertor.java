@@ -51,7 +51,7 @@ public class AdventurePacketConvertor {
      * @param overlay the overlay
      * @return the value
      */
-    public static int getBossBarOverlayValue(@NotNull BossBar.Overlay overlay) {
+    public static int getBossBarOverlayValue(BossBar.Overlay overlay) {
         return overlay.ordinal();
     }
 
@@ -61,7 +61,7 @@ public class AdventurePacketConvertor {
      * @param flags the flags
      * @return the value
      */
-    public static byte getBossBarFlagValue(@NotNull Collection<BossBar.Flag> flags) {
+    public static byte getBossBarFlagValue(Collection<BossBar.Flag> flags) {
         byte val = 0x0;
         for (BossBar.Flag flag : flags) {
             val |= flag.ordinal();
@@ -75,7 +75,7 @@ public class AdventurePacketConvertor {
      * @param color the color
      * @return the value
      */
-    public static int getBossBarColorValue(@NotNull BossBar.Color color) {
+    public static int getBossBarColorValue(BossBar.Color color) {
         return color.ordinal();
     }
 
@@ -85,7 +85,7 @@ public class AdventurePacketConvertor {
      * @param source the source
      * @return the value
      */
-    public static int getSoundSourceValue(@NotNull Sound.Source source) {
+    public static int getSoundSourceValue(Sound.Source source) {
         return source.ordinal();
     }
 
@@ -95,7 +95,7 @@ public class AdventurePacketConvertor {
      * @param color the color
      * @return the int value
      */
-    public static int getNamedTextColorValue(@NotNull NamedTextColor color) {
+    public static int getNamedTextColorValue(NamedTextColor color) {
         return NAMED_TEXT_COLOR_ID_MAP.getInt(color);
     }
 
@@ -108,7 +108,7 @@ public class AdventurePacketConvertor {
      * @param z     the z coordinate
      * @return the sound packet
      */
-    public static @NotNull ServerPacket createSoundPacket(@NotNull Sound sound, double x, double y, double z) {
+    public static ServerPacket createSoundPacket(Sound sound, double x, double y, double z) {
         final SoundEvent minestomSound = SoundEvent.fromNamespaceId(sound.name().asString());
         if (minestomSound == null) {
             return new NamedSoundEffectPacket(sound.name().asString(), sound.source(),
@@ -126,7 +126,7 @@ public class AdventurePacketConvertor {
      * @param emitter the emitter, must be an {@link Entity}
      * @return the sound packet
      */
-    public static @NotNull ServerPacket createSoundPacket(@NotNull Sound sound, Sound.@NotNull Emitter emitter) {
+    public static ServerPacket createSoundPacket(Sound sound, Sound.Emitter emitter) {
         if (emitter == Sound.Emitter.self())
             throw new IllegalArgumentException("you must replace instances of Emitter.self() before calling this method");
         if (!(emitter instanceof Entity entity))
@@ -152,7 +152,7 @@ public class AdventurePacketConvertor {
      * @deprecated Use {@link #createSoundPacket(Sound, Sound.Emitter)}
      */
     @Deprecated(forRemoval = true)
-    public static ServerPacket createEntitySoundPacket(@NotNull Sound sound, @NotNull Entity entity) {
+    public static ServerPacket createEntitySoundPacket(Sound sound, Entity entity) {
         return createSoundPacket(sound, entity);
     }
 
@@ -162,7 +162,7 @@ public class AdventurePacketConvertor {
      * @param stop the sound stop
      * @return the sound stop packet
      */
-    public static ServerPacket createSoundStopPacket(@NotNull SoundStop stop) {
+    public static ServerPacket createSoundStopPacket(SoundStop stop) {
         byte flags = 0x0;
         Sound.Source source = stop.source();
         String sound = null;
@@ -186,7 +186,7 @@ public class AdventurePacketConvertor {
      * @param <T>   the type of the part
      * @return the title packet
      */
-    public static <T> @NotNull ServerPacket createTitlePartPacket(@NotNull TitlePart<T> part, @NotNull T value) {
+    public static <T> ServerPacket createTitlePartPacket(TitlePart<T> part, T value) {
         if (part == TitlePart.TITLE) {
             return new SetTitleTextPacket((Component) value);
         } else if (part == TitlePart.SUBTITLE) {

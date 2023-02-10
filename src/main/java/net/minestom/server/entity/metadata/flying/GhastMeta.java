@@ -8,7 +8,7 @@ public class GhastMeta extends FlyingMeta {
     public static final byte OFFSET = FlyingMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 1;
 
-    public GhastMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
+    public GhastMeta(Entity entity, Metadata metadata) {
         super(entity, metadata);
     }
 

@@ -90,7 +90,7 @@ public class BlockUtils {
         return new Object2ObjectArrayMap<>(keys, values, entryCount);
     }
 
-    public static @Nullable NBTCompound extractClientNbt(@NotNull Block block) {
+    public static @Nullable NBTCompound extractClientNbt(Block block) {
         if (!block.registry().isBlockEntity()) return null;
         // Append handler tags
         final BlockHandler handler = block.handler();

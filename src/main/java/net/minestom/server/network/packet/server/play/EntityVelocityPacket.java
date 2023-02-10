@@ -12,7 +12,7 @@ import static net.minestom.server.network.NetworkBuffer.VAR_INT;
 
 public record EntityVelocityPacket(int entityId, short velocityX, short velocityY,
                                    short velocityZ) implements ServerPacket {
-    public EntityVelocityPacket(@NotNull NetworkBuffer reader) {
+    public EntityVelocityPacket(NetworkBuffer reader) {
         this(reader.read(VAR_INT), reader.read(SHORT), reader.read(SHORT), reader.read(SHORT));
     }
 
@@ -26,7 +26,7 @@ public record EntityVelocityPacket(int entityId, short velocityX, short velocity
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(VAR_INT, entityId);
         writer.write(SHORT, velocityX);
         writer.write(SHORT, velocityY);

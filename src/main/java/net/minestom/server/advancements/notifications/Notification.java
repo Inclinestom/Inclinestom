@@ -9,18 +9,18 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Represents a message which can be sent using the {@link NotificationCenter}.
  */
-public record Notification(@NotNull Component title, @NotNull FrameType frameType, @NotNull ItemStack icon) {
-    public Notification(@NotNull Component title, @NotNull FrameType frameType, @NotNull Material icon) {
+public record Notification(Component title, FrameType frameType, ItemStack icon) {
+    public Notification(Component title, FrameType frameType, Material icon) {
         this(title, frameType, ItemStack.of(icon));
     }
 
     @Deprecated
-    public @NotNull Component getTitle() {
+    public Component getTitle() {
         return title;
     }
 
     @Deprecated
-    public @NotNull FrameType getFrameType() {
+    public FrameType getFrameType() {
         return frameType;
     }
 }

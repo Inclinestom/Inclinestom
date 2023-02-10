@@ -10,7 +10,7 @@ public class BlazeMeta extends MonsterMeta {
 
     private final static byte ON_FIRE_BIT = 0x01;
 
-    public BlazeMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
+    public BlazeMeta(Entity entity, Metadata metadata) {
         super(entity, metadata);
     }
 

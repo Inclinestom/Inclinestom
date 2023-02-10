@@ -10,12 +10,12 @@ import static net.minestom.server.network.NetworkBuffer.RAW_BYTES;
 import static net.minestom.server.network.NetworkBuffer.STRING;
 
 public record PluginMessagePacket(String channel, byte[] data) implements ServerPacket {
-    public PluginMessagePacket(@NotNull NetworkBuffer reader) {
+    public PluginMessagePacket(NetworkBuffer reader) {
         this(reader.read(STRING), reader.read(RAW_BYTES));
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(STRING, channel);
         writer.write(RAW_BYTES, data);
     }
@@ -32,7 +32,7 @@ public record PluginMessagePacket(String channel, byte[] data) implements Server
      *
      * @return the current brand name packet
      */
-    public static @NotNull PluginMessagePacket getBrandPacket() {
+    public static PluginMessagePacket getBrandPacket() {
         final String brandName = MinecraftServer.getBrandName();
         final byte[] data = NetworkBuffer.makeArray(networkBuffer -> networkBuffer.write(STRING, brandName));
         return new PluginMessagePacket("minecraft:brand", data);

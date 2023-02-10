@@ -35,7 +35,7 @@ public abstract class PlayerConnection {
      *
      * @return this connection identifier
      */
-    public @NotNull String getIdentifier() {
+    public String getIdentifier() {
         final Player player = getPlayer();
         return player != null ?
                 player.getUsername() :
@@ -47,15 +47,15 @@ public abstract class PlayerConnection {
      *
      * @param packet the packet to send
      */
-    public abstract void sendPacket(@NotNull SendablePacket packet);
+    public abstract void sendPacket(SendablePacket packet);
 
     @ApiStatus.Experimental
-    public void sendPackets(@NotNull Collection<SendablePacket> packets) {
+    public void sendPackets(Collection<SendablePacket> packets) {
         packets.forEach(this::sendPacket);
     }
 
     @ApiStatus.Experimental
-    public void sendPackets(@NotNull SendablePacket... packets) {
+    public void sendPackets(SendablePacket... packets) {
         sendPackets(List.of(packets));
     }
 
@@ -64,7 +64,7 @@ public abstract class PlayerConnection {
      *
      * @return the remote address
      */
-    public abstract @NotNull SocketAddress getRemoteAddress();
+    public abstract SocketAddress getRemoteAddress();
 
     /**
      * Gets protocol version of client.
@@ -139,7 +139,7 @@ public abstract class PlayerConnection {
         return online;
     }
 
-    public void setConnectionState(@NotNull ConnectionState connectionState) {
+    public void setConnectionState(ConnectionState connectionState) {
         this.connectionState = connectionState;
     }
 
@@ -148,7 +148,7 @@ public abstract class PlayerConnection {
      *
      * @return the client connection state
      */
-    public @NotNull ConnectionState getConnectionState() {
+    public ConnectionState getConnectionState() {
         return connectionState;
     }
 

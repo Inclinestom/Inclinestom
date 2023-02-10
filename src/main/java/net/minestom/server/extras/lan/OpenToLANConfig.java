@@ -34,7 +34,7 @@ public class OpenToLANConfig {
      * @return {@code this}, for chaining
      */
     @Contract("_ -> this")
-    public @NotNull OpenToLANConfig port(int port) {
+    public OpenToLANConfig port(int port) {
         this.port = port;
         return this;
     }
@@ -46,7 +46,7 @@ public class OpenToLANConfig {
      * @return {@code this}, for chaining
      */
     @Contract("_ -> this")
-    public @NotNull OpenToLANConfig pingDelay(@NotNull Duration delay) {
+    public OpenToLANConfig pingDelay(Duration delay) {
         this.delayBetweenPings = Objects.requireNonNull(delay, "delay");
         return this;
     }
@@ -58,7 +58,7 @@ public class OpenToLANConfig {
      * @return {@code this}, for chaining
      */
     @Contract("_ -> this")
-    public @NotNull OpenToLANConfig eventCallDelay(@NotNull Duration delay) {
+    public OpenToLANConfig eventCallDelay(Duration delay) {
         this.delayBetweenEvent = Objects.requireNonNull(delay, "delay");
         return this;
     }

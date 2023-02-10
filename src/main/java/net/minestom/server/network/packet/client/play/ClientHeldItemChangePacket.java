@@ -7,12 +7,12 @@ import org.jetbrains.annotations.NotNull;
 import static net.minestom.server.network.NetworkBuffer.SHORT;
 
 public record ClientHeldItemChangePacket(short slot) implements ClientPacket {
-    public ClientHeldItemChangePacket(@NotNull NetworkBuffer reader) {
+    public ClientHeldItemChangePacket(NetworkBuffer reader) {
         this(reader.read(SHORT));
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(SHORT, slot);
     }
 }

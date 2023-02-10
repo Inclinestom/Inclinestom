@@ -65,14 +65,14 @@ final class EntityView {
                 entity instanceof Player player ? e -> e.viewEngine.viewableOption.removal.accept(player) : null);
     }
 
-    public void updateTracker(@Nullable Instance instance, @NotNull Point point) {
+    public void updateTracker(@Nullable Instance instance, Point point) {
         this.trackedLocation = instance != null ? new TrackedLocation(instance, point) : null;
     }
 
     record TrackedLocation(Instance instance, Point point) {
     }
 
-    public boolean manualAdd(@NotNull Player player) {
+    public boolean manualAdd(Player player) {
         if (player == this.entity) return false;
         synchronized (mutex) {
             if (manualViewers.add(player)) {
@@ -83,7 +83,7 @@ final class EntityView {
         }
     }
 
-    public boolean manualRemove(@NotNull Player player) {
+    public boolean manualRemove(Player player) {
         if (player == this.entity) return false;
         synchronized (mutex) {
             if (manualViewers.remove(player)) {
@@ -94,7 +94,7 @@ final class EntityView {
         }
     }
 
-    public void forManuals(@NotNull Consumer<Player> consumer) {
+    public void forManuals(Consumer<Player> consumer) {
         synchronized (mutex) {
             this.manualViewers.forEach(consumer);
         }
@@ -238,7 +238,7 @@ final class EntityView {
 
     final class SetImpl extends AbstractSet<Player> {
         @Override
-        public @NotNull Iterator<Player> iterator() {
+        public Iterator<Player> iterator() {
             List<Player> players;
             synchronized (mutex) {
                 var bitSet = viewableOption.bitSet;

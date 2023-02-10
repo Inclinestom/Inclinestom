@@ -25,7 +25,7 @@ public final class Acquired<T> {
         this.lock = AcquirableImpl.enter(owner, tickThread);
     }
 
-    public @NotNull T get() {
+    public T get() {
         safeCheck();
         return value;
     }

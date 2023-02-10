@@ -9,7 +9,7 @@ public class LightningBoltMeta extends EntityMeta {
     public static final byte OFFSET = EntityMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 0;
 
-    public LightningBoltMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
+    public LightningBoltMeta(Entity entity, Metadata metadata) {
         super(entity, metadata);
     }
 

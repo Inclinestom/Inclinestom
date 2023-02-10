@@ -9,7 +9,7 @@ public class EndermanMeta extends MonsterMeta {
     public static final byte OFFSET = MonsterMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 3;
 
-    public EndermanMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
+    public EndermanMeta(Entity entity, Metadata metadata) {
         super(entity, metadata);
     }
 

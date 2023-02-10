@@ -22,7 +22,7 @@ public final class ItemSerializers {
         static final Tag<String> ID = Tag.String("id");
 
         @Override
-        public @Nullable EnchantmentEntry read(@NotNull TagReadable reader) {
+        public @Nullable EnchantmentEntry read(TagReadable reader) {
             final String id = reader.getTag(ID);
             final Short level = reader.getTag(LEVEL);
             if (id == null || level == null) return null;
@@ -31,7 +31,7 @@ public final class ItemSerializers {
         }
 
         @Override
-        public void write(@NotNull TagWritable writer, @NotNull EnchantmentEntry value) {
+        public void write(TagWritable writer, EnchantmentEntry value) {
             writer.setTag(ID, value.enchantment.name());
             writer.setTag(LEVEL, value.level);
         }
@@ -49,7 +49,7 @@ public final class ItemSerializers {
         static final Tag<String> NAME = Tag.String("Name");
 
         @Override
-        public @Nullable ItemAttribute read(@NotNull TagReadable reader) {
+        public @Nullable ItemAttribute read(TagReadable reader) {
             final UUID uuid = reader.getTag(ID);
             final double amount = reader.getTag(AMOUNT);
             final String slot = reader.getTag(SLOT);
@@ -75,7 +75,7 @@ public final class ItemSerializers {
         }
 
         @Override
-        public void write(@NotNull TagWritable writer, @NotNull ItemAttribute value) {
+        public void write(TagWritable writer, ItemAttribute value) {
             writer.setTag(ID, value.uuid());
             writer.setTag(AMOUNT, value.amount());
             writer.setTag(SLOT, value.slot().name().toLowerCase(Locale.ROOT));

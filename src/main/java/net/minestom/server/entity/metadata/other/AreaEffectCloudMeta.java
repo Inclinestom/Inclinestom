@@ -9,7 +9,7 @@ public class AreaEffectCloudMeta extends EntityMeta {
     public static final byte OFFSET = EntityMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 4;
 
-    public AreaEffectCloudMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
+    public AreaEffectCloudMeta(Entity entity, Metadata metadata) {
         super(entity, metadata);
     }
 

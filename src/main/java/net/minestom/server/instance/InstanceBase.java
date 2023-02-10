@@ -1,0 +1,398 @@
+package net.minestom.server.instance;
+
+import it.unimi.dsi.fastutil.objects.ObjectArraySet;
+import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.pointer.Pointers;
+import net.minestom.server.MinecraftServer;
+import net.minestom.server.ServerProcess;
+import net.minestom.server.coordinate.Area;
+import net.minestom.server.coordinate.Point;
+import net.minestom.server.entity.Entity;
+import net.minestom.server.entity.EntityCreature;
+import net.minestom.server.entity.ExperienceOrb;
+import net.minestom.server.entity.Player;
+import net.minestom.server.entity.pathfinding.PFInstanceSpace;
+import net.minestom.server.event.EventDispatcher;
+import net.minestom.server.event.EventFilter;
+import net.minestom.server.event.EventNode;
+import net.minestom.server.event.instance.InstanceTickEvent;
+import net.minestom.server.event.trait.InstanceEvent;
+import net.minestom.server.instance.block.Block;
+import net.minestom.server.instance.generator.Generator;
+import net.minestom.server.network.packet.server.play.BlockActionPacket;
+import net.minestom.server.network.packet.server.play.TimeUpdatePacket;
+import net.minestom.server.tag.TagHandler;
+import net.minestom.server.timer.Scheduler;
+import net.minestom.server.utils.PacketUtils;
+import net.minestom.server.utils.chunk.ChunkCache;
+import net.minestom.server.utils.time.Cooldown;
+import net.minestom.server.utils.time.TimeUnit;
+import net.minestom.server.utils.validate.Check;
+import net.minestom.server.world.DimensionType;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
+
+import java.time.Duration;
+import java.util.*;
+import java.util.stream.Collectors;
+
+/**
+ * Instances are what are called "worlds" in Minecraft
+ * <p>
+ * An instance has entities, blocks, biomes, and lighting.
+ */
+public abstract class InstanceBase implements Instance {
+
+
+    private final DimensionType dimensionType;
+
+    private final WorldBorder worldBorder;
+
+    // Tick since the creation of the instance
+    private long worldAge;
+
+    // The time of the instance
+    private long time;
+    private int timeRate = 1;
+    private Duration timeUpdate = Duration.of(1, TimeUnit.SECOND);
+    private long lastTimeUpdate;
+
+    // Field for tick events
+    private long lastTickAge = System.currentTimeMillis();
+
+    private final EntityTracker entityTracker = new EntityTrackerImpl();
+
+    // the uuid of this instance
+    protected UUID uniqueId;
+
+    // instance custom data
+    private final TagHandler tagHandler = TagHandler.newHandler();
+    private final Scheduler scheduler = Scheduler.newScheduler();
+    private final EventNode<InstanceEvent> eventNode;
+
+    // Pathfinder
+    private final PFInstanceSpace instanceSpace = new PFInstanceSpace(this);
+
+    // Adventure
+    private final Pointers pointers;
+
+    /**
+     * Creates a new instance.
+     *
+     * @param uniqueId      the {@link UUID} of the instance
+     * @param dimensionType the {@link DimensionType} of the instance
+     */
+    public InstanceBase(UUID uniqueId, DimensionType dimensionType) {
+        Check.argCondition(!dimensionType.isRegistered(),
+                "The dimension " + dimensionType.getName() + " is not registered! Please use DimensionTypeManager#addDimension");
+        this.uniqueId = uniqueId;
+        this.dimensionType = dimensionType;
+
+        this.worldBorder = new WorldBorder(this);
+
+        this.pointers = Pointers.builder()
+                .withDynamic(Identity.UUID, this::getUniqueId)
+                .build();
+
+        final ServerProcess process = MinecraftServer.process();
+        if (process != null) {
+            this.eventNode = process.eventHandler().map(this, EventFilter.INSTANCE);
+        } else {
+            // Local nodes require a server process
+            this.eventNode = null;
+        }
+    }
+
+    /**
+     * Changes the instance {@link ChunkGenerator}.
+     *
+     * @param chunkGenerator the new {@link ChunkGenerator} of the instance
+     * @deprecated Use {@link #setGenerator(Generator)}
+     */
+    @Deprecated
+    public void setChunkGenerator(@Nullable ChunkGenerator chunkGenerator) {
+        setGenerator(chunkGenerator != null ? new ChunkGeneratorCompatibilityLayer(chunkGenerator) : null);
+    }
+
+    /**
+     * Gets the instance {@link DimensionType}.
+     *
+     * @return the dimension of the instance
+     */
+    public DimensionType getDimensionType() {
+        return dimensionType;
+    }
+
+    /**
+     * Gets the age of this instance in tick.
+     *
+     * @return the age of this instance in tick
+     */
+    public long getWorldAge() {
+        return worldAge;
+    }
+
+    /**
+     * Gets the current time in the instance (sun/moon).
+     *
+     * @return the time in the instance
+     */
+    public long getTime() {
+        return time;
+    }
+
+    /**
+     * Changes the current time in the instance, from 0 to 24000.
+     * <p>
+     * If the time is negative, the vanilla client will not move the sun.
+     * <p>
+     * 0 = sunrise
+     * 6000 = noon
+     * 12000 = sunset
+     * 18000 = midnight
+     * <p>
+     * This method is unaffected by {@link #getTimeRate()}
+     * <p>
+     * It does send the new time to all players in the instance, unaffected by {@link #getTimeUpdate()}
+     *
+     * @param time the new time of the instance
+     */
+    public void setTime(long time) {
+        this.time = time;
+        PacketUtils.sendGroupedPacket(getPlayers(), createTimePacket());
+    }
+
+    /**
+     * Gets the rate of the time passing, it is 1 by default
+     *
+     * @return the time rate of the instance
+     */
+    public int getTimeRate() {
+        return timeRate;
+    }
+
+    /**
+     * Changes the time rate of the instance
+     * <p>
+     * 1 is the default value and can be set to 0 to be completely disabled (constant time)
+     *
+     * @param timeRate the new time rate of the instance
+     * @throws IllegalStateException if {@code timeRate} is lower than 0
+     */
+    public void setTimeRate(int timeRate) {
+        Check.stateCondition(timeRate < 0, "The time rate cannot be lower than 0");
+        this.timeRate = timeRate;
+    }
+
+    /**
+     * Gets the rate at which the client is updated with the current instance time
+     *
+     * @return the client update rate for time related packet
+     */
+    public @Nullable Duration getTimeUpdate() {
+        return timeUpdate;
+    }
+
+    /**
+     * Changes the rate at which the client is updated about the time
+     * <p>
+     * Setting it to null means that the client will never know about time change
+     * (but will still change server-side)
+     *
+     * @param timeUpdate the new update rate concerning time
+     */
+    public void setTimeUpdate(@Nullable Duration timeUpdate) {
+        this.timeUpdate = timeUpdate;
+    }
+
+    /**
+     * Creates a {@link TimeUpdatePacket} with the current age and time of this instance
+     *
+     * @return the {@link TimeUpdatePacket} with this instance data
+     */
+    @ApiStatus.Internal
+    public TimeUpdatePacket createTimePacket() {
+        long time = this.time;
+        if (timeRate == 0) {
+            //Negative values stop the sun and moon from moving
+            //0 as a long cannot be negative
+            time = time == 0 ? -24000L : -Math.abs(time);
+        }
+        return new TimeUpdatePacket(worldAge, time);
+    }
+
+    /**
+     * Gets the instance {@link WorldBorder};
+     *
+     * @return the {@link WorldBorder} linked to the instance
+     */
+    public WorldBorder getWorldBorder() {
+        return worldBorder;
+    }
+
+    /**
+     * Gets the entities in the instance;
+     *
+     * @return an unmodifiable {@link Set} containing all the entities in the instance
+     */
+    public Set<Entity> getEntities() {
+        return entityTracker.entities();
+    }
+
+    /**
+     * Gets the players in the instance;
+     *
+     * @return an unmodifiable {@link Set} containing all the players in the instance
+     */
+    @Override
+    public Set<Player> getPlayers() {
+        return entityTracker.entities(EntityTracker.Target.PLAYERS);
+    }
+
+    /**
+     * Gets the creatures in the instance;
+     *
+     * @return an unmodifiable {@link Set} containing all the creatures in the instance
+     */
+    @Deprecated
+    public Set<EntityCreature> getCreatures() {
+        return entityTracker.entities().stream()
+                .filter(EntityCreature.class::isInstance)
+                .map(entity -> (EntityCreature) entity)
+                .collect(Collectors.toUnmodifiableSet());
+    }
+
+    /**
+     * Gets the experience orbs in the instance.
+     *
+     * @return an unmodifiable {@link Set} containing all the experience orbs in the instance
+     */
+    @Deprecated
+    public Set<ExperienceOrb> getExperienceOrbs() {
+        return entityTracker.entities().stream()
+                .filter(ExperienceOrb.class::isInstance)
+                .map(entity -> (ExperienceOrb) entity)
+                .collect(Collectors.toUnmodifiableSet());
+    }
+
+    /**
+     * Gets the entities located in the chunk.
+     *
+     * @param chunk the chunk to get the entities from
+     * @return an unmodifiable {@link Set} containing all the entities in a chunk,
+     * if {@code chunk} is unloaded, return an empty {@link HashSet}
+     */
+    public Set<Entity> getChunkEntities(Chunk chunk) {
+        var chunkEntities = entityTracker.chunkEntities(chunk.toPosition(), EntityTracker.Target.ENTITIES);
+        return ObjectArraySet.ofUnchecked(chunkEntities.toArray(Entity[]::new));
+    }
+
+    /**
+     * Gets nearby entities to the given position.
+     *
+     * @param point position to look at
+     * @param range max range from the given point to collect entities at
+     * @return entities that are not further than the specified distance from the transmitted position.
+     */
+    public Collection<Entity> getNearbyEntities(Point point, double range) {
+        List<Entity> result = new ArrayList<>();
+        this.entityTracker.nearbyEntities(point, range, EntityTracker.Target.ENTITIES, result::add);
+        return result;
+    }
+
+    @Override
+    public abstract @Nullable Block getBlock(int x, int y, int z, Condition condition);
+
+    /**
+     * Sends a {@link BlockActionPacket} for all the viewers of the specific position.
+     *
+     * @param blockPosition the block position
+     * @param actionId      the action id, depends on the block
+     * @param actionParam   the action parameter, depends on the block
+     * @see <a href="https://wiki.vg/Protocol#Block_Action">BlockActionPacket</a> for the action id &amp; param
+     */
+    public void sendBlockAction(Point blockPosition, byte actionId, byte actionParam) {
+        final Block block = getBlock(blockPosition);
+        final Set<Player> viewers = viewers(Area.collection(blockPosition));
+        PacketUtils.sendGroupedPacket(viewers, new BlockActionPacket(blockPosition, actionId, actionParam, block));
+    }
+
+    @ApiStatus.Experimental
+    public EntityTracker getEntityTracker() {
+        return entityTracker;
+    }
+
+    /**
+     * Gets the instance unique id.
+     *
+     * @return the instance unique id
+     */
+    public UUID getUniqueId() {
+        return uniqueId;
+    }
+
+    /**
+     * Performs a single tick in the instance
+     * <p>
+     * Warning: this does not update chunks and entities.
+     *
+     * @param time the tick time in milliseconds
+     */
+    @Override
+    public void tick(long time) {
+        // Scheduled tasks
+        this.scheduler.processTick();
+        // Time
+        {
+            this.worldAge++;
+            this.time += timeRate;
+            // time needs to be sent to players
+            if (timeUpdate != null && !Cooldown.hasCooldown(time, lastTimeUpdate, timeUpdate)) {
+                PacketUtils.sendGroupedPacket(getPlayers(), createTimePacket());
+                this.lastTimeUpdate = time;
+            }
+
+        }
+        // Tick event
+        {
+            // Process tick events
+            EventDispatcher.call(new InstanceTickEvent(this, time, lastTickAge));
+            // Set last tick age
+            this.lastTickAge = time;
+        }
+        this.worldBorder.update();
+    }
+
+    @Override
+    public TagHandler tagHandler() {
+        return tagHandler;
+    }
+
+    @Override
+    public Scheduler scheduler() {
+        return scheduler;
+    }
+
+    @Override
+    @ApiStatus.Experimental
+    public EventNode<InstanceEvent> eventNode() {
+        return eventNode;
+    }
+
+    /**
+     * Gets the instance space.
+     * <p>
+     * Used by the pathfinder for entities.
+     *
+     * @return the instance space
+     */
+    @ApiStatus.Internal
+    public PFInstanceSpace getInstanceSpace() {
+        return instanceSpace;
+    }
+
+    @Override
+    public Pointers pointers() {
+        return this.pointers;
+    }
+}

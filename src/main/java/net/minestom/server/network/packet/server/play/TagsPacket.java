@@ -15,7 +15,7 @@ import java.util.Map;
 
 import static net.minestom.server.network.NetworkBuffer.*;
 
-public record TagsPacket(@NotNull Map<Tag.BasicType, List<Tag>> tagsMap) implements ServerPacket {
+public record TagsPacket(Map<Tag.BasicType, List<Tag>> tagsMap) implements ServerPacket {
     @ApiStatus.Internal
     public static final CachedPacket DEFAULT_TAGS = new CachedPacket(new TagsPacket(MinecraftServer.getTagManager().getTagMap()));
 
@@ -23,12 +23,12 @@ public record TagsPacket(@NotNull Map<Tag.BasicType, List<Tag>> tagsMap) impleme
         tagsMap = Map.copyOf(tagsMap);
     }
 
-    public TagsPacket(@NotNull NetworkBuffer reader) {
+    public TagsPacket(NetworkBuffer reader) {
         this(readTagsMap(reader));
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(VAR_INT, tagsMap.size());
         for (var entry : tagsMap.entrySet()) {
             final var type = entry.getKey();
@@ -51,7 +51,7 @@ public record TagsPacket(@NotNull Map<Tag.BasicType, List<Tag>> tagsMap) impleme
         return ServerPacketIdentifier.TAGS;
     }
 
-    private static Map<Tag.BasicType, List<Tag>> readTagsMap(@NotNull NetworkBuffer reader) {
+    private static Map<Tag.BasicType, List<Tag>> readTagsMap(NetworkBuffer reader) {
         Map<Tag.BasicType, List<Tag>> tagsMap = new EnumMap<>(Tag.BasicType.class);
         // Read amount of tag types
         final int typeCount = reader.read(VAR_INT);

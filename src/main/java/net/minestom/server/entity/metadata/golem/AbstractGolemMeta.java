@@ -9,7 +9,7 @@ public class AbstractGolemMeta extends PathfinderMobMeta {
     public static final byte OFFSET = PathfinderMobMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 0;
 
-    protected AbstractGolemMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
+    protected AbstractGolemMeta(Entity entity, Metadata metadata) {
         super(entity, metadata);
     }
 

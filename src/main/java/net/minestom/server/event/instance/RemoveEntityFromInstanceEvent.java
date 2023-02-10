@@ -12,13 +12,13 @@ public class RemoveEntityFromInstanceEvent implements EntityInstanceEvent {
     private final Instance instance;
     private final Entity entity;
 
-    public RemoveEntityFromInstanceEvent(@NotNull Instance instance, @NotNull Entity entity) {
+    public RemoveEntityFromInstanceEvent(Instance instance, Entity entity) {
         this.instance = instance;
         this.entity = entity;
     }
 
     @Override
-    public @NotNull Instance getInstance() {
+    public Instance getInstance() {
         return instance;
     }
 
@@ -27,7 +27,7 @@ public class RemoveEntityFromInstanceEvent implements EntityInstanceEvent {
      *
      * @return entity being removed
      */
-    public @NotNull Entity getEntity() {
+    public Entity getEntity() {
         return entity;
     }
 }

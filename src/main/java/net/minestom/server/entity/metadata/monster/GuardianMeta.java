@@ -11,7 +11,7 @@ public class GuardianMeta extends MonsterMeta {
 
     private Entity target;
 
-    public GuardianMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
+    public GuardianMeta(Entity entity, Metadata metadata) {
         super(entity, metadata);
     }
 

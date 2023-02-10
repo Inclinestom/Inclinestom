@@ -29,7 +29,7 @@ public final class DimensionTypeManager {
      *
      * @param dimensionType the dimension to add
      */
-    public void addDimension(@NotNull DimensionType dimensionType) {
+    public void addDimension(DimensionType dimensionType) {
         dimensionType.registered = true;
         this.dimensionTypes.add(dimensionType);
     }
@@ -40,7 +40,7 @@ public final class DimensionTypeManager {
      * @param dimensionType the dimension to remove
      * @return if the dimension type was removed, false if it was not present before
      */
-    public boolean removeDimension(@NotNull DimensionType dimensionType) {
+    public boolean removeDimension(DimensionType dimensionType) {
         dimensionType.registered = false;
         return dimensionTypes.remove(dimensionType);
     }
@@ -49,7 +49,7 @@ public final class DimensionTypeManager {
      * @param namespaceID The dimension name
      * @return true if the dimension is registered
      */
-    public boolean isRegistered(@NotNull NamespaceID namespaceID) {
+    public boolean isRegistered(NamespaceID namespaceID) {
         return isRegistered(getDimension(namespaceID));
     }
 
@@ -67,7 +67,7 @@ public final class DimensionTypeManager {
      * @param namespaceID The Dimension Name
      * @return a DimensionType if it is present and registered
      */
-    public @Nullable DimensionType getDimension(@NotNull NamespaceID namespaceID) {
+    public @Nullable DimensionType getDimension(NamespaceID namespaceID) {
         return unmodifiableList().stream().filter(dimensionType -> dimensionType.getName().equals(namespaceID)).filter(DimensionType::isRegistered).findFirst().orElse(null);
     }
 
@@ -76,7 +76,7 @@ public final class DimensionTypeManager {
      *
      * @return an unmodifiable {@link List} containing all the added dimensions
      */
-    public @NotNull List<DimensionType> unmodifiableList() {
+    public List<DimensionType> unmodifiableList() {
         return Collections.unmodifiableList(dimensionTypes);
     }
 
@@ -87,7 +87,7 @@ public final class DimensionTypeManager {
      *
      * @return an nbt compound containing the registered dimensions
      */
-    public @NotNull NBTCompound toNBT() {
+    public NBTCompound toNBT() {
         return NBT.Compound(dimensions -> {
             dimensions.setString("type", "minecraft:dimension_type");
             dimensions.set("value", NBT.List(

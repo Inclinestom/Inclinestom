@@ -9,11 +9,11 @@ record EnchantmentImpl(Registry.EnchantmentEntry registry) implements Enchantmen
     private static final Registry.Container<Enchantment> CONTAINER = Registry.createContainer(Registry.Resource.ENCHANTMENTS,
             (namespace, properties) -> new EnchantmentImpl(Registry.enchantment(namespace, properties)));
 
-    static Enchantment get(@NotNull String namespace) {
+    static Enchantment get(String namespace) {
         return CONTAINER.get(namespace);
     }
 
-    static Enchantment getSafe(@NotNull String namespace) {
+    static Enchantment getSafe(String namespace) {
         return CONTAINER.getSafe(namespace);
     }
 

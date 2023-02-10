@@ -24,5 +24,5 @@ public interface PlayerProvider {
      * @param connection the player connection
      * @return a newly create {@link Player} object
      */
-    @NotNull Player createPlayer(@NotNull UUID uuid, @NotNull String username, @NotNull PlayerConnection connection);
+    Player createPlayer(UUID uuid, String username, PlayerConnection connection);
 }

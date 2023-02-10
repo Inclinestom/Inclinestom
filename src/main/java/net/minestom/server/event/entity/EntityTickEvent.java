@@ -12,12 +12,12 @@ public class EntityTickEvent implements EntityInstanceEvent {
 
     private final Entity entity;
 
-    public EntityTickEvent(@NotNull Entity entity) {
+    public EntityTickEvent(Entity entity) {
         this.entity = entity;
     }
 
     @Override
-    public @NotNull Entity getEntity() {
+    public Entity getEntity() {
         return entity;
     }
 }

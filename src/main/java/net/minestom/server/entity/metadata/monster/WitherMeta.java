@@ -13,7 +13,7 @@ public class WitherMeta extends MonsterMeta {
     private Entity leftHead;
     private Entity rightHead;
 
-    public WitherMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
+    public WitherMeta(Entity entity, Metadata metadata) {
         super(entity, metadata);
     }
 

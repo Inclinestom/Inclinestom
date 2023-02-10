@@ -24,9 +24,9 @@ public class PlayerBlockPlaceEvent implements PlayerInstanceEvent, BlockEvent, C
 
     private boolean cancelled;
 
-    public PlayerBlockPlaceEvent(@NotNull Player player, @NotNull Block block,
-                                 @NotNull BlockFace blockFace,
-                                 @NotNull Point blockPosition, @NotNull Player.Hand hand) {
+    public PlayerBlockPlaceEvent(Player player, Block block,
+                                 BlockFace blockFace,
+                                 Point blockPosition, Player.Hand hand) {
         this.player = player;
         this.block = block;
         this.blockFace = blockFace;
@@ -41,7 +41,7 @@ public class PlayerBlockPlaceEvent implements PlayerInstanceEvent, BlockEvent, C
      * @return the block to place
      */
     @Override
-    public @NotNull Block getBlock() {
+    public Block getBlock() {
         return block;
     }
 
@@ -50,11 +50,11 @@ public class PlayerBlockPlaceEvent implements PlayerInstanceEvent, BlockEvent, C
      *
      * @param block the new block
      */
-    public void setBlock(@NotNull Block block) {
+    public void setBlock(Block block) {
         this.block = block;
     }
 
-    public @NotNull BlockFace getBlockFace() {
+    public BlockFace getBlockFace() {
         return blockFace;
     }
 
@@ -63,7 +63,7 @@ public class PlayerBlockPlaceEvent implements PlayerInstanceEvent, BlockEvent, C
      *
      * @return the block position
      */
-    public @NotNull Point getBlockPosition() {
+    public Point getBlockPosition() {
         return blockPosition;
     }
 
@@ -72,7 +72,7 @@ public class PlayerBlockPlaceEvent implements PlayerInstanceEvent, BlockEvent, C
      *
      * @return the hand used
      */
-    public @NotNull Player.Hand getHand() {
+    public Player.Hand getHand() {
         return hand;
     }
 
@@ -105,7 +105,7 @@ public class PlayerBlockPlaceEvent implements PlayerInstanceEvent, BlockEvent, C
     }
 
     @Override
-    public @NotNull Player getPlayer() {
+    public Player getPlayer() {
         return player;
     }
 }

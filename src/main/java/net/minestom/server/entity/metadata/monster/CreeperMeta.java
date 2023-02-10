@@ -8,7 +8,7 @@ public class CreeperMeta extends MonsterMeta {
     public static final byte OFFSET = MonsterMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 3;
 
-    public CreeperMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
+    public CreeperMeta(Entity entity, Metadata metadata) {
         super(entity, metadata);
     }
 
@@ -18,7 +18,7 @@ public class CreeperMeta extends MonsterMeta {
         return id == -1 ? State.IDLE : State.FUSE;
     }
 
-    public void setState(@NotNull State value) {
+    public void setState(State value) {
         super.metadata.setIndex(OFFSET, Metadata.VarInt(value == State.IDLE ? -1 : 1));
     }
 

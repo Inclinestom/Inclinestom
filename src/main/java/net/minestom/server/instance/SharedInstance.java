@@ -20,38 +20,38 @@ import java.util.concurrent.CompletableFuture;
 public class SharedInstance extends Instance {
     private final InstanceContainer instanceContainer;
 
-    public SharedInstance(@NotNull UUID uniqueId, @NotNull InstanceContainer instanceContainer) {
+    public SharedInstance(UUID uniqueId, InstanceContainer instanceContainer) {
         super(uniqueId, instanceContainer.getDimensionType());
         this.instanceContainer = instanceContainer;
     }
 
     @Override
-    public void setBlock(int x, int y, int z, @NotNull Block block) {
+    public void setBlock(int x, int y, int z, Block block) {
         this.instanceContainer.setBlock(x, y, z, block);
     }
 
     @Override
-    public boolean placeBlock(@NotNull BlockHandler.Placement placement) {
+    public boolean placeBlock(BlockHandler.Placement placement) {
         return instanceContainer.placeBlock(placement);
     }
 
     @Override
-    public boolean breakBlock(@NotNull Player player, @NotNull Point blockPosition, @NotNull BlockFace blockFace) {
+    public boolean breakBlock(Player player, Point blockPosition, BlockFace blockFace) {
         return instanceContainer.breakBlock(player, blockPosition, blockFace);
     }
 
     @Override
-    public @NotNull CompletableFuture<Chunk> loadChunk(int chunkX, int chunkZ) {
+    public CompletableFuture<Chunk> loadChunk(int chunkX, int chunkZ) {
         return instanceContainer.loadChunk(chunkX, chunkZ);
     }
 
     @Override
-    public @NotNull CompletableFuture<Chunk> loadOptionalChunk(int chunkX, int chunkZ) {
+    public CompletableFuture<Chunk> loadOptionalChunk(int chunkX, int chunkZ) {
         return instanceContainer.loadOptionalChunk(chunkX, chunkZ);
     }
 
     @Override
-    public void unloadChunk(@NotNull Chunk chunk) {
+    public void unloadChunk(Chunk chunk) {
         instanceContainer.unloadChunk(chunk);
     }
 
@@ -61,17 +61,17 @@ public class SharedInstance extends Instance {
     }
 
     @Override
-    public @NotNull CompletableFuture<Void> saveInstance() {
+    public CompletableFuture<Void> saveInstance() {
         return instanceContainer.saveInstance();
     }
 
     @Override
-    public @NotNull CompletableFuture<Void> saveChunkToStorage(@NotNull Chunk chunk) {
+    public CompletableFuture<Void> saveChunkToStorage(Chunk chunk) {
         return instanceContainer.saveChunkToStorage(chunk);
     }
 
     @Override
-    public @NotNull CompletableFuture<Void> saveChunksToStorage() {
+    public CompletableFuture<Void> saveChunksToStorage() {
         return instanceContainer.saveChunksToStorage();
     }
 
@@ -88,7 +88,7 @@ public class SharedInstance extends Instance {
     @NotNull
     @Override
     public Collection<Chunk> getChunks() {
-        return instanceContainer.getChunks();
+        return instanceContainer.loadedSections();
     }
 
     @Override
@@ -102,7 +102,7 @@ public class SharedInstance extends Instance {
     }
 
     @Override
-    public boolean isInVoid(@NotNull Point point) {
+    public boolean isInVoid(Point point) {
         return instanceContainer.isInVoid(point);
     }
 
@@ -111,7 +111,7 @@ public class SharedInstance extends Instance {
      *
      * @return the associated {@link InstanceContainer}
      */
-    public @NotNull InstanceContainer getInstanceContainer() {
+    public InstanceContainer getInstanceContainer() {
         return instanceContainer;
     }
 }

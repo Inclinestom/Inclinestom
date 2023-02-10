@@ -9,12 +9,12 @@ import static net.minestom.server.network.NetworkBuffer.BYTE;
 import static net.minestom.server.network.NetworkBuffer.STRING;
 
 public record CraftRecipeResponse(byte windowId, String recipe) implements ServerPacket {
-    public CraftRecipeResponse(@NotNull NetworkBuffer reader) {
+    public CraftRecipeResponse(NetworkBuffer reader) {
         this(reader.read(BYTE), reader.read(STRING));
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(BYTE, windowId);
         writer.write(STRING, recipe);
     }

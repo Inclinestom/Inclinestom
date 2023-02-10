@@ -8,7 +8,7 @@ public class HuskMeta extends ZombieMeta {
     public static final byte OFFSET = ZombieMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 0;
 
-    public HuskMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
+    public HuskMeta(Entity entity, Metadata metadata) {
         super(entity, metadata);
     }
 

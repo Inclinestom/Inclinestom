@@ -22,7 +22,7 @@ public record PlayerHeadMeta(TagReadable readable) implements ItemMetaView<Playe
         private static final Tag<NBT> TEXTURES = Tag.NBT("textures");
 
         @Override
-        public @Nullable PlayerSkin read(@NotNull TagReadable reader) {
+        public @Nullable PlayerSkin read(TagReadable reader) {
             final NBT result = reader.getTag(TEXTURES);
             if (!(result instanceof NBTList)) return null;
             final NBTList<NBTCompound> textures = (NBTList<NBTCompound>) result;
@@ -33,7 +33,7 @@ public record PlayerHeadMeta(TagReadable readable) implements ItemMetaView<Playe
         }
 
         @Override
-        public void write(@NotNull TagWritable writer, @NotNull PlayerSkin playerSkin) {
+        public void write(TagWritable writer, PlayerSkin playerSkin) {
             final String value = Objects.requireNonNullElse(playerSkin.textures(), "");
             final String signature = Objects.requireNonNullElse(playerSkin.signature(), "");
             NBTList<NBTCompound> textures = new NBTList<>(NBTType.TAG_Compound,
@@ -51,7 +51,7 @@ public record PlayerHeadMeta(TagReadable readable) implements ItemMetaView<Playe
     }
 
     @Override
-    public <T> @UnknownNullability T getTag(@NotNull Tag<T> tag) {
+    public <T> @UnknownNullability T getTag(Tag<T> tag) {
         return readable.getTag(tag);
     }
 

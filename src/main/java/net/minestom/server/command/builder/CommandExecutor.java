@@ -17,5 +17,5 @@ public interface CommandExecutor {
      * @param sender  the sender of the command
      * @param context the command context, used to retrieve the arguments and various other things
      */
-    void apply(@NotNull CommandSender sender, @NotNull CommandContext context);
+    void apply(CommandSender sender, CommandContext context);
 }

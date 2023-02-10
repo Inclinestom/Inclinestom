@@ -10,7 +10,7 @@ public class BatMeta extends AmbientCreatureMeta {
 
     private final static byte IS_HANGING_BIT = 0x01;
 
-    public BatMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
+    public BatMeta(Entity entity, Metadata metadata) {
         super(entity, metadata);
     }
 

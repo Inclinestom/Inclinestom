@@ -14,7 +14,7 @@ public class PlayerSpawnEvent implements PlayerEvent {
     private final Instance spawnInstance;
     private final boolean firstSpawn;
 
-    public PlayerSpawnEvent(@NotNull Player player, @NotNull Instance spawnInstance, boolean firstSpawn) {
+    public PlayerSpawnEvent(Player player, Instance spawnInstance, boolean firstSpawn) {
         this.player = player;
         this.spawnInstance = spawnInstance;
         this.firstSpawn = firstSpawn;
@@ -40,7 +40,7 @@ public class PlayerSpawnEvent implements PlayerEvent {
     }
 
     @Override
-    public @NotNull Player getPlayer() {
+    public Player getPlayer() {
         return player;
     }
 }

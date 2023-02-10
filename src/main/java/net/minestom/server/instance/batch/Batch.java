@@ -68,5 +68,5 @@ public interface Batch<C> extends Block.Setter {
      * @return The inverse of this batch, if inverse is enabled in the {@link BatchOption}
      */
     @Nullable
-    Batch<C> apply(@NotNull Instance instance, @Nullable C callback);
+    Batch<C> apply(Instance instance, @Nullable C callback);
 }

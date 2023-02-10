@@ -38,7 +38,7 @@ public class ItemEntity extends Entity {
     private long spawnTime;
     private long pickupDelay;
 
-    public ItemEntity(@NotNull ItemStack itemStack) {
+    public ItemEntity(ItemStack itemStack) {
         super(EntityType.ITEM);
         setItemStack(itemStack);
         setBoundingBox(0.25f, 0.25f, 0.25f);
@@ -99,7 +99,7 @@ public class ItemEntity extends Entity {
     }
 
     @Override
-    public @NotNull ItemEntityMeta getEntityMeta() {
+    public ItemEntityMeta getEntityMeta() {
         return (ItemEntityMeta) super.getEntityMeta();
     }
 
@@ -118,7 +118,7 @@ public class ItemEntity extends Entity {
      *
      * @param itemStack the item stack
      */
-    public void setItemStack(@NotNull ItemStack itemStack) {
+    public void setItemStack(ItemStack itemStack) {
         this.itemStack = itemStack;
         getEntityMeta().setItem(itemStack);
     }
@@ -196,7 +196,7 @@ public class ItemEntity extends Entity {
      * @param delay        the pickup delay
      * @param temporalUnit the unit of the delay
      */
-    public void setPickupDelay(long delay, @NotNull TemporalUnit temporalUnit) {
+    public void setPickupDelay(long delay, TemporalUnit temporalUnit) {
         setPickupDelay(Duration.of(delay, temporalUnit));
     }
 

@@ -80,7 +80,7 @@ public class Team implements PacketGroupingAudience {
      *
      * @param teamName The registry name for the team
      */
-    protected Team(@NotNull String teamName) {
+    protected Team(String teamName) {
         this.teamName = teamName;
 
         this.teamDisplayName = Component.empty();
@@ -108,7 +108,7 @@ public class Team implements PacketGroupingAudience {
      *
      * @param member The member to be added
      */
-    public void addMember(@NotNull String member) {
+    public void addMember(String member) {
         addMembers(List.of(member));
     }
 
@@ -120,7 +120,7 @@ public class Team implements PacketGroupingAudience {
      *
      * @param toAdd The members to be added
      */
-    public void addMembers(@NotNull Collection<@NotNull String> toAdd) {
+    public void addMembers(Collection<String> toAdd) {
         // Adds a new member to the team
         this.members.addAll(toAdd);
 
@@ -142,7 +142,7 @@ public class Team implements PacketGroupingAudience {
      *
      * @param member The member to be removed
      */
-    public void removeMember(@NotNull String member) {
+    public void removeMember(String member) {
         removeMembers(List.of(member));
     }
 
@@ -154,7 +154,7 @@ public class Team implements PacketGroupingAudience {
      *
      * @param toRemove The members to be removed
      */
-    public void removeMembers(@NotNull Collection<@NotNull String> toRemove) {
+    public void removeMembers(Collection<String> toRemove) {
         // Initializes remove player packet
         final TeamsPacket removePlayerPacket = new TeamsPacket(teamName,
                 new TeamsPacket.RemoveEntitiesToTeamAction(toRemove));
@@ -197,7 +197,7 @@ public class Team implements PacketGroupingAudience {
      * @param visibility The new tag visibility
      * @see #updateNameTagVisibility(NameTagVisibility)
      */
-    public void setNameTagVisibility(@NotNull NameTagVisibility visibility) {
+    public void setNameTagVisibility(NameTagVisibility visibility) {
         this.nameTagVisibility = visibility;
     }
 
@@ -206,7 +206,7 @@ public class Team implements PacketGroupingAudience {
      *
      * @param nameTagVisibility The new tag visibility
      */
-    public void updateNameTagVisibility(@NotNull NameTagVisibility nameTagVisibility) {
+    public void updateNameTagVisibility(NameTagVisibility nameTagVisibility) {
         this.setNameTagVisibility(nameTagVisibility);
         sendUpdatePacket();
     }
@@ -219,7 +219,7 @@ public class Team implements PacketGroupingAudience {
      * @param rule The new rule
      * @see #updateCollisionRule(CollisionRule)
      */
-    public void setCollisionRule(@NotNull CollisionRule rule) {
+    public void setCollisionRule(CollisionRule rule) {
         this.collisionRule = rule;
     }
 
@@ -228,7 +228,7 @@ public class Team implements PacketGroupingAudience {
      *
      * @param collisionRule The new collision rule
      */
-    public void updateCollisionRule(@NotNull CollisionRule collisionRule) {
+    public void updateCollisionRule(CollisionRule collisionRule) {
         this.setCollisionRule(collisionRule);
         sendUpdatePacket();
     }
@@ -241,7 +241,7 @@ public class Team implements PacketGroupingAudience {
      * @param color The new team color
      * @see #updateTeamColor(NamedTextColor)
      */
-    public void setTeamColor(@NotNull NamedTextColor color) {
+    public void setTeamColor(NamedTextColor color) {
         this.teamColor = color;
     }
 
@@ -250,7 +250,7 @@ public class Team implements PacketGroupingAudience {
      *
      * @param color The new team color
      */
-    public void updateTeamColor(@NotNull NamedTextColor color) {
+    public void updateTeamColor(NamedTextColor color) {
         this.setTeamColor(color);
         sendUpdatePacket();
     }
@@ -370,7 +370,7 @@ public class Team implements PacketGroupingAudience {
      *
      * @return the packet to add the team
      */
-    public @NotNull TeamsPacket createTeamsCreationPacket() {
+    public TeamsPacket createTeamsCreationPacket() {
         final var info = new TeamsPacket.CreateTeamAction(teamDisplayName, friendlyFlags,
                 nameTagVisibility, collisionRule, teamColor, prefix, suffix, members);
         return new TeamsPacket(teamName, info);
@@ -381,7 +381,7 @@ public class Team implements PacketGroupingAudience {
      *
      * @return the packet to remove the team
      */
-    public @NotNull TeamsPacket createTeamDestructionPacket() {
+    public TeamsPacket createTeamDestructionPacket() {
         return new TeamsPacket(teamName, new TeamsPacket.RemoveTeamAction());
     }
 
@@ -390,7 +390,7 @@ public class Team implements PacketGroupingAudience {
      *
      * @return an unmodifiable {@link Set} of registered players
      */
-    public @NotNull Set<String> getMembers() {
+    public Set<String> getMembers() {
         return Collections.unmodifiableSet(members);
     }
 
@@ -417,7 +417,7 @@ public class Team implements PacketGroupingAudience {
      *
      * @return the tag visibility
      */
-    public @NotNull NameTagVisibility getNameTagVisibility() {
+    public NameTagVisibility getNameTagVisibility() {
         return nameTagVisibility;
     }
 
@@ -426,7 +426,7 @@ public class Team implements PacketGroupingAudience {
      *
      * @return the collision rule
      */
-    public @NotNull CollisionRule getCollisionRule() {
+    public CollisionRule getCollisionRule() {
         return collisionRule;
     }
 
@@ -435,7 +435,7 @@ public class Team implements PacketGroupingAudience {
      *
      * @return the team color
      */
-    public @NotNull NamedTextColor getTeamColor() {
+    public NamedTextColor getTeamColor() {
         return teamColor;
     }
 
@@ -467,7 +467,7 @@ public class Team implements PacketGroupingAudience {
     }
 
     @Override
-    public @NotNull Collection<Player> getPlayers() {
+    public Collection<Player> getPlayers() {
         if (!this.isPlayerMembersUpToDate) {
             this.playerMembers.clear();
 
@@ -486,7 +486,7 @@ public class Team implements PacketGroupingAudience {
     }
 
     @Override
-    public @NotNull Pointers pointers() {
+    public Pointers pointers() {
         return this.pointers;
     }
 }

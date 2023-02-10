@@ -14,7 +14,7 @@ public record MapMeta(TagReadable readable) implements ItemMetaView<MapMeta.Buil
     private static final Tag<Integer> MAP_SCALE_DIRECTION = Tag.Integer("map_scale_direction").defaultValue(0);
     private static final Tag<List<Decoration>> DECORATIONS = Tag.Structure("Decorations", new TagSerializer<Decoration>() {
         @Override
-        public @Nullable Decoration read(@NotNull TagReadable reader) {
+        public @Nullable Decoration read(TagReadable reader) {
             final String id = reader.getTag(Tag.String("id"));
             final Byte type = reader.getTag(Tag.Byte("type"));
             final Byte x = reader.getTag(Tag.Byte("x"));
@@ -25,7 +25,7 @@ public record MapMeta(TagReadable readable) implements ItemMetaView<MapMeta.Buil
         }
 
         @Override
-        public void write(@NotNull TagWritable writer, @NotNull Decoration value) {
+        public void write(TagWritable writer, Decoration value) {
             writer.setTag(Tag.String("id"), value.id);
             writer.setTag(Tag.Byte("type"), value.type);
             writer.setTag(Tag.Byte("x"), value.x);
@@ -47,12 +47,12 @@ public record MapMeta(TagReadable readable) implements ItemMetaView<MapMeta.Buil
         return getTag(DECORATIONS);
     }
 
-    public @NotNull Color getMapColor() {
+    public Color getMapColor() {
         return getTag(MAP_COLOR);
     }
 
     @Override
-    public <T> @UnknownNullability T getTag(@NotNull Tag<T> tag) {
+    public <T> @UnknownNullability T getTag(Tag<T> tag) {
         return readable.getTag(tag);
     }
 

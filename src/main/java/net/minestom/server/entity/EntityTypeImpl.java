@@ -48,11 +48,11 @@ record EntityTypeImpl(Registry.EntityEntry registry) implements EntityType {
             (namespace, properties) -> new EntityTypeImpl(Registry.entity(namespace, properties)));
     static final Map<String, BiFunction<Entity, Metadata, EntityMeta>> ENTITY_META_SUPPLIER = createMetaMap();
 
-    static EntityType get(@NotNull String namespace) {
+    static EntityType get(String namespace) {
         return CONTAINER.get(namespace);
     }
 
-    static EntityType getSafe(@NotNull String namespace) {
+    static EntityType getSafe(String namespace) {
         return CONTAINER.getSafe(namespace);
     }
 

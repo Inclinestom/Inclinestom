@@ -10,7 +10,7 @@ public class MooshroomMeta extends CowMeta {
     public static final byte OFFSET = CowMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 1;
 
-    public MooshroomMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
+    public MooshroomMeta(Entity entity, Metadata metadata) {
         super(entity, metadata);
     }
 
@@ -19,7 +19,7 @@ public class MooshroomMeta extends CowMeta {
         return Variant.valueOf(super.metadata.getIndex(OFFSET, "red").toUpperCase(Locale.ROOT));
     }
 
-    public void setVariant(@NotNull Variant value) {
+    public void setVariant(Variant value) {
         super.metadata.setIndex(OFFSET, Metadata.String(value.name().toLowerCase(Locale.ROOT)));
     }
 

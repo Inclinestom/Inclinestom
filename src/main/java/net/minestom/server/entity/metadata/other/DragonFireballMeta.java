@@ -14,7 +14,7 @@ public class DragonFireballMeta extends EntityMeta implements ObjectDataProvider
 
     private Entity shooter;
 
-    public DragonFireballMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
+    public DragonFireballMeta(Entity entity, Metadata metadata) {
         super(entity, metadata);
     }
 

@@ -9,12 +9,12 @@ import org.jetbrains.annotations.Nullable;
 import static net.minestom.server.network.NetworkBuffer.STRING;
 
 public record SelectAdvancementTabPacket(@Nullable String identifier) implements ServerPacket {
-    public SelectAdvancementTabPacket(@NotNull NetworkBuffer reader) {
+    public SelectAdvancementTabPacket(NetworkBuffer reader) {
         this(reader.readOptional(STRING));
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.writeOptional(STRING, identifier);
     }
 

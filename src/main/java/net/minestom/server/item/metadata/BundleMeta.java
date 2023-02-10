@@ -16,12 +16,12 @@ import java.util.List;
 public record BundleMeta(TagReadable readable) implements ItemMetaView<BundleMeta.Builder> {
     private static final Tag<List<ItemStack>> ITEMS = Tag.ItemStack("Items").list().defaultValue(List.of());
 
-    public @NotNull List<ItemStack> getItems() {
+    public List<ItemStack> getItems() {
         return getTag(ITEMS);
     }
 
     @Override
-    public <T> @UnknownNullability T getTag(@NotNull Tag<T> tag) {
+    public <T> @UnknownNullability T getTag(Tag<T> tag) {
         return readable.getTag(tag);
     }
 
@@ -30,20 +30,20 @@ public record BundleMeta(TagReadable readable) implements ItemMetaView<BundleMet
             this(TagHandler.newHandler());
         }
 
-        public Builder items(@NotNull List<ItemStack> items) {
+        public Builder items(List<ItemStack> items) {
             setTag(ITEMS, items);
             return this;
         }
 
         @ApiStatus.Experimental
-        public Builder addItem(@NotNull ItemStack item) {
+        public Builder addItem(ItemStack item) {
             var newList = new ArrayList<>(getTag(ITEMS));
             newList.add(item);
             return items(newList);
         }
 
         @ApiStatus.Experimental
-        public Builder removeItem(@NotNull ItemStack item) {
+        public Builder removeItem(ItemStack item) {
             var newList = new ArrayList<>(getTag(ITEMS));
             newList.remove(item);
             return items(newList);

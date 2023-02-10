@@ -10,7 +10,7 @@ public class DolphinMeta extends WaterAnimalMeta {
     public static final byte OFFSET = WaterAnimalMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 3;
 
-    public DolphinMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
+    public DolphinMeta(Entity entity, Metadata metadata) {
         super(entity, metadata);
     }
 
@@ -19,7 +19,7 @@ public class DolphinMeta extends WaterAnimalMeta {
         return super.metadata.getIndex(OFFSET, Vec.ZERO);
     }
 
-    public void setTreasurePosition(@NotNull Point value) {
+    public void setTreasurePosition(Point value) {
         super.metadata.setIndex(OFFSET, Metadata.Position(value));
     }
 

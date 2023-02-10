@@ -15,13 +15,13 @@ public class ArgumentCommand extends Argument<CommandResult> {
     private boolean onlyCorrect;
     private String shortcut = "";
 
-    public ArgumentCommand(@NotNull String id) {
+    public ArgumentCommand(String id) {
         super(id, true, true);
     }
 
     @NotNull
     @Override
-    public CommandResult parse(@NotNull String input) throws ArgumentSyntaxException {
+    public CommandResult parse(String input) throws ArgumentSyntaxException {
         final String commandString = !shortcut.isEmpty() ?
                 shortcut + StringUtils.SPACE + input
                 : input;
@@ -54,7 +54,7 @@ public class ArgumentCommand extends Argument<CommandResult> {
     }
 
     @ApiStatus.Experimental
-    public ArgumentCommand setShortcut(@NotNull String shortcut) {
+    public ArgumentCommand setShortcut(String shortcut) {
         this.shortcut = shortcut;
         return this;
     }

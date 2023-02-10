@@ -10,21 +10,21 @@ import java.util.List;
 import static net.minestom.server.network.NetworkBuffer.*;
 
 public record ClientClickWindowPacket(byte windowId, int stateId,
-                                      short slot, byte button, @NotNull ClickType clickType,
-                                      @NotNull List<ChangedSlot> changedSlots,
-                                      @NotNull ItemStack clickedItem) implements ClientPacket {
+                                      short slot, byte button, ClickType clickType,
+                                      List<ChangedSlot> changedSlots,
+                                      ItemStack clickedItem) implements ClientPacket {
     public ClientClickWindowPacket {
         changedSlots = List.copyOf(changedSlots);
     }
 
-    public ClientClickWindowPacket(@NotNull NetworkBuffer reader) {
+    public ClientClickWindowPacket(NetworkBuffer reader) {
         this(reader.read(BYTE), reader.read(VAR_INT),
                 reader.read(SHORT), reader.read(BYTE), reader.readEnum(ClickType.class),
                 reader.readCollection(ChangedSlot::new), reader.read(ITEM));
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(BYTE, windowId);
         writer.write(VAR_INT, stateId);
         writer.write(SHORT, slot);
@@ -34,13 +34,13 @@ public record ClientClickWindowPacket(byte windowId, int stateId,
         writer.write(ITEM, clickedItem);
     }
 
-    public record ChangedSlot(short slot, @NotNull ItemStack item) implements NetworkBuffer.Writer {
-        public ChangedSlot(@NotNull NetworkBuffer reader) {
+    public record ChangedSlot(short slot, ItemStack item) implements NetworkBuffer.Writer {
+        public ChangedSlot(NetworkBuffer reader) {
             this(reader.read(SHORT), reader.read(ITEM));
         }
 
         @Override
-        public void write(@NotNull NetworkBuffer writer) {
+        public void write(NetworkBuffer writer) {
             writer.write(SHORT, slot);
             writer.write(ITEM, item);
         }

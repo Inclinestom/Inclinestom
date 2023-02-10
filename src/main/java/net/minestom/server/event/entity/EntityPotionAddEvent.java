@@ -10,7 +10,7 @@ public class EntityPotionAddEvent implements EntityInstanceEvent {
     private final Entity entity;
     private final Potion potion;
 
-    public EntityPotionAddEvent(@NotNull Entity entity, @NotNull Potion potion) {
+    public EntityPotionAddEvent(Entity entity, Potion potion) {
         this.entity = entity;
         this.potion = potion;
     }

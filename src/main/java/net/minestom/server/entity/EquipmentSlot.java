@@ -37,11 +37,11 @@ public enum EquipmentSlot {
         return armorSlot;
     }
 
-    public static @NotNull List<@NotNull EquipmentSlot> armors() {
+    public static List<EquipmentSlot> armors() {
         return ARMORS;
     }
 
-    public static @NotNull EquipmentSlot fromAttributeSlot(@NotNull AttributeSlot attributeSlot) {
+    public static EquipmentSlot fromAttributeSlot(AttributeSlot attributeSlot) {
         return switch (attributeSlot) {
             case MAINHAND -> MAIN_HAND;
             case OFFHAND -> OFF_HAND;

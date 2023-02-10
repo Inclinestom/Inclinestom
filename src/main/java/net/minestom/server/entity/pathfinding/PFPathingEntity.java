@@ -217,7 +217,7 @@ public final class PFPathingEntity implements IPathingEntity {
         return (float) entity.getBoundingBox().height();
     }
 
-    private float getAttributeValue(@NotNull Attribute attribute) {
+    private float getAttributeValue(Attribute attribute) {
         if (entity instanceof LivingEntity) {
             return ((LivingEntity) entity).getAttributeValue(attribute);
         }

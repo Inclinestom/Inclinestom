@@ -66,7 +66,7 @@ public class ArgumentEntity extends Argument<EntityFinder> {
 
     @NotNull
     @Override
-    public EntityFinder parse(@NotNull String input) throws ArgumentSyntaxException {
+    public EntityFinder parse(String input) throws ArgumentSyntaxException {
         return staticParse(input, onlySingleEntity, onlyPlayers);
     }
 
@@ -94,7 +94,7 @@ public class ArgumentEntity extends Argument<EntityFinder> {
      */
     @Deprecated
     @NotNull
-    public static EntityFinder staticParse(@NotNull String input,
+    public static EntityFinder staticParse(String input,
                                            boolean onlySingleEntity, boolean onlyPlayers) throws ArgumentSyntaxException {
         // Check for raw player name or UUID
         if (!input.contains(SELECTOR_PREFIX) && !input.contains(StringUtils.SPACE)) {
@@ -152,9 +152,9 @@ public class ArgumentEntity extends Argument<EntityFinder> {
     }
 
     @NotNull
-    private static EntityFinder parseStructure(@NotNull String input,
-                                               @NotNull EntityFinder entityFinder,
-                                               @NotNull String structure) throws ArgumentSyntaxException {
+    private static EntityFinder parseStructure(String input,
+                                               EntityFinder entityFinder,
+                                               String structure) throws ArgumentSyntaxException {
         // The structure isn't opened or closed properly
         if (!structure.startsWith("[") || !structure.endsWith("]"))
             throw new ArgumentSyntaxException("Target selector needs to start and end with brackets", input, INVALID_SYNTAX);
@@ -184,10 +184,10 @@ public class ArgumentEntity extends Argument<EntityFinder> {
         return entityFinder;
     }
 
-    private static int parseArgument(@NotNull EntityFinder entityFinder,
-                                     @NotNull String argumentName,
-                                     @NotNull String input,
-                                     @NotNull String structureData, int beginIndex) throws ArgumentSyntaxException {
+    private static int parseArgument(EntityFinder entityFinder,
+                                     String argumentName,
+                                     String input,
+                                     String structureData, int beginIndex) throws ArgumentSyntaxException {
         final char comma = ',';
         final boolean isSimple = SIMPLE_ARGUMENTS.contains(argumentName);
 
@@ -290,7 +290,7 @@ public class ArgumentEntity extends Argument<EntityFinder> {
         return String.format("Entities<%s>", getId());
     }
 
-    private static EntityFinder.TargetSelector toTargetSelector(@NotNull String selectorVariable) {
+    private static EntityFinder.TargetSelector toTargetSelector(String selectorVariable) {
         if (selectorVariable.equals("@p"))
             return EntityFinder.TargetSelector.NEAREST_PLAYER;
         if (selectorVariable.equals("@r"))

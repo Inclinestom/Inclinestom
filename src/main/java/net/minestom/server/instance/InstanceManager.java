@@ -28,7 +28,7 @@ public final class InstanceManager {
      *
      * @param instance the {@link Instance} to register
      */
-    public void registerInstance(@NotNull Instance instance) {
+    public void registerInstance(Instance instance) {
         Check.stateCondition(instance instanceof SharedInstance,
                 "Please use InstanceManager#registerSharedInstance to register a shared instance");
         UNSAFE_registerInstance(instance);
@@ -42,18 +42,18 @@ public final class InstanceManager {
      * @return the created {@link InstanceContainer}
      */
     @ApiStatus.Experimental
-    public @NotNull InstanceContainer createInstanceContainer(@NotNull DimensionType dimensionType, @Nullable IChunkLoader loader) {
+    public InstanceContainer createInstanceContainer(DimensionType dimensionType, @Nullable IChunkLoader loader) {
         final InstanceContainer instanceContainer = new InstanceContainer(UUID.randomUUID(), dimensionType, loader);
         registerInstance(instanceContainer);
         return instanceContainer;
     }
 
-    public @NotNull InstanceContainer createInstanceContainer(@NotNull DimensionType dimensionType) {
+    public InstanceContainer createInstanceContainer(DimensionType dimensionType) {
         return createInstanceContainer(dimensionType, null);
     }
 
     @ApiStatus.Experimental
-    public @NotNull InstanceContainer createInstanceContainer(@Nullable IChunkLoader loader) {
+    public InstanceContainer createInstanceContainer(@Nullable IChunkLoader loader) {
         return createInstanceContainer(DimensionType.OVERWORLD, loader);
     }
 
@@ -62,7 +62,7 @@ public final class InstanceManager {
      *
      * @return the created {@link InstanceContainer}
      */
-    public @NotNull InstanceContainer createInstanceContainer() {
+    public InstanceContainer createInstanceContainer() {
         return createInstanceContainer(DimensionType.OVERWORLD, null);
     }
 
@@ -75,7 +75,7 @@ public final class InstanceManager {
      * @return the registered {@link SharedInstance}
      * @throws NullPointerException if {@code sharedInstance} doesn't have an {@link InstanceContainer} assigned to it
      */
-    public @NotNull SharedInstance registerSharedInstance(@NotNull SharedInstance sharedInstance) {
+    public SharedInstance registerSharedInstance(SharedInstance sharedInstance) {
         final InstanceContainer instanceContainer = sharedInstance.getInstanceContainer();
         Check.notNull(instanceContainer, "SharedInstance needs to have an InstanceContainer to be created!");
 
@@ -91,7 +91,7 @@ public final class InstanceManager {
      * @return the created {@link SharedInstance}
      * @throws IllegalStateException if {@code instanceContainer} is not registered
      */
-    public @NotNull SharedInstance createSharedInstance(@NotNull InstanceContainer instanceContainer) {
+    public SharedInstance createSharedInstance(InstanceContainer instanceContainer) {
         Check.notNull(instanceContainer, "Instance container cannot be null when creating a SharedInstance!");
         Check.stateCondition(!instanceContainer.isRegistered(), "The container needs to be register in the InstanceManager");
 
@@ -106,14 +106,14 @@ public final class InstanceManager {
      *
      * @param instance the {@link Instance} to unregister
      */
-    public void unregisterInstance(@NotNull Instance instance) {
+    public void unregisterInstance(Instance instance) {
         Check.stateCondition(!instance.getPlayers().isEmpty(), "You cannot unregister an instance with players inside.");
         synchronized (instance) {
             // Unload all chunks
             if (instance instanceof InstanceContainer) {
-                instance.getChunks().forEach(instance::unloadChunk);
+                instance.loadedSections().forEach(instance::unloadChunk);
                 var dispatcher = MinecraftServer.process().dispatcher();
-                instance.getChunks().forEach(dispatcher::deletePartition);
+                instance.loadedSections().forEach(dispatcher::deletePartition);
             }
             // Unregister
             instance.setRegistered(false);
@@ -126,7 +126,7 @@ public final class InstanceManager {
      *
      * @return an unmodifiable {@link Set} containing all the registered instances
      */
-    public @NotNull Set<@NotNull Instance> getInstances() {
+    public Set<Instance> getInstances() {
         return Collections.unmodifiableSet(instances);
     }
 
@@ -136,7 +136,7 @@ public final class InstanceManager {
      * @param uuid UUID of the instance
      * @return the instance with the given UUID, null if not found
      */
-    public @Nullable Instance getInstance(@NotNull UUID uuid) {
+    public @Nullable Instance getInstance(UUID uuid) {
         Optional<Instance> instance = getInstances()
                 .stream()
                 .filter(someInstance -> someInstance.getUniqueId().equals(uuid))
@@ -151,10 +151,10 @@ public final class InstanceManager {
      *
      * @param instance the {@link Instance} to register
      */
-    private void UNSAFE_registerInstance(@NotNull Instance instance) {
+    private void UNSAFE_registerInstance(Instance instance) {
         instance.setRegistered(true);
         this.instances.add(instance);
         var dispatcher = MinecraftServer.process().dispatcher();
-        instance.getChunks().forEach(dispatcher::createPartition);
+        instance.loadedSections().forEach(dispatcher::createPartition);
     }
 }

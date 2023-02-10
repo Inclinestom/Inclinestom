@@ -6,15 +6,15 @@ import org.jetbrains.annotations.NotNull;
 
 import static net.minestom.server.network.NetworkBuffer.VAR_INT;
 
-public record ClientEntityActionPacket(int playerId, @NotNull Action action,
+public record ClientEntityActionPacket(int playerId, Action action,
                                        int horseJumpBoost) implements ClientPacket {
-    public ClientEntityActionPacket(@NotNull NetworkBuffer reader) {
+    public ClientEntityActionPacket(NetworkBuffer reader) {
         this(reader.read(VAR_INT), reader.readEnum(Action.class),
                 reader.read(VAR_INT));
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(VAR_INT, playerId);
         writer.writeEnum(Action.class, action);
         writer.write(VAR_INT, horseJumpBoost);

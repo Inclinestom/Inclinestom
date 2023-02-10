@@ -8,7 +8,7 @@ public class RabbitMeta extends AnimalMeta {
     public static final byte OFFSET = AnimalMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 1;
 
-    public RabbitMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
+    public RabbitMeta(Entity entity, Metadata metadata) {
         super(entity, metadata);
     }
 
@@ -21,7 +21,7 @@ public class RabbitMeta extends AnimalMeta {
         return Type.VALUES[id];
     }
 
-    public void setType(@NotNull Type value) {
+    public void setType(Type value) {
         int id = value == Type.KILLER_BUNNY ? 99 : value.ordinal();
         super.metadata.setIndex(OFFSET, Metadata.VarInt(id));
     }

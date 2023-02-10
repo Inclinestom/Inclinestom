@@ -8,12 +8,12 @@ import static net.minestom.server.network.NetworkBuffer.BOOLEAN;
 import static net.minestom.server.network.NetworkBuffer.FLOAT;
 
 public record ClientPlayerRotationPacket(float yaw, float pitch, boolean onGround) implements ClientPacket {
-    public ClientPlayerRotationPacket(@NotNull NetworkBuffer reader) {
+    public ClientPlayerRotationPacket(NetworkBuffer reader) {
         this(reader.read(FLOAT), reader.read(FLOAT), reader.read(BOOLEAN));
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(FLOAT, yaw);
         writer.write(FLOAT, pitch);
         writer.write(BOOLEAN, onGround);

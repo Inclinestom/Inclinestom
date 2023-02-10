@@ -76,7 +76,7 @@ public final class BinaryBuffer {
         throw new RuntimeException("VarInt is too big");
     }
 
-    public @NotNull Marker mark() {
+    public Marker mark() {
         return new Marker(readerOffset, writerOffset);
     }
 
@@ -85,7 +85,7 @@ public final class BinaryBuffer {
         this.writerOffset = writerOffset;
     }
 
-    public void reset(@NotNull Marker marker) {
+    public void reset(Marker marker) {
         reset(marker.readerOffset(), marker.writerOffset());
     }
 

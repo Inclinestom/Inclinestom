@@ -8,7 +8,7 @@ public class WolfMeta extends TameableAnimalMeta {
     public static final byte OFFSET = TameableAnimalMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 3;
 
-    public WolfMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
+    public WolfMeta(Entity entity, Metadata metadata) {
         super(entity, metadata);
     }
 

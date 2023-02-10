@@ -17,20 +17,20 @@ public class ArgumentEnum<E extends Enum> extends Argument<E> {
     private final E[] values;
     private Format format = Format.DEFAULT;
 
-    public ArgumentEnum(@NotNull String id, Class<E> enumClass) {
+    public ArgumentEnum(String id, Class<E> enumClass) {
         super(id);
         this.enumClass = enumClass;
         this.values = enumClass.getEnumConstants();
     }
 
-    public ArgumentEnum<E> setFormat(@NotNull Format format) {
+    public ArgumentEnum<E> setFormat(Format format) {
         this.format = format;
         return this;
     }
 
     @NotNull
     @Override
-    public E parse(@NotNull String input) throws ArgumentSyntaxException {
+    public E parse(String input) throws ArgumentSyntaxException {
         for (E value : this.values) {
             if (this.format.formatter.apply(value.name()).equals(input)) {
                 return value;
@@ -55,7 +55,7 @@ public class ArgumentEnum<E extends Enum> extends Argument<E> {
 
         private final UnaryOperator<String> formatter;
 
-        Format(@NotNull UnaryOperator<String> formatter) {
+        Format(UnaryOperator<String> formatter) {
             this.formatter = formatter;
         }
     }

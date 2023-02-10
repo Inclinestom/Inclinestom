@@ -49,12 +49,12 @@ public class BelowNameTag implements Scoreboard {
     }
 
     @Override
-    public @NotNull String getObjectiveName() {
+    public String getObjectiveName() {
         return this.objectiveName;
     }
 
     @Override
-    public boolean addViewer(@NotNull Player player) {
+    public boolean addViewer(Player player) {
         final boolean result = this.viewers.add(player);
         if (result) {
             player.sendPacket(this.scoreboardObjectivePacket);
@@ -65,7 +65,7 @@ public class BelowNameTag implements Scoreboard {
     }
 
     @Override
-    public boolean removeViewer(@NotNull Player player) {
+    public boolean removeViewer(Player player) {
         final boolean result = this.viewers.remove(player);
         if (result) {
             player.sendPacket(this.getDestructionObjectivePacket());

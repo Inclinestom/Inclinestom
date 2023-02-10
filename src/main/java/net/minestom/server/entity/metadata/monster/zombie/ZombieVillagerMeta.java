@@ -9,7 +9,7 @@ public class ZombieVillagerMeta extends ZombieMeta {
     public static final byte OFFSET = ZombieMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 2;
 
-    public ZombieVillagerMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
+    public ZombieVillagerMeta(Entity entity, Metadata metadata) {
         super(entity, metadata);
     }
 

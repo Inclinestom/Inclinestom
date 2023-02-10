@@ -98,112 +98,112 @@ final class ServerProcessImpl implements ServerProcess {
     }
 
     @Override
-    public @NotNull ConnectionManager connection() {
+    public ConnectionManager connection() {
         return connection;
     }
 
     @Override
-    public @NotNull InstanceManager instance() {
+    public InstanceManager instance() {
         return instance;
     }
 
     @Override
-    public @NotNull BlockManager block() {
+    public BlockManager block() {
         return block;
     }
 
     @Override
-    public @NotNull CommandManager command() {
+    public CommandManager command() {
         return command;
     }
 
     @Override
-    public @NotNull RecipeManager recipe() {
+    public RecipeManager recipe() {
         return recipe;
     }
 
     @Override
-    public @NotNull TeamManager team() {
+    public TeamManager team() {
         return team;
     }
 
     @Override
-    public @NotNull GlobalEventHandler eventHandler() {
+    public GlobalEventHandler eventHandler() {
         return eventHandler;
     }
 
     @Override
-    public @NotNull SchedulerManager scheduler() {
+    public SchedulerManager scheduler() {
         return scheduler;
     }
 
     @Override
-    public @NotNull BenchmarkManager benchmark() {
+    public BenchmarkManager benchmark() {
         return benchmark;
     }
 
     @Override
-    public @NotNull DimensionTypeManager dimension() {
+    public DimensionTypeManager dimension() {
         return dimension;
     }
 
     @Override
-    public @NotNull BiomeManager biome() {
+    public BiomeManager biome() {
         return biome;
     }
 
     @Override
-    public @NotNull AdvancementManager advancement() {
+    public AdvancementManager advancement() {
         return advancement;
     }
 
     @Override
-    public @NotNull BossBarManager bossBar() {
+    public BossBarManager bossBar() {
         return bossBar;
     }
 
     @Override
-    public @NotNull ExtensionManager extension() {
+    public ExtensionManager extension() {
         return extension;
     }
 
     @Override
-    public @NotNull TagManager tag() {
+    public TagManager tag() {
         return tag;
     }
 
     @Override
-    public @NotNull ExceptionManager exception() {
+    public ExceptionManager exception() {
         return exception;
     }
 
     @Override
-    public @NotNull PacketListenerManager packetListener() {
+    public PacketListenerManager packetListener() {
         return packetListener;
     }
 
     @Override
-    public @NotNull PacketProcessor packetProcessor() {
+    public PacketProcessor packetProcessor() {
         return packetProcessor;
     }
 
     @Override
-    public @NotNull Server server() {
+    public Server server() {
         return server;
     }
 
     @Override
-    public @NotNull ThreadDispatcher<Chunk> dispatcher() {
+    public ThreadDispatcher<Chunk> dispatcher() {
         return dispatcher;
     }
 
     @Override
-    public @NotNull Ticker ticker() {
+    public Ticker ticker() {
         return ticker;
     }
 
     @Override
-    public void start(@NotNull SocketAddress socketAddress) {
+    public void start(SocketAddress socketAddress) {
         if (!started.compareAndSet(false, true)) {
             throw new IllegalStateException("Server already started");
         }
@@ -260,7 +260,7 @@ final class ServerProcessImpl implements ServerProcess {
     }
 
     @Override
-    public @NotNull ServerSnapshot updateSnapshot(@NotNull SnapshotUpdater updater) {
+    public ServerSnapshot updateSnapshot(SnapshotUpdater updater) {
         List<AtomicReference<InstanceSnapshot>> instanceRefs = new ArrayList<>();
         Int2ObjectOpenHashMap<AtomicReference<EntitySnapshot>> entityRefs = new Int2ObjectOpenHashMap<>();
         for (Instance instance : instance.getInstances()) {

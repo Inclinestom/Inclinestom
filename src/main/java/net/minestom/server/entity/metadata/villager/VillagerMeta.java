@@ -8,7 +8,7 @@ public class VillagerMeta extends AbstractVillagerMeta {
     public static final byte OFFSET = AbstractVillagerMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 1;
 
-    public VillagerMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
+    public VillagerMeta(Entity entity, Metadata metadata) {
         super(entity, metadata);
     }
 
@@ -21,7 +21,7 @@ public class VillagerMeta extends AbstractVillagerMeta {
         return new VillagerData(Type.VALUES[data[0]], Profession.VALUES[data[1]], Level.VALUES[data[2] - 1]);
     }
 
-    public void setVillagerData(@NotNull VillagerData data) {
+    public void setVillagerData(VillagerData data) {
         super.metadata.setIndex(OFFSET, Metadata.VillagerData(
                 data.type.ordinal(),
                 data.profession.ordinal(),
@@ -35,7 +35,7 @@ public class VillagerMeta extends AbstractVillagerMeta {
         private Profession profession;
         private Level level;
 
-        public VillagerData(@NotNull Type type, @NotNull Profession profession, @NotNull Level level) {
+        public VillagerData(Type type, Profession profession, Level level) {
             this.type = type;
             this.profession = profession;
             this.level = level;
@@ -46,7 +46,7 @@ public class VillagerMeta extends AbstractVillagerMeta {
             return this.type;
         }
 
-        public void setType(@NotNull Type type) {
+        public void setType(Type type) {
             this.type = type;
         }
 
@@ -55,7 +55,7 @@ public class VillagerMeta extends AbstractVillagerMeta {
             return this.profession;
         }
 
-        public void setProfession(@NotNull Profession profession) {
+        public void setProfession(Profession profession) {
             this.profession = profession;
         }
 
@@ -64,7 +64,7 @@ public class VillagerMeta extends AbstractVillagerMeta {
             return level;
         }
 
-        public void setLevel(@NotNull Level level) {
+        public void setLevel(Level level) {
             this.level = level;
         }
     }

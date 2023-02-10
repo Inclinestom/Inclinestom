@@ -8,16 +8,16 @@ import org.jetbrains.annotations.NotNull;
 
 import static net.minestom.server.network.NetworkBuffer.*;
 
-public record ClientSettingsPacket(@NotNull String locale, byte viewDistance,
-                                   @NotNull ChatMessageType chatMessageType, boolean chatColors,
-                                   byte displayedSkinParts, @NotNull Player.MainHand mainHand,
+public record ClientSettingsPacket(String locale, byte viewDistance,
+                                   ChatMessageType chatMessageType, boolean chatColors,
+                                   byte displayedSkinParts, Player.MainHand mainHand,
                                    boolean enableTextFiltering, boolean allowsListing) implements ClientPacket {
     public ClientSettingsPacket {
         if (locale.length() > 128)
             throw new IllegalArgumentException("Locale cannot be longer than 128 characters.");
     }
 
-    public ClientSettingsPacket(@NotNull NetworkBuffer reader) {
+    public ClientSettingsPacket(NetworkBuffer reader) {
         this(reader.read(STRING), reader.read(BYTE),
                 ChatMessageType.fromPacketID(reader.read(VAR_INT)), reader.read(BOOLEAN),
                 reader.read(BYTE), reader.readEnum(Player.MainHand.class),
@@ -25,7 +25,7 @@ public record ClientSettingsPacket(@NotNull String locale, byte viewDistance,
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(STRING, locale);
         writer.write(BYTE, viewDistance);
         writer.write(VAR_INT, chatMessageType.getPacketID());

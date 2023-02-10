@@ -9,11 +9,11 @@ import java.util.List;
 import static net.minestom.server.network.NetworkBuffer.*;
 
 public record LightData(boolean trustEdges,
-                        @NotNull BitSet skyMask, @NotNull BitSet blockMask,
-                        @NotNull BitSet emptySkyMask, @NotNull BitSet emptyBlockMask,
-                        @NotNull List<byte[]> skyLight,
-                        @NotNull List<byte[]> blockLight) implements NetworkBuffer.Writer {
-    public LightData(@NotNull NetworkBuffer reader) {
+                        BitSet skyMask, BitSet blockMask,
+                        BitSet emptySkyMask, BitSet emptyBlockMask,
+                        List<byte[]> skyLight,
+                        List<byte[]> blockLight) implements NetworkBuffer.Writer {
+    public LightData(NetworkBuffer reader) {
         this(reader.read(BOOLEAN),
                 BitSet.valueOf(reader.read(LONG_ARRAY)), BitSet.valueOf(reader.read(LONG_ARRAY)),
                 BitSet.valueOf(reader.read(LONG_ARRAY)), BitSet.valueOf(reader.read(LONG_ARRAY)),
@@ -21,7 +21,7 @@ public record LightData(boolean trustEdges,
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(BOOLEAN, trustEdges);
 
         writer.write(LONG_ARRAY, skyMask.toLongArray());

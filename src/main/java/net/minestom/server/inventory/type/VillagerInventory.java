@@ -20,11 +20,11 @@ public class VillagerInventory extends Inventory {
     private boolean regularVillager;
     private boolean canRestock;
 
-    public VillagerInventory(@NotNull Component title) {
+    public VillagerInventory(Component title) {
         super(InventoryType.MERCHANT, title);
     }
 
-    public VillagerInventory(@NotNull String title) {
+    public VillagerInventory(String title) {
         super(InventoryType.MERCHANT, title);
     }
 
@@ -86,7 +86,7 @@ public class VillagerInventory extends Inventory {
     }
 
     @Override
-    public boolean addViewer(@NotNull Player player) {
+    public boolean addViewer(Player player) {
         final boolean result = super.addViewer(player);
         if (result) player.sendPacket(tradeCache);
         return result;

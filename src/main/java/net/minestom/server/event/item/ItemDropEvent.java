@@ -14,13 +14,13 @@ public class ItemDropEvent implements PlayerInstanceEvent, ItemEvent, Cancellabl
 
     private boolean cancelled;
 
-    public ItemDropEvent(@NotNull Player player, @NotNull ItemStack itemStack) {
+    public ItemDropEvent(Player player, ItemStack itemStack) {
         this.player = player;
         this.itemStack = itemStack;
     }
 
     @Override
-    public @NotNull Player getPlayer() {
+    public Player getPlayer() {
         return player;
     }
 

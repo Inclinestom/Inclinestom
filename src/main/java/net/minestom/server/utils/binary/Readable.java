@@ -12,6 +12,6 @@ public interface Readable {
      *
      * @param reader the reader to read from
      */
-    void read(@NotNull BinaryReader reader);
+    void read(BinaryReader reader);
 
 }

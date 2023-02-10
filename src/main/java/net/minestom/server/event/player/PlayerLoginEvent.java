@@ -21,7 +21,7 @@ public class PlayerLoginEvent implements PlayerEvent {
     private final Player player;
     private Instance spawningInstance;
 
-    public PlayerLoginEvent(@NotNull Player player) {
+    public PlayerLoginEvent(Player player) {
         this.player = player;
     }
 
@@ -42,12 +42,12 @@ public class PlayerLoginEvent implements PlayerEvent {
      *
      * @param instance the new spawning instance
      */
-    public void setSpawningInstance(@NotNull Instance instance) {
+    public void setSpawningInstance(Instance instance) {
         this.spawningInstance = instance;
     }
 
     @Override
-    public @NotNull Player getPlayer() {
+    public Player getPlayer() {
         return player;
     }
 }

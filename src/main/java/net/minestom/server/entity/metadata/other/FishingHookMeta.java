@@ -14,7 +14,7 @@ public class FishingHookMeta extends EntityMeta implements ObjectDataProvider {
     private Entity hooked;
     private Entity owner;
 
-    public FishingHookMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
+    public FishingHookMeta(Entity entity, Metadata metadata) {
         super(entity, metadata);
     }
 

@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 import static net.minestom.server.network.NetworkBuffer.STRING;
 
-public record ClientAdvancementTabPacket(@NotNull AdvancementAction action,
+public record ClientAdvancementTabPacket(AdvancementAction action,
                                          @Nullable String tabIdentifier) implements ClientPacket {
     public ClientAdvancementTabPacket {
         if (tabIdentifier != null && tabIdentifier.length() > 256) {
@@ -16,7 +16,7 @@ public record ClientAdvancementTabPacket(@NotNull AdvancementAction action,
         }
     }
 
-    public ClientAdvancementTabPacket(@NotNull NetworkBuffer reader) {
+    public ClientAdvancementTabPacket(NetworkBuffer reader) {
         this(read(reader));
     }
 
@@ -24,14 +24,14 @@ public record ClientAdvancementTabPacket(@NotNull AdvancementAction action,
         this(packet.action, packet.tabIdentifier);
     }
 
-    private static ClientAdvancementTabPacket read(@NotNull NetworkBuffer reader) {
+    private static ClientAdvancementTabPacket read(NetworkBuffer reader) {
         var action = reader.readEnum(AdvancementAction.class);
         var tabIdentifier = action == AdvancementAction.OPENED_TAB ? reader.read(STRING) : null;
         return new ClientAdvancementTabPacket(action, tabIdentifier);
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.writeEnum(AdvancementAction.class, action);
         if (action == AdvancementAction.OPENED_TAB) {
             assert tabIdentifier != null;

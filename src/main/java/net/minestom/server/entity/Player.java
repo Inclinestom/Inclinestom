@@ -202,7 +202,7 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
     private Identity identity;
     private final Pointers pointers;
 
-    public Player(@NotNull UUID uuid, @NotNull String username, @NotNull PlayerConnection playerConnection) {
+    public Player(UUID uuid, String username, PlayerConnection playerConnection) {
         super(EntityType.PLAYER, uuid);
         this.username = username;
         this.usernameComponent = Component.text(username);
@@ -243,7 +243,7 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
      *
      * @param spawnInstance the player spawn instance (defined in {@link PlayerLoginEvent})
      */
-    public CompletableFuture<Void> UNSAFE_init(@NotNull Instance spawnInstance) {
+    public CompletableFuture<Void> UNSAFE_init(Instance spawnInstance) {
         this.dimensionType = spawnInstance.getDimensionType();
 
         NBTCompound nbt = NBT.Compound(Map.of(
@@ -533,7 +533,7 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
     }
 
     @Override
-    public void updateOldViewer(@NotNull Player player) {
+    public void updateOldViewer(Player player) {
         super.updateOldViewer(player);
         // Team
         if (this.getTeam() != null && this.getTeam().getMembers().size() == 1) {// If team only contains "this" player
@@ -542,7 +542,7 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
     }
 
     @Override
-    public void sendPacketToViewersAndSelf(@NotNull SendablePacket packet) {
+    public void sendPacketToViewersAndSelf(SendablePacket packet) {
         sendPacket(packet);
         super.sendPacketToViewersAndSelf(packet);
     }
@@ -558,7 +558,7 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
      * @return a future called once the player instance changed
      */
     @Override
-    public CompletableFuture<Void> setInstance(@NotNull Instance instance, @NotNull Pos spawnPosition) {
+    public CompletableFuture<Void> setInstance(Instance instance, Pos spawnPosition) {
         final Instance currentInstance = this.instance;
         Check.argCondition(currentInstance == instance, "Instance should be different than the current one");
         if (InstanceUtils.areLinked(currentInstance, instance) && spawnPosition.sameChunk(this.position)) {
@@ -627,7 +627,7 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
      * @see #setInstance(Instance, Pos)
      */
     @Override
-    public CompletableFuture<Void> setInstance(@NotNull Instance instance) {
+    public CompletableFuture<Void> setInstance(Instance instance) {
         return setInstance(instance, this.instance != null ? getPosition() : getRespawnPoint());
     }
 
@@ -643,7 +643,7 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
      * @param updateChunks  true if chunks should be refreshed, false if the new instance shares the same
      *                      chunks
      */
-    private void spawnPlayer(@NotNull Instance instance, @NotNull Pos spawnPosition,
+    private void spawnPlayer(Instance instance, Pos spawnPosition,
                              boolean firstSpawn, boolean dimensionChange, boolean updateChunks) {
         if (!firstSpawn) {
             // Player instance changed, clear current viewable collections
@@ -679,7 +679,7 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
      * @param channel the message channel
      * @param data    the message data
      */
-    public void sendPluginMessage(@NotNull String channel, byte @NotNull [] data) {
+    public void sendPluginMessage(String channel, byte [] data) {
         sendPacket(new PluginMessagePacket(channel, data));
     }
 
@@ -691,31 +691,31 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
      * @param channel the message channel
      * @param message the message
      */
-    public void sendPluginMessage(@NotNull String channel, @NotNull String message) {
+    public void sendPluginMessage(String channel, String message) {
         sendPluginMessage(channel, message.getBytes(StandardCharsets.UTF_8));
     }
 
     @Override
-    public void sendMessage(@NotNull Identity source, @NotNull Component message, @NotNull MessageType type) {
+    public void sendMessage(Identity source, Component message, MessageType type) {
         Messenger.sendMessage(this, message, ChatPosition.fromMessageType(type), source.uuid());
     }
 
     @Override
-    public void playSound(@NotNull Sound sound) {
+    public void playSound(Sound sound) {
         this.playSound(sound, this.position.x(), this.position.y(), this.position.z());
     }
 
-    public void playSound(@NotNull Sound sound, @NotNull Point point) {
+    public void playSound(Sound sound, Point point) {
         sendPacket(AdventurePacketConvertor.createSoundPacket(sound, point.x(), point.y(), point.z()));
     }
 
     @Override
-    public void playSound(@NotNull Sound sound, double x, double y, double z) {
+    public void playSound(Sound sound, double x, double y, double z) {
         sendPacket(AdventurePacketConvertor.createSoundPacket(sound, x, y, z));
     }
 
     @Override
-    public void playSound(@NotNull Sound sound, Sound.@NotNull Emitter emitter) {
+    public void playSound(Sound sound, Sound.Emitter emitter) {
         final ServerPacket packet;
         if (emitter == Sound.Emitter.self()) {
             packet = AdventurePacketConvertor.createSoundPacket(sound, this);
@@ -726,7 +726,7 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
     }
 
     @Override
-    public void stopSound(@NotNull SoundStop stop) {
+    public void stopSound(SoundStop stop) {
         sendPacket(AdventurePacketConvertor.createSoundStopPacket(stop));
     }
 
@@ -740,22 +740,22 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
      * @param data                  data for the effect
      * @param disableRelativeVolume disable volume scaling based on distance
      */
-    public void playEffect(@NotNull Effects effect, int x, int y, int z, int data, boolean disableRelativeVolume) {
+    public void playEffect(Effects effect, int x, int y, int z, int data, boolean disableRelativeVolume) {
         sendPacket(new EffectPacket(effect.getId(), new Vec(x, y, z), data, disableRelativeVolume));
     }
 
     @Override
-    public void sendPlayerListHeaderAndFooter(@NotNull Component header, @NotNull Component footer) {
+    public void sendPlayerListHeaderAndFooter(Component header, Component footer) {
         sendPacket(new PlayerListHeaderAndFooterPacket(header, footer));
     }
 
     @Override
-    public <T> void sendTitlePart(@NotNull TitlePart<T> part, @NotNull T value) {
+    public <T> void sendTitlePart(TitlePart<T> part, T value) {
         sendPacket(AdventurePacketConvertor.createTitlePartPacket(part, value));
     }
 
     @Override
-    public void sendActionBar(@NotNull Component message) {
+    public void sendActionBar(Component message) {
         sendPacket(new ActionBarPacket(message));
     }
 
@@ -770,17 +770,17 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
     }
 
     @Override
-    public void showBossBar(@NotNull BossBar bar) {
+    public void showBossBar(BossBar bar) {
         MinecraftServer.getBossBarManager().addBossBar(this, bar);
     }
 
     @Override
-    public void hideBossBar(@NotNull BossBar bar) {
+    public void hideBossBar(BossBar bar) {
         MinecraftServer.getBossBarManager().removeBossBar(this, bar);
     }
 
     @Override
-    public void openBook(@NotNull Book book) {
+    public void openBook(Book book) {
         final ItemStack writtenBook = ItemStack.builder(Material.WRITTEN_BOOK)
                 .meta(WrittenBookMeta.class, builder -> builder.resolved(false)
                         .generation(WrittenBookMeta.WrittenBookGeneration.ORIGINAL)
@@ -797,7 +797,7 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
     }
 
     @Override
-    public boolean isImmune(@NotNull DamageType type) {
+    public boolean isImmune(DamageType type) {
         if (!getGameMode().canTakeDamage()) {
             return type != DamageType.VOID;
         }
@@ -811,7 +811,7 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
     }
 
     @Override
-    public @NotNull PlayerMeta getEntityMeta() {
+    public PlayerMeta getEntityMeta() {
         return (PlayerMeta) super.getEntityMeta();
     }
 
@@ -1017,7 +1017,7 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
      * @return the name
      */
     @Override
-    public @NotNull Component getName() {
+    public Component getName() {
         return Objects.requireNonNullElse(displayName, usernameComponent);
     }
 
@@ -1026,7 +1026,7 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
      *
      * @return the player's username
      */
-    public @NotNull String getUsername() {
+    public String getUsername() {
         return username;
     }
 
@@ -1036,7 +1036,7 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
      *
      * @param username the new player name
      */
-    public void setUsernameField(@NotNull String username) {
+    public void setUsernameField(String username) {
         this.username = username;
         this.usernameComponent = Component.text(username);
     }
@@ -1049,7 +1049,7 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
      * @param item the item to drop
      * @return true if player can drop the item (event not cancelled), false otherwise
      */
-    public boolean dropItem(@NotNull ItemStack item) {
+    public boolean dropItem(ItemStack item) {
         if (item.isAir()) return false;
         ItemDropEvent itemDropEvent = new ItemDropEvent(this, item);
         EventDispatcher.call(itemDropEvent);
@@ -1061,7 +1061,7 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
      *
      * @param resourcePack the resource pack
      */
-    public void setResourcePack(@NotNull ResourcePack resourcePack) {
+    public void setResourcePack(ResourcePack resourcePack) {
         sendPacket(new ResourcePackSendPacket(resourcePack));
     }
 
@@ -1071,7 +1071,7 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
      * @param facePoint      the point from where the player should aim
      * @param targetPosition the target position to face
      */
-    public void facePosition(@NotNull FacePoint facePoint, @NotNull Point targetPosition) {
+    public void facePosition(FacePoint facePoint, Point targetPosition) {
         facePosition(facePoint, targetPosition, null, null);
     }
 
@@ -1082,11 +1082,11 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
      * @param entity      the entity to face
      * @param targetPoint the point to aim at {@code entity} position
      */
-    public void facePosition(@NotNull FacePoint facePoint, Entity entity, FacePoint targetPoint) {
+    public void facePosition(FacePoint facePoint, Entity entity, FacePoint targetPoint) {
         facePosition(facePoint, entity.getPosition(), entity, targetPoint);
     }
 
-    private void facePosition(@NotNull FacePoint facePoint, @NotNull Point targetPosition,
+    private void facePosition(FacePoint facePoint, Point targetPosition,
                               @Nullable Entity entity, @Nullable FacePoint targetPoint) {
         final int entityId = entity != null ? entity.getEntityId() : 0;
         sendPacket(new FacePlayerPacket(
@@ -1102,7 +1102,7 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
      *
      * @param entity the entity to spectate
      */
-    public void spectate(@NotNull Entity entity) {
+    public void spectate(Entity entity) {
         sendPacket(new CameraPacket(entity));
     }
 
@@ -1120,7 +1120,7 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
      *
      * @return a copy of the default respawn point
      */
-    public @NotNull Pos getRespawnPoint() {
+    public Pos getRespawnPoint() {
         return respawnPoint;
     }
 
@@ -1129,7 +1129,7 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
      *
      * @param respawnPoint the player respawn point
      */
-    public void setRespawnPoint(@NotNull Pos respawnPoint) {
+    public void setRespawnPoint(Pos respawnPoint) {
         this.respawnPoint = respawnPoint;
     }
 
@@ -1208,7 +1208,7 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
      *
      * @return the player connection
      */
-    public @NotNull PlayerConnection getPlayerConnection() {
+    public PlayerConnection getPlayerConnection() {
         return playerConnection;
     }
 
@@ -1218,17 +1218,17 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
      * @param packet the packet to send
      */
     @ApiStatus.Experimental
-    public void sendPacket(@NotNull SendablePacket packet) {
+    public void sendPacket(SendablePacket packet) {
         this.playerConnection.sendPacket(packet);
     }
 
     @ApiStatus.Experimental
-    public void sendPackets(@NotNull SendablePacket... packets) {
+    public void sendPackets(SendablePacket... packets) {
         this.playerConnection.sendPackets(packets);
     }
 
     @ApiStatus.Experimental
-    public void sendPackets(@NotNull Collection<SendablePacket> packets) {
+    public void sendPackets(Collection<SendablePacket> packets) {
         this.playerConnection.sendPackets(packets);
     }
 
@@ -1246,7 +1246,7 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
      *
      * @return the player settings
      */
-    public @NotNull PlayerSettings getSettings() {
+    public PlayerSettings getSettings() {
         return settings;
     }
 
@@ -1259,7 +1259,7 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
         return dimensionType;
     }
 
-    public @NotNull PlayerInventory getInventory() {
+    public PlayerInventory getInventory() {
         return inventory;
     }
 
@@ -1287,7 +1287,7 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
      *
      * @param gameMode the new player GameMode
      */
-    public void setGameMode(@NotNull GameMode gameMode) {
+    public void setGameMode(GameMode gameMode) {
         this.gameMode = gameMode;
         // Condition to prevent sending the packets before spawning the player
         if (isActive()) {
@@ -1337,7 +1337,7 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
      *
      * @param dimensionType the new player dimension
      */
-    protected void sendDimension(@NotNull DimensionType dimensionType) {
+    protected void sendDimension(DimensionType dimensionType) {
         Check.argCondition(dimensionType.equals(getDimensionType()),
                 "The dimension needs to be different than the current one!");
         this.dimensionType = dimensionType;
@@ -1351,7 +1351,7 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
      *
      * @param component the reason
      */
-    public void kick(@NotNull Component component) {
+    public void kick(Component component) {
         final ConnectionState connectionState = playerConnection.getConnectionState();
         // Packet type depends on the current player connection state
         final ServerPacket disconnectPacket;
@@ -1369,7 +1369,7 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
      *
      * @param message the kick reason
      */
-    public void kick(@NotNull String message) {
+    public void kick(String message) {
         this.kick(Component.text(message));
     }
 
@@ -1431,7 +1431,7 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
      * @param inventory the inventory to open
      * @return true if the inventory has been opened/sent to the player, false otherwise (cancelled by event)
      */
-    public boolean openInventory(@NotNull Inventory inventory) {
+    public boolean openInventory(Inventory inventory) {
         InventoryOpenEvent inventoryOpenEvent = new InventoryOpenEvent(inventory, this);
 
         EventDispatcher.callCancellable(inventoryOpenEvent, () -> {
@@ -1734,7 +1734,7 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
      *
      * @return the modifiable statistic map
      */
-    public @NotNull Map<PlayerStatistic, Integer> getStatisticValueMap() {
+    public Map<PlayerStatistic, Integer> getStatisticValueMap() {
         return statisticValueMap;
     }
 
@@ -1743,7 +1743,7 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
      *
      * @return the player vehicle information
      */
-    public @NotNull PlayerVehicleInformation getVehicleInformation() {
+    public PlayerVehicleInformation getVehicleInformation() {
         return vehicleInformation;
     }
 
@@ -1770,7 +1770,7 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
      *
      * @param packet the packet to add in the queue
      */
-    public void addPacketToQueue(@NotNull ClientPacket packet) {
+    public void addPacketToQueue(ClientPacket packet) {
         this.packets.offer(packet);
     }
 
@@ -1905,7 +1905,7 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
     }
 
     @Override
-    public @NotNull HoverEvent<ShowEntity> asHoverEvent(@NotNull UnaryOperator<ShowEntity> op) {
+    public HoverEvent<ShowEntity> asHoverEvent(UnaryOperator<ShowEntity> op) {
         return HoverEvent.showEntity(ShowEntity.of(EntityType.PLAYER, this.uuid, this.displayName));
     }
 
@@ -1914,7 +1914,7 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
      *
      * @return a {@link PlayerInfoPacket} to add the player
      */
-    protected @NotNull PlayerInfoPacket getAddPlayerToList() {
+    protected PlayerInfoPacket getAddPlayerToList() {
         final PlayerSkin skin = this.skin;
         List<PlayerInfoPacket.AddPlayer.Property> prop = skin != null ?
                 List.of(new PlayerInfoPacket.AddPlayer.Property("textures", skin.textures(), skin.signature())) :
@@ -1928,7 +1928,7 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
      *
      * @return a {@link PlayerInfoPacket} to remove the player
      */
-    protected @NotNull PlayerInfoPacket getRemovePlayerToList() {
+    protected PlayerInfoPacket getRemovePlayerToList() {
         return new PlayerInfoPacket(PlayerInfoPacket.Action.REMOVE_PLAYER, new PlayerInfoPacket.RemovePlayer(getUuid()));
     }
 
@@ -1940,7 +1940,7 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
      *
      * @param connection the connection to show the player to
      */
-    protected void showPlayer(@NotNull PlayerConnection connection) {
+    protected void showPlayer(PlayerConnection connection) {
         connection.sendPacket(getEntityType().registry().spawnType().getSpawnPacket(this));
         connection.sendPacket(getVelocityPacket());
         connection.sendPacket(getMetadataPacket());
@@ -1956,62 +1956,62 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
     }
 
     @Override
-    public @NotNull ItemStack getItemInMainHand() {
+    public ItemStack getItemInMainHand() {
         return inventory.getItemInMainHand();
     }
 
     @Override
-    public void setItemInMainHand(@NotNull ItemStack itemStack) {
+    public void setItemInMainHand(ItemStack itemStack) {
         inventory.setItemInMainHand(itemStack);
     }
 
     @Override
-    public @NotNull ItemStack getItemInOffHand() {
+    public ItemStack getItemInOffHand() {
         return inventory.getItemInOffHand();
     }
 
     @Override
-    public void setItemInOffHand(@NotNull ItemStack itemStack) {
+    public void setItemInOffHand(ItemStack itemStack) {
         inventory.setItemInOffHand(itemStack);
     }
 
     @Override
-    public @NotNull ItemStack getHelmet() {
+    public ItemStack getHelmet() {
         return inventory.getHelmet();
     }
 
     @Override
-    public void setHelmet(@NotNull ItemStack itemStack) {
+    public void setHelmet(ItemStack itemStack) {
         inventory.setHelmet(itemStack);
     }
 
     @Override
-    public @NotNull ItemStack getChestplate() {
+    public ItemStack getChestplate() {
         return inventory.getChestplate();
     }
 
     @Override
-    public void setChestplate(@NotNull ItemStack itemStack) {
+    public void setChestplate(ItemStack itemStack) {
         inventory.setChestplate(itemStack);
     }
 
     @Override
-    public @NotNull ItemStack getLeggings() {
+    public ItemStack getLeggings() {
         return inventory.getLeggings();
     }
 
     @Override
-    public void setLeggings(@NotNull ItemStack itemStack) {
+    public void setLeggings(ItemStack itemStack) {
         inventory.setLeggings(itemStack);
     }
 
     @Override
-    public @NotNull ItemStack getBoots() {
+    public ItemStack getBoots() {
         return inventory.getBoots();
     }
 
     @Override
-    public void setBoots(@NotNull ItemStack itemStack) {
+    public void setBoots(ItemStack itemStack) {
         inventory.setBoots(itemStack);
     }
 
@@ -2023,7 +2023,7 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
     }
 
     @Override
-    public @NotNull PlayerSnapshot updateSnapshot(@NotNull SnapshotUpdater updater) {
+    public PlayerSnapshot updateSnapshot(SnapshotUpdater updater) {
         final EntitySnapshot snapshot = super.updateSnapshot(updater);
         return new SnapshotImpl.Player(snapshot, username, gameMode);
     }
@@ -2040,17 +2040,17 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
     }
 
     @Override
-    public @NotNull Identity identity() {
+    public Identity identity() {
         return this.identity;
     }
 
     @Override
-    public @NotNull Pointers pointers() {
+    public Pointers pointers() {
         return this.pointers;
     }
 
     @Override
-    public void setUuid(@NotNull UUID uuid) {
+    public void setUuid(UUID uuid) {
         super.setUuid(uuid);
         // update identity
         this.identity = Identity.identity(uuid);
@@ -2079,7 +2079,7 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
     }
 
     @Override
-    public @NotNull CompletableFuture<Void> teleport(@NotNull Pos position, long @Nullable [] chunks) {
+    public CompletableFuture<Void> teleport(Pos position, long @Nullable [] chunks) {
         chunkUpdateLimitChecker.clearHistory();
         return super.teleport(position, chunks);
     }

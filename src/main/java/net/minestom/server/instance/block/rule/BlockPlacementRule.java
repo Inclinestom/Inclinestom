@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 public abstract class BlockPlacementRule {
     private final Block block;
 
-    public BlockPlacementRule(@NotNull Block block) {
+    public BlockPlacementRule(Block block) {
         this.block = block;
     }
 
@@ -23,7 +23,7 @@ public abstract class BlockPlacementRule {
      * @param currentBlock  the current block
      * @return the updated block
      */
-    public abstract @NotNull Block blockUpdate(@NotNull Instance instance, @NotNull Point blockPosition, @NotNull Block currentBlock);
+    public abstract Block blockUpdate(Instance instance, Point blockPosition, Block currentBlock);
 
     /**
      * Called when the block is placed.
@@ -35,11 +35,11 @@ public abstract class BlockPlacementRule {
      * @param pl            the player who placed the block
      * @return the block to place, {@code null} to cancel
      */
-    public abstract @Nullable Block blockPlace(@NotNull Instance instance,
-                                               @NotNull Block block, @NotNull BlockFace blockFace, @NotNull Point blockPosition,
-                                               @NotNull Player pl);
+    public abstract @Nullable Block blockPlace(Instance instance,
+                                               Block block, BlockFace blockFace, Point blockPosition,
+                                               Player pl);
 
-    public @NotNull Block getBlock() {
+    public Block getBlock() {
         return block;
     }
 }

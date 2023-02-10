@@ -7,12 +7,12 @@ import org.jetbrains.annotations.NotNull;
 import static net.minestom.server.network.NetworkBuffer.LONG;
 
 public record PongPacket(long number) implements ServerPacket {
-    public PongPacket(@NotNull NetworkBuffer reader) {
+    public PongPacket(NetworkBuffer reader) {
         this(reader.read(LONG));
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(LONG, number);
     }
 

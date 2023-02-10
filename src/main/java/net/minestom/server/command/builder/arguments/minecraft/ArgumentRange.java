@@ -22,7 +22,7 @@ public abstract class ArgumentRange<T extends Range<N>, N extends Number> extend
     private final Function<String, N> parser;
     private final BiFunction<N, N, T> rangeConstructor;
 
-    public ArgumentRange(@NotNull String id, N min, N max, Function<String, N> parser, BiFunction<N, N, T> rangeConstructor) {
+    public ArgumentRange(String id, N min, N max, Function<String, N> parser, BiFunction<N, N, T> rangeConstructor) {
         super(id);
         this.min = min;
         this.max = max;
@@ -32,7 +32,7 @@ public abstract class ArgumentRange<T extends Range<N>, N extends Number> extend
 
     @NotNull
     @Override
-    public T parse(@NotNull String input) throws ArgumentSyntaxException {
+    public T parse(String input) throws ArgumentSyntaxException {
         try {
             final String[] split = input.split(Pattern.quote(".."), -1);
 

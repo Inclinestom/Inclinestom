@@ -32,7 +32,7 @@ public class PlayerPositionListener {
         player.refreshReceivedTeleportId(packet.teleportId());
     }
 
-    private static void processMovement(@NotNull Player player, @NotNull Pos packetPosition, boolean onGround) {
+    private static void processMovement(Player player, Pos packetPosition, boolean onGround) {
         final var currentPosition = player.getPosition();
         if (currentPosition.equals(packetPosition)) {
             // For some reason, the position is the same

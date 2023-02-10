@@ -9,16 +9,16 @@ import org.jetbrains.annotations.NotNull;
 public interface ProtocolObject extends Keyed {
 
     @Contract(pure = true)
-    @NotNull NamespaceID namespace();
+    NamespaceID namespace();
 
     @Override
     @Contract(pure = true)
-    default @NotNull Key key() {
+    default Key key() {
         return namespace();
     }
 
     @Contract(pure = true)
-    default @NotNull String name() {
+    default String name() {
         return namespace().asString();
     }
 

@@ -8,12 +8,12 @@ import org.jetbrains.annotations.NotNull;
 import static net.minestom.server.network.NetworkBuffer.BYTE;
 
 public record CloseWindowPacket(byte windowId) implements ServerPacket {
-    public CloseWindowPacket(@NotNull NetworkBuffer reader) {
+    public CloseWindowPacket(NetworkBuffer reader) {
         this(reader.read(BYTE));
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(BYTE, windowId);
     }
 

@@ -17,10 +17,10 @@ public sealed interface Enchantment extends ProtocolObject, Enchantments permits
      * @return the enchantment registry
      */
     @Contract(pure = true)
-    @NotNull Registry.EnchantmentEntry registry();
+    Registry.EnchantmentEntry registry();
 
     @Override
-    default @NotNull NamespaceID namespace() {
+    default NamespaceID namespace() {
         return registry().namespace();
     }
 
@@ -29,15 +29,15 @@ public sealed interface Enchantment extends ProtocolObject, Enchantments permits
         return registry().id();
     }
 
-    static @NotNull Collection<@NotNull Enchantment> values() {
+    static Collection<Enchantment> values() {
         return EnchantmentImpl.values();
     }
 
-    static @Nullable Enchantment fromNamespaceId(@NotNull String namespaceID) {
+    static @Nullable Enchantment fromNamespaceId(String namespaceID) {
         return EnchantmentImpl.getSafe(namespaceID);
     }
 
-    static @Nullable Enchantment fromNamespaceId(@NotNull NamespaceID namespaceID) {
+    static @Nullable Enchantment fromNamespaceId(NamespaceID namespaceID) {
         return fromNamespaceId(namespaceID.asString());
     }
 

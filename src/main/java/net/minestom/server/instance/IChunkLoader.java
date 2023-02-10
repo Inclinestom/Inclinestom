@@ -23,7 +23,7 @@ public interface IChunkLoader {
      *
      * @param instance the instance to retrieve the data from
      */
-    default void loadInstance(@NotNull Instance instance) {
+    default void loadInstance(Instance instance) {
     }
 
     /**
@@ -34,9 +34,9 @@ public interface IChunkLoader {
      * @param chunkZ   the chunk Z
      * @return a {@link CompletableFuture} containing the chunk, or null if not present
      */
-    @NotNull CompletableFuture<@Nullable Chunk> loadChunk(@NotNull Instance instance, int chunkX, int chunkZ);
+    CompletableFuture<@Nullable Chunk> loadChunk(Instance instance, int chunkX, int chunkZ);
 
-    default @NotNull CompletableFuture<Void> saveInstance(@NotNull Instance instance) {
+    default CompletableFuture<Void> saveInstance(Instance instance) {
         return AsyncUtils.VOID_FUTURE;
     }
 
@@ -47,7 +47,7 @@ public interface IChunkLoader {
      * @return a {@link CompletableFuture} executed when the {@link Chunk} is done saving,
      * should be called even if the saving failed (you can throw an exception).
      */
-    @NotNull CompletableFuture<Void> saveChunk(@NotNull Chunk chunk);
+    CompletableFuture<Void> saveChunk(Chunk chunk);
 
     /**
      * Saves multiple chunks with an optional callback for when it is done.
@@ -58,7 +58,7 @@ public interface IChunkLoader {
      * @return a {@link CompletableFuture} executed when the {@link Chunk} is done saving,
      * should be called even if the saving failed (you can throw an exception).
      */
-    default @NotNull CompletableFuture<Void> saveChunks(@NotNull Collection<Chunk> chunks) {
+    default CompletableFuture<Void> saveChunks(Collection<Chunk> chunks) {
         if (supportsParallelSaving()) {
             ExecutorService parallelSavingThreadPool = ForkJoinPool.commonPool();
             chunks.forEach(c -> parallelSavingThreadPool.execute(() -> saveChunk(c)));

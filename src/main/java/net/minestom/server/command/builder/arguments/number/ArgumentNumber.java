@@ -28,7 +28,7 @@ public class ArgumentNumber<T extends Number> extends Argument<T> {
     protected final BiConsumer<BinaryWriter, T> propertiesWriter;
     protected final Comparator<T> comparator;
 
-    ArgumentNumber(@NotNull String id, String parserName, Function<String, T> parser,
+    ArgumentNumber(String id, String parserName, Function<String, T> parser,
                    BiFunction<String, Integer, T> radixParser, BiConsumer<BinaryWriter, T> propertiesWriter,
                    Comparator<T> comparator) {
         super(id);
@@ -40,7 +40,7 @@ public class ArgumentNumber<T extends Number> extends Argument<T> {
     }
 
     @Override
-    public @NotNull T parse(@NotNull String input) throws ArgumentSyntaxException {
+    public T parse(String input) throws ArgumentSyntaxException {
         try {
             final T value;
             final int radix = getRadix(input);
@@ -81,14 +81,14 @@ public class ArgumentNumber<T extends Number> extends Argument<T> {
     }
 
     @NotNull
-    public ArgumentNumber<T> min(@NotNull T value) {
+    public ArgumentNumber<T> min(T value) {
         this.min = value;
         this.hasMin = true;
         return this;
     }
 
     @NotNull
-    public ArgumentNumber<T> max(@NotNull T value) {
+    public ArgumentNumber<T> max(T value) {
         this.max = value;
         this.hasMax = true;
 
@@ -96,7 +96,7 @@ public class ArgumentNumber<T extends Number> extends Argument<T> {
     }
 
     @NotNull
-    public ArgumentNumber<T> between(@NotNull T min, @NotNull T max) {
+    public ArgumentNumber<T> between(T min, T max) {
         this.min = min;
         this.max = max;
         this.hasMin = true;
@@ -157,7 +157,7 @@ public class ArgumentNumber<T extends Number> extends Argument<T> {
     }
 
     @NotNull
-    protected String parseValue(@NotNull String value) {
+    protected String parseValue(String value) {
         if (value.startsWith("0b")) {
             value = value.replaceFirst(Pattern.quote("0b"), "");
         } else if (value.startsWith("0x")) {
@@ -169,7 +169,7 @@ public class ArgumentNumber<T extends Number> extends Argument<T> {
         return value;
     }
 
-    protected int getRadix(@NotNull String value) {
+    protected int getRadix(String value) {
         if (value.startsWith("0b")) {
             return 2;
         } else if (value.startsWith("0x")) {
@@ -179,7 +179,7 @@ public class ArgumentNumber<T extends Number> extends Argument<T> {
     }
 
     @Nullable
-    protected String removeScientificNotation(@NotNull String value) {
+    protected String removeScientificNotation(String value) {
         try {
             return new BigDecimal(value).toPlainString();
         } catch (NumberFormatException e) {

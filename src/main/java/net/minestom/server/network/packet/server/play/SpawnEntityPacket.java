@@ -10,10 +10,10 @@ import java.util.UUID;
 
 import static net.minestom.server.network.NetworkBuffer.*;
 
-public record SpawnEntityPacket(int entityId, @NotNull UUID uuid, int type,
-                                @NotNull Pos position, float headRot, int data,
+public record SpawnEntityPacket(int entityId, UUID uuid, int type,
+                                Pos position, float headRot, int data,
                                 short velocityX, short velocityY, short velocityZ) implements ServerPacket {
-    public SpawnEntityPacket(@NotNull NetworkBuffer reader) {
+    public SpawnEntityPacket(NetworkBuffer reader) {
         this(reader.read(VAR_INT), reader.read(UUID), reader.read(VAR_INT),
                 new Pos(reader.read(DOUBLE), reader.read(DOUBLE), reader.read(DOUBLE),
                         reader.read(BYTE) * 360f / 256f, reader.read(BYTE) * 360f / 256f), reader.read(BYTE) * 360f / 256f,
@@ -21,7 +21,7 @@ public record SpawnEntityPacket(int entityId, @NotNull UUID uuid, int type,
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(VAR_INT, entityId);
         writer.write(UUID, uuid);
         writer.write(VAR_INT, type);

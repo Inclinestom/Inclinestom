@@ -8,7 +8,7 @@ public class CaveSpiderMeta extends SpiderMeta {
     public static final byte OFFSET = SpiderMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 0;
 
-    public CaveSpiderMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
+    public CaveSpiderMeta(Entity entity, Metadata metadata) {
         super(entity, metadata);
     }
 

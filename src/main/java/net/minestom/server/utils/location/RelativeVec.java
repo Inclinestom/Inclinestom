@@ -19,7 +19,7 @@ public final class RelativeVec {
     private final CoordinateType coordinateType;
     private final boolean relativeX, relativeY, relativeZ;
 
-    public RelativeVec(@NotNull Vec vec, @NotNull CoordinateType coordinateType, boolean relativeX, boolean relativeY, boolean relativeZ) {
+    public RelativeVec(Vec vec, CoordinateType coordinateType, boolean relativeX, boolean relativeY, boolean relativeZ) {
         this.vec = vec;
         this.coordinateType = coordinateType;
         this.relativeX = relativeX;
@@ -27,7 +27,7 @@ public final class RelativeVec {
         this.relativeZ = relativeZ;
     }
 
-    public @NotNull CoordinateType coordinateType() {
+    public CoordinateType coordinateType() {
         return this.coordinateType;
     }
 
@@ -37,7 +37,7 @@ public final class RelativeVec {
      * @param origin the origin position, null if none
      * @return the location
      */
-    public @NotNull Vec from(@Nullable Pos origin) {
+    public Vec from(@Nullable Pos origin) {
         origin = Objects.requireNonNullElse(origin, Pos.ZERO);
         return coordinateType.convert(vec, origin, relativeX, relativeY, relativeZ);
     }
@@ -59,7 +59,7 @@ public final class RelativeVec {
      * @param entity the entity to get the relative position from
      * @return the location
      */
-    public @NotNull Vec from(@Nullable Entity entity) {
+    public Vec from(@Nullable Entity entity) {
         if (entity != null) {
             return from(entity.getPosition());
         } else {
@@ -67,13 +67,13 @@ public final class RelativeVec {
         }
     }
 
-    public @NotNull Vec fromSender(@Nullable CommandSender sender) {
+    public Vec fromSender(@Nullable CommandSender sender) {
         final var entityPosition = sender instanceof Player ? ((Player) sender).getPosition() : Pos.ZERO;
         return from(entityPosition);
     }
 
     @ApiStatus.Experimental
-    public @NotNull Vec fromView(@Nullable Entity entity) {
+    public Vec fromView(@Nullable Entity entity) {
         final var entityPosition = entity != null ? entity.getPosition() : Pos.ZERO;
         return fromView(entityPosition);
     }
@@ -129,13 +129,13 @@ public final class RelativeVec {
             this.converter = converter;
         }
 
-        private @NotNull Vec convert(Vec vec, Pos origin, boolean relativeX, boolean relativeY, boolean relativeZ) {
+        private Vec convert(Vec vec, Pos origin, boolean relativeX, boolean relativeY, boolean relativeZ) {
             return converter.convert(vec, origin, relativeX, relativeY, relativeZ);
         }
     }
 
     private interface CoordinateConverter {
-        @NotNull Vec convert(Vec vec, Pos origin, boolean relativeX, boolean relativeY, boolean relativeZ);
+        Vec convert(Vec vec, Pos origin, boolean relativeX, boolean relativeY, boolean relativeZ);
     }
 
     @Override

@@ -18,7 +18,7 @@ public class ArgumentEnchantment extends ArgumentRegistry<Enchantment> {
     }
 
     @Override
-    public Enchantment getRegistry(@NotNull String value) {
+    public Enchantment getRegistry(String value) {
         return Enchantment.fromNamespaceId(value);
     }
 

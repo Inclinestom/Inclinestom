@@ -16,18 +16,18 @@ import static net.minestom.server.network.NetworkBuffer.*;
 
 public record ResourcePackSendPacket(String url, String hash, boolean forced,
                                      Component prompt) implements ComponentHoldingServerPacket {
-    public ResourcePackSendPacket(@NotNull NetworkBuffer reader) {
+    public ResourcePackSendPacket(NetworkBuffer reader) {
         this(reader.read(STRING), reader.read(STRING), reader.read(BOOLEAN),
                 reader.read(BOOLEAN) ? reader.read(COMPONENT) : null);
     }
 
-    public ResourcePackSendPacket(@NotNull ResourcePack resourcePack) {
+    public ResourcePackSendPacket(ResourcePack resourcePack) {
         this(resourcePack.getUrl(), resourcePack.getHash(), resourcePack.isForced(),
                 resourcePack.getPrompt());
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(STRING, url);
         writer.write(STRING, hash);
         writer.write(BOOLEAN, forced);
@@ -45,12 +45,12 @@ public record ResourcePackSendPacket(String url, String hash, boolean forced,
     }
 
     @Override
-    public @NotNull Collection<Component> components() {
+    public Collection<Component> components() {
         return List.of(this.prompt);
     }
 
     @Override
-    public @NotNull ServerPacket copyWithOperator(@NotNull UnaryOperator<Component> operator) {
+    public ServerPacket copyWithOperator(UnaryOperator<Component> operator) {
         return new ResourcePackSendPacket(this.url, this.hash, this.forced, operator.apply(this.prompt));
     }
 }

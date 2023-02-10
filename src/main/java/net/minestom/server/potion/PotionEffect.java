@@ -12,10 +12,10 @@ import java.util.Collection;
 public sealed interface PotionEffect extends ProtocolObject, PotionEffects permits PotionEffectImpl {
 
     @Contract(pure = true)
-    @NotNull Registry.PotionEffectEntry registry();
+    Registry.PotionEffectEntry registry();
 
     @Override
-    default @NotNull NamespaceID namespace() {
+    default NamespaceID namespace() {
         return registry().namespace();
     }
 
@@ -24,15 +24,15 @@ public sealed interface PotionEffect extends ProtocolObject, PotionEffects permi
         return registry().id();
     }
 
-    static @NotNull Collection<@NotNull PotionEffect> values() {
+    static Collection<PotionEffect> values() {
         return PotionEffectImpl.values();
     }
 
-    static @Nullable PotionEffect fromNamespaceId(@NotNull String namespaceID) {
+    static @Nullable PotionEffect fromNamespaceId(String namespaceID) {
         return PotionEffectImpl.getSafe(namespaceID);
     }
 
-    static @Nullable PotionEffect fromNamespaceId(@NotNull NamespaceID namespaceID) {
+    static @Nullable PotionEffect fromNamespaceId(NamespaceID namespaceID) {
         return fromNamespaceId(namespaceID.asString());
     }
 

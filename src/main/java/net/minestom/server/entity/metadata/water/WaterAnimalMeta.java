@@ -9,7 +9,7 @@ public class WaterAnimalMeta extends PathfinderMobMeta {
     public static final byte OFFSET = PathfinderMobMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 0;
 
-    protected WaterAnimalMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
+    protected WaterAnimalMeta(Entity entity, Metadata metadata) {
         super(entity, metadata);
     }
 

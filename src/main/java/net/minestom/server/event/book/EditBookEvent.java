@@ -17,9 +17,9 @@ public class EditBookEvent implements PlayerInstanceEvent, ItemEvent {
     private final String title;
 
     public EditBookEvent(
-            @NotNull Player player,
-            @NotNull ItemStack itemStack,
-            @NotNull List<String> pages,
+            Player player,
+            ItemStack itemStack,
+            List<String> pages,
             @Nullable String title
     ) {
         this.player = player;
@@ -29,16 +29,16 @@ public class EditBookEvent implements PlayerInstanceEvent, ItemEvent {
     }
 
     @Override
-    public @NotNull Player getPlayer() {
+    public Player getPlayer() {
         return player;
     }
 
     @Override
-    public @NotNull ItemStack getItemStack() {
+    public ItemStack getItemStack() {
         return itemStack;
     }
 
-    public @NotNull List<String> getPages() {
+    public List<String> getPages() {
         return pages;
     }
 

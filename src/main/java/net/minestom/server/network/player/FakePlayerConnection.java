@@ -14,7 +14,7 @@ import java.net.SocketAddress;
 public class FakePlayerConnection extends PlayerConnection {
 
     @Override
-    public void sendPacket(@NotNull SendablePacket packet) {
+    public void sendPacket(SendablePacket packet) {
         FakePlayerController controller = getFakePlayer().getController();
         final ServerPacket serverPacket = SendablePacket.extractServerPacket(packet);
         controller.consumePacket(serverPacket);

@@ -66,7 +66,7 @@ public final class PacketListenerManager {
      * @param player the player who sent the packet
      * @param <T>    the packet type
      */
-    public <T extends ClientPacket> void processClientPacket(@NotNull T packet, @NotNull Player player) {
+    public <T extends ClientPacket> void processClientPacket(T packet, Player player) {
 
         final Class clazz = packet.getClass();
 
@@ -104,7 +104,7 @@ public final class PacketListenerManager {
      * @param consumer    the new packet's listener
      * @param <T>         the type of the packet
      */
-    public <T extends ClientPacket> void setListener(@NotNull Class<T> packetClass, @NotNull PacketListenerConsumer<T> consumer) {
+    public <T extends ClientPacket> void setListener(Class<T> packetClass, PacketListenerConsumer<T> consumer) {
         this.listeners.put(packetClass, consumer);
     }
 

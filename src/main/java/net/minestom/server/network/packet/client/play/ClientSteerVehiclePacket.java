@@ -9,12 +9,12 @@ import static net.minestom.server.network.NetworkBuffer.FLOAT;
 
 public record ClientSteerVehiclePacket(float sideways, float forward,
                                        byte flags) implements ClientPacket {
-    public ClientSteerVehiclePacket(@NotNull NetworkBuffer reader) {
+    public ClientSteerVehiclePacket(NetworkBuffer reader) {
         this(reader.read(FLOAT), reader.read(FLOAT), reader.read(BYTE));
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(FLOAT, sideways);
         writer.write(FLOAT, forward);
         writer.write(BYTE, flags);

@@ -18,7 +18,7 @@ public class ArgumentParticle extends ArgumentRegistry<Particle> {
     }
 
     @Override
-    public Particle getRegistry(@NotNull String value) {
+    public Particle getRegistry(String value) {
         return Particle.fromNamespaceId(value);
     }
 

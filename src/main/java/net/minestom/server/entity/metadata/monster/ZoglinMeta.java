@@ -9,7 +9,7 @@ public class ZoglinMeta extends MonsterMeta {
     public static final byte OFFSET = MonsterMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 1;
 
-    public ZoglinMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
+    public ZoglinMeta(Entity entity, Metadata metadata) {
         super(entity, metadata);
     }
 

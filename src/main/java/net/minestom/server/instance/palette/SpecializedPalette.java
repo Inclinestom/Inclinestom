@@ -16,7 +16,7 @@ interface SpecializedPalette extends Palette {
     }
 
     @Override
-    @NotNull SpecializedPalette clone();
+    SpecializedPalette clone();
 
     interface Immutable extends SpecializedPalette {
         @Override
@@ -30,17 +30,17 @@ interface SpecializedPalette extends Palette {
         }
 
         @Override
-        default void setAll(@NotNull EntrySupplier supplier) {
+        default void setAll(EntrySupplier supplier) {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        default void replace(int x, int y, int z, @NotNull IntUnaryOperator operator) {
+        default void replace(int x, int y, int z, IntUnaryOperator operator) {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        default void replaceAll(@NotNull EntryFunction function) {
+        default void replaceAll(EntryFunction function) {
             throw new UnsupportedOperationException();
         }
     }

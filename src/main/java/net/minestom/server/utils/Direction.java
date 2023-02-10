@@ -34,7 +34,7 @@ public enum Direction {
         return normalZ;
     }
 
-    public @NotNull Direction opposite() {
+    public Direction opposite() {
         return switch (this) {
             case UP -> DOWN;
             case DOWN -> UP;

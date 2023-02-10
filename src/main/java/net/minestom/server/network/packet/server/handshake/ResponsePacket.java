@@ -6,13 +6,13 @@ import org.jetbrains.annotations.NotNull;
 
 import static net.minestom.server.network.NetworkBuffer.STRING;
 
-public record ResponsePacket(@NotNull String jsonResponse) implements ServerPacket {
-    public ResponsePacket(@NotNull NetworkBuffer reader) {
+public record ResponsePacket(String jsonResponse) implements ServerPacket {
+    public ResponsePacket(NetworkBuffer reader) {
         this(reader.read(STRING));
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(STRING, jsonResponse);
     }
 

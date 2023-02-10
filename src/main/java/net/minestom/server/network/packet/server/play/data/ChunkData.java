@@ -14,8 +14,8 @@ import java.util.stream.Collectors;
 
 import static net.minestom.server.network.NetworkBuffer.*;
 
-public record ChunkData(@NotNull NBTCompound heightmaps, byte @NotNull [] data,
-                        @NotNull Map<Integer, Block> blockEntities) implements NetworkBuffer.Writer {
+public record ChunkData(NBTCompound heightmaps, byte [] data,
+                        Map<Integer, Block> blockEntities) implements NetworkBuffer.Writer {
     public ChunkData {
         blockEntities = blockEntities.entrySet()
                 .stream()
@@ -23,13 +23,13 @@ public record ChunkData(@NotNull NBTCompound heightmaps, byte @NotNull [] data,
                 .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
-    public ChunkData(@NotNull NetworkBuffer reader) {
+    public ChunkData(NetworkBuffer reader) {
         this((NBTCompound) reader.read(NBT), reader.read(BYTE_ARRAY),
                 readBlockEntities(reader));
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         // Heightmaps
         writer.write(NBT, this.heightmaps);
         // Data
@@ -52,7 +52,7 @@ public record ChunkData(@NotNull NBTCompound heightmaps, byte @NotNull [] data,
         }
     }
 
-    private static Map<Integer, Block> readBlockEntities(@NotNull NetworkBuffer reader) {
+    private static Map<Integer, Block> readBlockEntities(NetworkBuffer reader) {
         final Map<Integer, Block> blockEntities = new HashMap<>();
         final int size = reader.read(VAR_INT);
         for (int i = 0; i < size; i++) {

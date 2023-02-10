@@ -44,14 +44,14 @@ public class EventNodeTest {
 
     record ItemTestEvent(ItemStack item) implements ItemEvent {
         @Override
-        public @NotNull ItemStack getItemStack() {
+        public ItemStack getItemStack() {
             return item;
         }
     }
 
     record EntityTestEvent(Entity entity) implements EntityEvent {
         @Override
-        public @NotNull Entity getEntity() {
+        public Entity getEntity() {
             return entity;
         }
     }

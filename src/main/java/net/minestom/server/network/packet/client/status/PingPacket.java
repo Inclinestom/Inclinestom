@@ -12,12 +12,12 @@ import org.jetbrains.annotations.NotNull;
 import static net.minestom.server.network.NetworkBuffer.LONG;
 
 public record PingPacket(long number) implements ClientPreplayPacket {
-    public PingPacket(@NotNull NetworkBuffer reader) {
+    public PingPacket(NetworkBuffer reader) {
         this(reader.read(LONG));
     }
 
     @Override
-    public void process(@NotNull PlayerConnection connection) {
+    public void process(PlayerConnection connection) {
         final ClientPingServerEvent clientPingEvent = new ClientPingServerEvent(connection, number);
         EventDispatcher.call(clientPingEvent);
 
@@ -37,7 +37,7 @@ public record PingPacket(long number) implements ClientPreplayPacket {
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(LONG, number);
     }
 }

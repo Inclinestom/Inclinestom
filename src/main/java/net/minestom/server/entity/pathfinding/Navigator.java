@@ -31,7 +31,7 @@ public final class Navigator {
 
     private final Entity entity;
 
-    public Navigator(@NotNull Entity entity) {
+    public Navigator(Entity entity) {
         this.entity = entity;
         this.pathingEntity = new PFPathingEntity(this);
     }
@@ -44,7 +44,7 @@ public final class Navigator {
      * @param direction the targeted position
      * @param speed     define how far the entity will move
      */
-    public PhysicsResult moveTowards(@NotNull Point direction, double speed) {
+    public PhysicsResult moveTowards(Point direction, double speed) {
         final Pos position = entity.getPosition();
         final double dx = direction.x() - position.x();
         final double dy = direction.y() - position.y();
@@ -153,12 +153,12 @@ public final class Navigator {
         return pathPosition;
     }
 
-    public @NotNull Entity getEntity() {
+    public Entity getEntity() {
         return entity;
     }
 
     @ApiStatus.Internal
-    public @NotNull PFPathingEntity getPathingEntity() {
+    public PFPathingEntity getPathingEntity() {
         return pathingEntity;
     }
 

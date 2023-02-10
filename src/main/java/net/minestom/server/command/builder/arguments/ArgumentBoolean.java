@@ -18,7 +18,7 @@ public class ArgumentBoolean extends Argument<Boolean> {
 
     @NotNull
     @Override
-    public Boolean parse(@NotNull String input) throws ArgumentSyntaxException {
+    public Boolean parse(String input) throws ArgumentSyntaxException {
         if (input.equalsIgnoreCase("true"))
             return true;
         if (input.equalsIgnoreCase("false"))

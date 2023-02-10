@@ -1,5 +1,6 @@
 package net.minestom.server.coordinate;
 
+import net.minestom.server.instance.Chunk;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -12,7 +13,7 @@ import java.util.stream.StreamSupport;
  * An area is a spatially connected set of block positions.
  * These areas can be used for optimizations such as instance block queries, and pathfinding domains.
  */
-public sealed interface Area extends Iterable<Point> permits AreaImpl.Fill, AreaImpl.SetArea, AreaImpl.Union {
+public sealed interface Area extends Iterable<Point> permits AreaImpl.ExcludeArea, AreaImpl.Fill, AreaImpl.SetArea, AreaImpl.Union {
 
     /**
      * Creates a new area from a collection of block positions. Note that these points will be block-aligned.
@@ -20,8 +21,28 @@ public sealed interface Area extends Iterable<Point> permits AreaImpl.Fill, Area
      * @return a new area
      * @throws IllegalStateException if the resulting area is not fully connected
      */
-    static @NotNull Area collection(@NotNull Collection<? extends Point> collection) {
+    static Area collection(Collection<? extends Point> collection) {
         return AreaImpl.fromCollection(collection);
+    }
+
+    /**
+     * Creates a new area from a collection of block positions. Note that these points will be block-aligned.
+     * @param collection the collection of block positions
+     * @return a new area
+     * @throws IllegalStateException if the resulting area is not fully connected
+     */
+    static Area collection(Iterable<? extends Point> collection) {
+        return AreaImpl.fromCollection(StreamSupport.stream(collection.spliterator(), false).toList());
+    }
+
+    /**
+     * Creates a new area from a collection of block positions. Note that these points will be block-aligned.
+     * @param collection the collection of block positions
+     * @return a new area
+     * @throws IllegalStateException if the resulting area is not fully connected
+     */
+    static Area collection(Point... collection) {
+        return AreaImpl.fromCollection(List.of(collection));
     }
 
     /**
@@ -30,7 +51,7 @@ public sealed interface Area extends Iterable<Point> permits AreaImpl.Fill, Area
      * @param point2 the second (max) point
      * @return a new area
      */
-    static @NotNull Area fill(@NotNull Point point1, @NotNull Point point2) {
+    static Area fill(Point point1, Point point2) {
         return new AreaImpl.Fill(point1, point2);
     }
 
@@ -39,7 +60,7 @@ public sealed interface Area extends Iterable<Point> permits AreaImpl.Fill, Area
      * @param areas the areas to union
      * @return a new area
      */
-    static @NotNull Area union(@NotNull Area... areas) {
+    static Area union(Area... areas) {
         return new AreaImpl.Union(List.of(areas));
     }
 
@@ -48,83 +69,120 @@ public sealed interface Area extends Iterable<Point> permits AreaImpl.Fill, Area
      * @param areas the areas to intersect
      * @return a new area
      */
-    static @NotNull Area intersection(@NotNull Area... areas) {
+    static Area intersection(Area... areas) {
         return AreaImpl.intersection(areas);
+    }
+
+    /**
+     * Creates a new area from a source area and an area to exclude.
+     * @param source the source area
+     * @param exclude the area to exclude
+     * @return a new area
+     */
+    static Area exclude(Area source, Area exclude) {
+        return AreaImpl.exclude(source, exclude);
     }
 
     /**
      * Starts a path pointer used to construct an area. This is useful for pathfinding purposes.
      * @return a new path pointer
      */
-    static @NotNull Area.Path path() {
+    static Area.Path path() {
         return new AreaImpl.Path();
+    }
+
+    static Area section(Vec sectionIndex) {
+        return fill(sectionIndex, sectionIndex.add(Chunk.CHUNK_SECTION_SIZE));
+    }
+
+    static Area empty() {
+        return AreaImpl.EMPTY;
+    }
+
+    static Area full() {
+        return fill(new Vec(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY),
+                new Vec(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY));
     }
 
     /**
      * The minimum point of this area
      * @return the minimum point
      */
-    @NotNull Point min();
+    Point min();
 
     /**
      * The maximum point of this area
      * @return the maximum point
      */
-    @NotNull Point max();
+    Point max();
 
     /**
-     * Moves this area by an offset
-     * @param offset the offset
-     * @return a new area
+     * Checks if the given area is within this area.
+     * @param area the area
+     * @return true if the area is within this area
      */
-    default @NotNull Area move(@NotNull Point offset) {
-        Set<Point> points = StreamSupport.stream(spliterator(), false)
-                .map(point -> point.add(offset))
-                .collect(Collectors.toUnmodifiableSet());
-        return AreaImpl.fromCollection(points);
-    }
+    boolean contains(Area area);
+
+    /**
+     * Checks if the given point is within this area.
+     * @param point the point
+     * @return true if the point is within this area
+     */
+    boolean contains(Point point);
+
+    /**
+     * @return the number of points in this area
+     */
+    long size();
+
+    /**
+     * Calculates the number of overlapping points between this area and another.
+     * @param other the other area
+     * @return the number of overlapping points
+     */
+    long overlap(Area other);
 
     interface Path {
-        @NotNull Area.Path north(double factor);
+        Area.Path north(double factor);
 
-        @NotNull Area.Path south(double factor);
+        Area.Path south(double factor);
 
-        @NotNull Area.Path east(double factor);
+        Area.Path east(double factor);
 
-        @NotNull Area.Path west(double factor);
+        Area.Path west(double factor);
 
-        @NotNull Area.Path up(double factor);
+        Area.Path up(double factor);
 
-        @NotNull Area.Path down(double factor);
+        Area.Path down(double factor);
 
-        @NotNull Area end();
+        Area end();
 
-        default @NotNull Area.Path north() {
+        default Area.Path north() {
             return north(1);
         }
 
-        default @NotNull Area.Path south() {
+        default Area.Path south() {
             return south(1);
         }
 
-        default @NotNull Area.Path east() {
+        default Area.Path east() {
             return east(1);
         }
 
-        default @NotNull Area.Path west() {
+        default Area.Path west() {
             return west(1);
         }
 
-        default @NotNull Area.Path up() {
+        default Area.Path up() {
             return up(1);
         }
 
-        default @NotNull Area.Path down() {
+        default Area.Path down() {
             return down(1);
         }
     }
 
     sealed interface HasChildren permits AreaImpl.Union {
-        @NotNull Collection<Area> children();
+        Collection<Area> children();
     }
 }

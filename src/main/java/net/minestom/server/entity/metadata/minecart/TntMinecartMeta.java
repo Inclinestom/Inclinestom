@@ -8,7 +8,7 @@ public class TntMinecartMeta extends AbstractMinecartMeta {
     public static final byte OFFSET = AbstractMinecartMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 0;
 
-    public TntMinecartMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
+    public TntMinecartMeta(Entity entity, Metadata metadata) {
         super(entity, metadata);
     }
 

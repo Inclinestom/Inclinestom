@@ -25,7 +25,7 @@ public non-sealed class PlayerInventory extends AbstractInventory implements Equ
     protected final Player player;
     private ItemStack cursorItem = ItemStack.AIR;
 
-    public PlayerInventory(@NotNull Player player) {
+    public PlayerInventory(Player player) {
         super(INVENTORY_SIZE);
         this.player = player;
     }
@@ -44,62 +44,62 @@ public non-sealed class PlayerInventory extends AbstractInventory implements Equ
     }
 
     @Override
-    public @NotNull ItemStack getItemInMainHand() {
+    public ItemStack getItemInMainHand() {
         return getItemStack(player.getHeldSlot());
     }
 
     @Override
-    public void setItemInMainHand(@NotNull ItemStack itemStack) {
+    public void setItemInMainHand(ItemStack itemStack) {
         safeItemInsert(player.getHeldSlot(), itemStack);
     }
 
     @Override
-    public @NotNull ItemStack getItemInOffHand() {
+    public ItemStack getItemInOffHand() {
         return getItemStack(OFFHAND_SLOT);
     }
 
     @Override
-    public void setItemInOffHand(@NotNull ItemStack itemStack) {
+    public void setItemInOffHand(ItemStack itemStack) {
         safeItemInsert(OFFHAND_SLOT, itemStack);
     }
 
     @Override
-    public @NotNull ItemStack getHelmet() {
+    public ItemStack getHelmet() {
         return getItemStack(HELMET_SLOT);
     }
 
     @Override
-    public void setHelmet(@NotNull ItemStack itemStack) {
+    public void setHelmet(ItemStack itemStack) {
         safeItemInsert(HELMET_SLOT, itemStack);
     }
 
     @Override
-    public @NotNull ItemStack getChestplate() {
+    public ItemStack getChestplate() {
         return getItemStack(CHESTPLATE_SLOT);
     }
 
     @Override
-    public void setChestplate(@NotNull ItemStack itemStack) {
+    public void setChestplate(ItemStack itemStack) {
         safeItemInsert(CHESTPLATE_SLOT, itemStack);
     }
 
     @Override
-    public @NotNull ItemStack getLeggings() {
+    public ItemStack getLeggings() {
         return getItemStack(LEGGINGS_SLOT);
     }
 
     @Override
-    public void setLeggings(@NotNull ItemStack itemStack) {
+    public void setLeggings(ItemStack itemStack) {
         safeItemInsert(LEGGINGS_SLOT, itemStack);
     }
 
     @Override
-    public @NotNull ItemStack getBoots() {
+    public ItemStack getBoots() {
         return getItemStack(BOOTS_SLOT);
     }
 
     @Override
-    public void setBoots(@NotNull ItemStack itemStack) {
+    public void setBoots(ItemStack itemStack) {
         safeItemInsert(BOOTS_SLOT, itemStack);
     }
 
@@ -117,7 +117,7 @@ public non-sealed class PlayerInventory extends AbstractInventory implements Equ
      *
      * @return the cursor item
      */
-    public @NotNull ItemStack getCursorItem() {
+    public ItemStack getCursorItem() {
         return cursorItem;
     }
 
@@ -126,7 +126,7 @@ public non-sealed class PlayerInventory extends AbstractInventory implements Equ
      *
      * @param cursorItem the new cursor item
      */
-    public void setCursorItem(@NotNull ItemStack cursorItem) {
+    public void setCursorItem(ItemStack cursorItem) {
         if (this.cursorItem.equals(cursorItem)) return;
         this.cursorItem = cursorItem;
         final SetSlotPacket setSlotPacket = SetSlotPacket.createCursorPacket(cursorItem);
@@ -134,7 +134,7 @@ public non-sealed class PlayerInventory extends AbstractInventory implements Equ
     }
 
     @Override
-    protected void UNSAFE_itemInsert(int slot, @NotNull ItemStack itemStack, boolean sendPacket) {
+    protected void UNSAFE_itemInsert(int slot, ItemStack itemStack, boolean sendPacket) {
         final EquipmentSlot equipmentSlot = switch (slot) {
             case HELMET_SLOT -> EquipmentSlot.HELMET;
             case CHESTPLATE_SLOT -> EquipmentSlot.CHESTPLATE;
@@ -184,7 +184,7 @@ public non-sealed class PlayerInventory extends AbstractInventory implements Equ
     }
 
     @Override
-    public boolean leftClick(@NotNull Player player, int slot) {
+    public boolean leftClick(Player player, int slot) {
         final int convertedSlot = convertPlayerInventorySlot(slot, OFFSET);
         final ItemStack cursor = getCursorItem();
         final ItemStack clicked = getItemStack(convertedSlot);
@@ -200,7 +200,7 @@ public non-sealed class PlayerInventory extends AbstractInventory implements Equ
     }
 
     @Override
-    public boolean rightClick(@NotNull Player player, int slot) {
+    public boolean rightClick(Player player, int slot) {
         final int convertedSlot = convertPlayerInventorySlot(slot, OFFSET);
         final ItemStack cursor = getCursorItem();
         final ItemStack clicked = getItemStack(convertedSlot);
@@ -216,14 +216,14 @@ public non-sealed class PlayerInventory extends AbstractInventory implements Equ
     }
 
     @Override
-    public boolean middleClick(@NotNull Player player, int slot) {
+    public boolean middleClick(Player player, int slot) {
         // TODO
         update();
         return false;
     }
 
     @Override
-    public boolean drop(@NotNull Player player, boolean all, int slot, int button) {
+    public boolean drop(Player player, boolean all, int slot, int button) {
         final int convertedSlot = convertPlayerInventorySlot(slot, OFFSET);
         final ItemStack cursor = getCursorItem();
         final boolean outsideDrop = slot == -999;
@@ -243,7 +243,7 @@ public non-sealed class PlayerInventory extends AbstractInventory implements Equ
     }
 
     @Override
-    public boolean shiftClick(@NotNull Player player, int slot) {
+    public boolean shiftClick(Player player, int slot) {
         final int convertedSlot = convertPlayerInventorySlot(slot, OFFSET);
         final ItemStack cursor = getCursorItem();
         final ItemStack clicked = getItemStack(convertedSlot);
@@ -265,7 +265,7 @@ public non-sealed class PlayerInventory extends AbstractInventory implements Equ
     }
 
     @Override
-    public boolean changeHeld(@NotNull Player player, int slot, int key) {
+    public boolean changeHeld(Player player, int slot, int key) {
         final int convertedKey = key == 40 ? OFFHAND_SLOT : key;
         final ItemStack cursorItem = getCursorItem();
         if (!cursorItem.isAir()) return false;
@@ -284,7 +284,7 @@ public non-sealed class PlayerInventory extends AbstractInventory implements Equ
     }
 
     @Override
-    public boolean dragging(@NotNull Player player, int slot, int button) {
+    public boolean dragging(Player player, int slot, int button) {
         final ItemStack cursor = getCursorItem();
         final ItemStack clicked = slot != -999 ? getItemStackFromPacketSlot(slot) : ItemStack.AIR;
         final InventoryClickResult clickResult = clickProcessor.dragging(player, this,
@@ -299,7 +299,7 @@ public non-sealed class PlayerInventory extends AbstractInventory implements Equ
     }
 
     @Override
-    public boolean doubleClick(@NotNull Player player, int slot) {
+    public boolean doubleClick(Player player, int slot) {
         final int convertedSlot = convertPlayerInventorySlot(slot, OFFSET);
         final ItemStack cursor = getCursorItem();
         final ItemStack clicked = getItemStack(convertedSlot);
@@ -313,7 +313,7 @@ public non-sealed class PlayerInventory extends AbstractInventory implements Equ
         return true;
     }
 
-    private void setItemStackFromPacketSlot(int slot, @NotNull ItemStack itemStack) {
+    private void setItemStackFromPacketSlot(int slot, ItemStack itemStack) {
         final int convertedSlot = convertPlayerInventorySlot(slot, OFFSET);
         setItemStack(convertedSlot, itemStack);
     }

@@ -14,7 +14,7 @@ public class WitherSkullMeta extends EntityMeta implements ObjectDataProvider, P
 
     private Entity shooter;
 
-    public WitherSkullMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
+    public WitherSkullMeta(Entity entity, Metadata metadata) {
         super(entity, metadata);
     }
 

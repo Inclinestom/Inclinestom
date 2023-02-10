@@ -8,13 +8,13 @@ import org.jetbrains.annotations.NotNull;
 import static net.minestom.server.network.NetworkBuffer.BYTE;
 import static net.minestom.server.network.NetworkBuffer.FLOAT;
 
-public record ChangeGameStatePacket(@NotNull Reason reason, float value) implements ServerPacket {
-    public ChangeGameStatePacket(@NotNull NetworkBuffer reader) {
+public record ChangeGameStatePacket(Reason reason, float value) implements ServerPacket {
+    public ChangeGameStatePacket(NetworkBuffer reader) {
         this(Reason.values()[reader.read(BYTE)], reader.read(FLOAT));
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(BYTE, (byte) reason.ordinal());
         writer.write(FLOAT, value);
     }

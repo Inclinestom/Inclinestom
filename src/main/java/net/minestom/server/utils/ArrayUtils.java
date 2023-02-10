@@ -15,14 +15,14 @@ public final class ArrayUtils {
     private ArrayUtils() {
     }
 
-    public static boolean isEmpty(@Nullable Object @NotNull [] array) {
+    public static boolean isEmpty(@Nullable Object [] array) {
         for (Object object : array) {
             if (object != null) return false;
         }
         return true;
     }
 
-    public static int[] concatenateIntArrays(int @NotNull []... arrays) {
+    public static int[] concatenateIntArrays(int []... arrays) {
         int totalLength = 0;
         for (int[] array : arrays) {
             totalLength += array.length;
@@ -49,7 +49,7 @@ public final class ArrayUtils {
         return result;
     }
 
-    public static <K, V> Map<K, V> toMap(@NotNull K[] keys, @NotNull V[] values, int length) {
+    public static <K, V> Map<K, V> toMap(K[] keys, V[] values, int length) {
         assert keys.length >= length && keys.length == values.length;
         return switch (length) {
             case 0 -> Map.of();

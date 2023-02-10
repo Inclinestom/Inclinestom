@@ -16,7 +16,7 @@ public record PotionMeta(TagReadable readable) implements ItemMetaView<PotionMet
     private static final Tag<PotionType> POTION_TYPE = Tag.String("Potion").map(PotionType::fromNamespaceId, ProtocolObject::name).defaultValue(PotionType.EMPTY);
     private static final Tag<List<CustomPotionEffect>> CUSTOM_POTION_EFFECTS = Tag.Structure("CustomPotionEffects", new TagSerializer<CustomPotionEffect>() {
         @Override
-        public @Nullable CustomPotionEffect read(@NotNull TagReadable reader) {
+        public @Nullable CustomPotionEffect read(TagReadable reader) {
             final Byte id = reader.getTag(Tag.Byte("Id"));
             final Byte amplifier = reader.getTag(Tag.Byte("Amplifier"));
             final Integer duration = reader.getTag(Tag.Integer("Duration"));
@@ -30,7 +30,7 @@ public record PotionMeta(TagReadable readable) implements ItemMetaView<PotionMet
         }
 
         @Override
-        public void write(@NotNull TagWritable writer, @NotNull CustomPotionEffect value) {
+        public void write(TagWritable writer, CustomPotionEffect value) {
             writer.setTag(Tag.Byte("Id"), value.id());
             writer.setTag(Tag.Byte("Amplifier"), value.amplifier());
             writer.setTag(Tag.Integer("Duration"), value.duration());
@@ -41,11 +41,11 @@ public record PotionMeta(TagReadable readable) implements ItemMetaView<PotionMet
     }).list().defaultValue(List.of());
     private static final Tag<Color> CUSTOM_POTION_COLOR = Tag.Integer("CustomPotionColor").path("display").map(Color::new, Color::asRGB);
 
-    public @NotNull PotionType getPotionType() {
+    public PotionType getPotionType() {
         return getTag(POTION_TYPE);
     }
 
-    public @NotNull List<CustomPotionEffect> getCustomPotionEffects() {
+    public List<CustomPotionEffect> getCustomPotionEffects() {
         return getTag(CUSTOM_POTION_EFFECTS);
     }
 
@@ -54,7 +54,7 @@ public record PotionMeta(TagReadable readable) implements ItemMetaView<PotionMet
     }
 
     @Override
-    public <T> @UnknownNullability T getTag(@NotNull Tag<T> tag) {
+    public <T> @UnknownNullability T getTag(Tag<T> tag) {
         return readable.getTag(tag);
     }
 
@@ -63,17 +63,17 @@ public record PotionMeta(TagReadable readable) implements ItemMetaView<PotionMet
             this(TagHandler.newHandler());
         }
 
-        public Builder potionType(@NotNull PotionType potionType) {
+        public Builder potionType(PotionType potionType) {
             setTag(POTION_TYPE, potionType);
             return this;
         }
 
-        public Builder effects(@NotNull List<CustomPotionEffect> customPotionEffects) {
+        public Builder effects(List<CustomPotionEffect> customPotionEffects) {
             setTag(CUSTOM_POTION_EFFECTS, customPotionEffects);
             return this;
         }
 
-        public Builder color(@NotNull Color color) {
+        public Builder color(Color color) {
             setTag(CUSTOM_POTION_COLOR, color);
             return this;
         }

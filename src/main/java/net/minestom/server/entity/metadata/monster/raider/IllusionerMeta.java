@@ -8,7 +8,7 @@ public class IllusionerMeta extends SpellcasterIllagerMeta {
     public static final byte OFFSET = SpellcasterIllagerMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 0;
 
-    public IllusionerMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
+    public IllusionerMeta(Entity entity, Metadata metadata) {
         super(entity, metadata);
     }
 

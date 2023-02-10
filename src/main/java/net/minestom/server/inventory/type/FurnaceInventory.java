@@ -13,11 +13,11 @@ public class FurnaceInventory extends Inventory {
     private short progressArrow;
     private short maximumProgress;
 
-    public FurnaceInventory(@NotNull Component title) {
+    public FurnaceInventory(Component title) {
         super(InventoryType.FURNACE, title);
     }
 
-    public FurnaceInventory(@NotNull String title) {
+    public FurnaceInventory(String title) {
         super(InventoryType.FURNACE, title);
     }
 

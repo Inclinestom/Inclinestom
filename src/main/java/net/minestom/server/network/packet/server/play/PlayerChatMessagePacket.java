@@ -19,11 +19,11 @@ import static net.minestom.server.network.NetworkBuffer.*;
 /**
  * Represents an outgoing chat message packet.
  */
-public record PlayerChatMessagePacket(@NotNull Component signedContent, @Nullable Component unsignedContent,
-                                      int type, @NotNull UUID uuid,
-                                      @NotNull Component displayName, @Nullable Component teamDisplayName,
-                                      @NotNull MessageSignature signature) implements ComponentHoldingServerPacket {
-    public PlayerChatMessagePacket(@NotNull NetworkBuffer reader) {
+public record PlayerChatMessagePacket(Component signedContent, @Nullable Component unsignedContent,
+                                      int type, UUID uuid,
+                                      Component displayName, @Nullable Component teamDisplayName,
+                                      MessageSignature signature) implements ComponentHoldingServerPacket {
+    public PlayerChatMessagePacket(NetworkBuffer reader) {
         this(reader.read(COMPONENT), reader.readOptional(COMPONENT),
                 reader.read(VAR_INT), reader.read(NetworkBuffer.UUID),
                 reader.read(COMPONENT), reader.readOptional(COMPONENT),
@@ -31,7 +31,7 @@ public record PlayerChatMessagePacket(@NotNull Component signedContent, @Nullabl
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(COMPONENT, signedContent);
         writer.writeOptional(COMPONENT, unsignedContent);
         writer.write(VAR_INT, type);
@@ -47,12 +47,12 @@ public record PlayerChatMessagePacket(@NotNull Component signedContent, @Nullabl
     }
 
     @Override
-    public @NotNull Collection<Component> components() {
+    public Collection<Component> components() {
         return List.of(signedContent);
     }
 
     @Override
-    public @NotNull ServerPacket copyWithOperator(@NotNull UnaryOperator<Component> operator) {
+    public ServerPacket copyWithOperator(UnaryOperator<Component> operator) {
         return new PlayerChatMessagePacket(signedContent, unsignedContent, type,
                 uuid, displayName, teamDisplayName, signature);
     }

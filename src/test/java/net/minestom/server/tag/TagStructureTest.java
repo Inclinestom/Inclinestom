@@ -16,13 +16,13 @@ public class TagStructureTest {
         private static final Tag<String> VALUE_TAG = Tag.String("value");
 
         @Override
-        public @Nullable Entry read(@NotNull TagReadable reader) {
+        public @Nullable Entry read(TagReadable reader) {
             final String value = reader.getTag(VALUE_TAG);
             return value != null ? new Entry(value) : null;
         }
 
         @Override
-        public void write(@NotNull TagWritable writer, @NotNull Entry value) {
+        public void write(TagWritable writer, Entry value) {
             writer.setTag(VALUE_TAG, value.value);
         }
     });
@@ -31,13 +31,13 @@ public class TagStructureTest {
         private static final Tag<String> VALUE_TAG = Tag.String("value2");
 
         @Override
-        public @Nullable Entry read(@NotNull TagReadable reader) {
+        public @Nullable Entry read(TagReadable reader) {
             final String value = reader.getTag(VALUE_TAG);
             return value != null ? new Entry(value) : null;
         }
 
         @Override
-        public void write(@NotNull TagWritable writer, @NotNull Entry value) {
+        public void write(TagWritable writer, Entry value) {
             writer.setTag(VALUE_TAG, value.value);
         }
     });
@@ -139,7 +139,7 @@ public class TagStructureTest {
         Tag<UUID> uuidTag = Tag.UUID("Id").path("SkullOwner");
         Tag<PlayerSkin> skinTag = Tag.Structure("Properties", new TagSerializer<PlayerSkin>() {
             @Override
-            public @Nullable PlayerSkin read(@NotNull TagReadable reader) {
+            public @Nullable PlayerSkin read(TagReadable reader) {
                 final String value = reader.getTag(Tag.String("Value"));
                 final String signature = reader.getTag(Tag.String("Signature"));
                 if (value == null || signature == null) return null;
@@ -147,7 +147,7 @@ public class TagStructureTest {
             }
 
             @Override
-            public void write(@NotNull TagWritable writer, @NotNull PlayerSkin value) {
+            public void write(TagWritable writer, PlayerSkin value) {
                 writer.setTag(Tag.String("Value"), value.textures());
                 writer.setTag(Tag.String("Signature"), value.signature());
             }

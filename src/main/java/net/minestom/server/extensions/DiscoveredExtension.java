@@ -105,11 +105,11 @@ public final class DiscoveredExtension {
         return originalJar;
     }
 
-    public @NotNull Path getDataDirectory() {
+    public Path getDataDirectory() {
         return dataDirectory;
     }
 
-    public void setDataDirectory(@NotNull Path dataDirectory) {
+    public void setDataDirectory(Path dataDirectory) {
         this.dataDirectory = dataDirectory;
     }
 
@@ -129,7 +129,7 @@ public final class DiscoveredExtension {
      *
      * @param extension The extension to verify
      */
-    public static void verifyIntegrity(@NotNull DiscoveredExtension extension) {
+    public static void verifyIntegrity(DiscoveredExtension extension) {
         if (extension.name == null) {
             StringBuilder fileList = new StringBuilder();
             for (URL f : extension.files) {
@@ -214,7 +214,7 @@ public final class DiscoveredExtension {
 
         private final String message;
 
-        LoadStatus(@NotNull String message) {
+        LoadStatus(String message) {
             this.message = message;
         }
 

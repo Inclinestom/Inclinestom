@@ -32,7 +32,7 @@ public sealed interface EventNode<T extends Event> permits EventNodeImpl {
      * @return An event node with no filtering
      */
     @Contract(value = "_ -> new", pure = true)
-    static @NotNull EventNode<Event> all(@NotNull String name) {
+    static EventNode<Event> all(String name) {
         return type(name, EventFilter.ALL);
     }
 
@@ -51,8 +51,8 @@ public sealed interface EventNode<T extends Event> permits EventNodeImpl {
      * @return A node with just an event type filter
      */
     @Contract(value = "_, _ -> new", pure = true)
-    static <E extends Event, V> @NotNull EventNode<E> type(@NotNull String name,
-                                                           @NotNull EventFilter<E, V> filter) {
+    static <E extends Event, V> EventNode<E> type(String name,
+                                                           EventFilter<E, V> filter) {
         return create(name, filter, null);
     }
 
@@ -76,9 +76,9 @@ public sealed interface EventNode<T extends Event> permits EventNodeImpl {
      * @return A node with an event type filter as well as a condition on the event.
      */
     @Contract(value = "_, _, _ -> new", pure = true)
-    static <E extends Event, V> @NotNull EventNode<E> event(@NotNull String name,
-                                                            @NotNull EventFilter<E, V> filter,
-                                                            @NotNull Predicate<E> predicate) {
+    static <E extends Event, V> EventNode<E> event(String name,
+                                                            EventFilter<E, V> filter,
+                                                            Predicate<E> predicate) {
         return create(name, filter, (e, h) -> predicate.test(e));
     }
 
@@ -104,9 +104,9 @@ public sealed interface EventNode<T extends Event> permits EventNodeImpl {
      * @return A node with an event type filter as well as a condition on the event.
      */
     @Contract(value = "_, _, _ -> new", pure = true)
-    static <E extends Event, V> @NotNull EventNode<E> type(@NotNull String name,
-                                                           @NotNull EventFilter<E, V> filter,
-                                                           @NotNull BiPredicate<E, V> predicate) {
+    static <E extends Event, V> EventNode<E> type(String name,
+                                                           EventFilter<E, V> filter,
+                                                           BiPredicate<E, V> predicate) {
         return create(name, filter, predicate);
     }
 
@@ -129,9 +129,9 @@ public sealed interface EventNode<T extends Event> permits EventNodeImpl {
      * @return A node with an event type filter as well as a condition on the event.
      */
     @Contract(value = "_, _, _ -> new", pure = true)
-    static <E extends Event, V> @NotNull EventNode<E> value(@NotNull String name,
-                                                            @NotNull EventFilter<E, V> filter,
-                                                            @NotNull Predicate<V> predicate) {
+    static <E extends Event, V> EventNode<E> value(String name,
+                                                            EventFilter<E, V> filter,
+                                                            Predicate<V> predicate) {
         return create(name, filter, (e, h) -> predicate.test(h));
     }
 
@@ -148,9 +148,9 @@ public sealed interface EventNode<T extends Event> permits EventNodeImpl {
      * @return A node with an event type filter as well as a handler with the provided tag
      */
     @Contract(value = "_, _, _ -> new", pure = true)
-    static <E extends Event> @NotNull EventNode<E> tag(@NotNull String name,
-                                                       @NotNull EventFilter<E, ? extends TagReadable> filter,
-                                                       @NotNull Tag<?> tag) {
+    static <E extends Event> EventNode<E> tag(String name,
+                                                       EventFilter<E, ? extends TagReadable> filter,
+                                                       Tag<?> tag) {
         return create(name, filter, (e, h) -> h.hasTag(tag));
     }
 
@@ -166,15 +166,15 @@ public sealed interface EventNode<T extends Event> permits EventNodeImpl {
      * @return A node with an event type filter as well as a handler with the provided tag
      */
     @Contract(value = "_, _, _, _ -> new", pure = true)
-    static <E extends Event, V> @NotNull EventNode<E> tag(@NotNull String name,
-                                                          @NotNull EventFilter<E, ? extends TagReadable> filter,
-                                                          @NotNull Tag<V> tag,
-                                                          @NotNull Predicate<@Nullable V> consumer) {
+    static <E extends Event, V> EventNode<E> tag(String name,
+                                                          EventFilter<E, ? extends TagReadable> filter,
+                                                          Tag<V> tag,
+                                                          Predicate<@Nullable V> consumer) {
         return create(name, filter, (e, h) -> consumer.test(h.getTag(tag)));
     }
 
-    private static <E extends Event, V> EventNode<E> create(@NotNull String name,
-                                                            @NotNull EventFilter<E, V> filter,
+    private static <E extends Event, V> EventNode<E> create(String name,
+                                                            EventFilter<E, V> filter,
                                                             @Nullable BiPredicate<E, V> predicate) {
         //noinspection unchecked
         return new EventNodeImpl<>(name, filter, predicate != null ? (e, o) -> predicate.test(e, (V) o) : null);
@@ -185,12 +185,12 @@ public sealed interface EventNode<T extends Event> permits EventNodeImpl {
      *
      * @param event the event to call
      */
-    default void call(@NotNull T event) {
+    default void call(T event) {
         //noinspection unchecked
         getHandle((Class<T>) event.getClass()).call(event);
     }
 
-    default boolean hasListener(@NotNull Class<? extends T> type) {
+    default boolean hasListener(Class<? extends T> type) {
         return getHandle(type).hasListener();
     }
 
@@ -202,7 +202,7 @@ public sealed interface EventNode<T extends Event> permits EventNodeImpl {
      * @return the handle linked to {@code handleType}
      */
     @ApiStatus.Experimental
-    <E extends T> @NotNull ListenerHandle<E> getHandle(@NotNull Class<E> handleType);
+    <E extends T> ListenerHandle<E> getHandle(Class<E> handleType);
 
     /**
      * Execute a cancellable event with a callback to execute if the event is successful.
@@ -211,7 +211,7 @@ public sealed interface EventNode<T extends Event> permits EventNodeImpl {
      * @param event           The event to execute
      * @param successCallback A callback if the event is not cancelled
      */
-    default void callCancellable(@NotNull T event, @NotNull Runnable successCallback) {
+    default void callCancellable(T event, Runnable successCallback) {
         call(event);
         if (!(event instanceof CancellableEvent cancellableEvent) || !cancellableEvent.isCancelled()) {
             successCallback.run();
@@ -219,16 +219,16 @@ public sealed interface EventNode<T extends Event> permits EventNodeImpl {
     }
 
     @Contract(pure = true)
-    @NotNull Class<T> getEventType();
+    Class<T> getEventType();
 
     @Contract(pure = true)
-    @NotNull String getName();
+    String getName();
 
     @Contract(pure = true)
     int getPriority();
 
     @Contract(value = "_ -> this")
-    @NotNull EventNode<T> setPriority(int priority);
+    EventNode<T> setPriority(int priority);
 
     @Contract(pure = true)
     @Nullable EventNode<? super T> getParent();
@@ -240,7 +240,7 @@ public sealed interface EventNode<T extends Event> permits EventNodeImpl {
      * @see #removeChild(EventNode)
      */
     @Contract(pure = true)
-    @NotNull Set<@NotNull EventNode<T>> getChildren();
+    Set<EventNode<T>> getChildren();
 
     /**
      * Locates all child nodes with the given name and event type recursively starting at this node.
@@ -250,7 +250,7 @@ public sealed interface EventNode<T extends Event> permits EventNodeImpl {
      * @return All matching event nodes
      */
     @Contract(pure = true)
-    <E extends T> @NotNull List<EventNode<E>> findChildren(@NotNull String name, Class<E> eventType);
+    <E extends T> List<EventNode<E>> findChildren(String name, Class<E> eventType);
 
     /**
      * Locates all child nodes with the given name and event type recursively starting at this node.
@@ -259,7 +259,7 @@ public sealed interface EventNode<T extends Event> permits EventNodeImpl {
      * @return All matching event nodes
      */
     @Contract(pure = true)
-    default @NotNull List<EventNode<T>> findChildren(@NotNull String name) {
+    default List<EventNode<T>> findChildren(String name) {
         return findChildren(name, getEventType());
     }
 
@@ -272,7 +272,7 @@ public sealed interface EventNode<T extends Event> permits EventNodeImpl {
      * @param eventType The event node type to filter for
      * @param eventNode The replacement node
      */
-    <E extends T> void replaceChildren(@NotNull String name, @NotNull Class<E> eventType, @NotNull EventNode<E> eventNode);
+    <E extends T> void replaceChildren(String name, Class<E> eventType, EventNode<E> eventNode);
 
     /**
      * Replaces all children matching the given name and type recursively starting from this node.
@@ -282,7 +282,7 @@ public sealed interface EventNode<T extends Event> permits EventNodeImpl {
      * @param name      The node name to filter for
      * @param eventNode The replacement node
      */
-    default void replaceChildren(@NotNull String name, @NotNull EventNode<T> eventNode) {
+    default void replaceChildren(String name, EventNode<T> eventNode) {
         replaceChildren(name, getEventType(), eventNode);
     }
 
@@ -292,14 +292,14 @@ public sealed interface EventNode<T extends Event> permits EventNodeImpl {
      * @param name      The node name to filter for
      * @param eventType The node type to filter for
      */
-    void removeChildren(@NotNull String name, @NotNull Class<? extends T> eventType);
+    void removeChildren(String name, Class<? extends T> eventType);
 
     /**
      * Recursively removes children with the given name starting at this node.
      *
      * @param name The node name to filter for
      */
-    default void removeChildren(@NotNull String name) {
+    default void removeChildren(String name) {
         removeChildren(name, getEventType());
     }
 
@@ -310,7 +310,7 @@ public sealed interface EventNode<T extends Event> permits EventNodeImpl {
      * @return this, can be used for chaining
      */
     @Contract(value = "_ -> this")
-    @NotNull EventNode<T> addChild(@NotNull EventNode<? extends T> child);
+    EventNode<T> addChild(EventNode<? extends T> child);
 
     /**
      * Directly removes the given child from this node.
@@ -319,18 +319,18 @@ public sealed interface EventNode<T extends Event> permits EventNodeImpl {
      * @return this, can be used for chaining
      */
     @Contract(value = "_ -> this")
-    @NotNull EventNode<T> removeChild(@NotNull EventNode<? extends T> child);
+    EventNode<T> removeChild(EventNode<? extends T> child);
 
     @Contract(value = "_ -> this")
-    @NotNull EventNode<T> addListener(@NotNull EventListener<? extends T> listener);
+    EventNode<T> addListener(EventListener<? extends T> listener);
 
     @Contract(value = "_, _ -> this")
-    default <E extends T> @NotNull EventNode<T> addListener(@NotNull Class<E> eventType, @NotNull Consumer<@NotNull E> listener) {
+    default <E extends T> EventNode<T> addListener(Class<E> eventType, Consumer<E> listener) {
         return addListener(EventListener.of(eventType, listener));
     }
 
     @Contract(value = "_ -> this")
-    @NotNull EventNode<T> removeListener(@NotNull EventListener<? extends T> listener);
+    EventNode<T> removeListener(EventListener<? extends T> listener);
 
     /**
      * Maps a specific object to a node.
@@ -343,7 +343,7 @@ public sealed interface EventNode<T extends Event> permits EventNodeImpl {
      * @return the node (which may have already been registered) directly linked to {@code value}
      */
     @ApiStatus.Experimental
-    <E extends T, H> @NotNull EventNode<E> map(@NotNull H value, @NotNull EventFilter<E, H> filter);
+    <E extends T, H> EventNode<E> map(H value, EventFilter<E, H> filter);
 
     /**
      * Prevents the node from {@link #map(Object, EventFilter)} to be called.
@@ -351,11 +351,11 @@ public sealed interface EventNode<T extends Event> permits EventNodeImpl {
      * @param value the value to unmap
      */
     @ApiStatus.Experimental
-    void unmap(@NotNull Object value);
+    void unmap(Object value);
 
     @ApiStatus.Experimental
-    void register(@NotNull EventBinding<? extends T> binding);
+    void register(EventBinding<? extends T> binding);
 
     @ApiStatus.Experimental
-    void unregister(@NotNull EventBinding<? extends T> binding);
+    void unregister(EventBinding<? extends T> binding);
 }

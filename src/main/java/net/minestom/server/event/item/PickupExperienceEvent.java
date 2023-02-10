@@ -14,14 +14,14 @@ public class PickupExperienceEvent implements CancellableEvent, PlayerInstanceEv
 
     private boolean cancelled;
 
-    public PickupExperienceEvent(@NotNull Player player, @NotNull ExperienceOrb experienceOrb) {
+    public PickupExperienceEvent(Player player, ExperienceOrb experienceOrb) {
         this.player = player;
         this.experienceOrb = experienceOrb;
         this.experienceCount = experienceOrb.getExperienceCount();
     }
 
     @Override
-    public @NotNull Player getPlayer() {
+    public Player getPlayer() {
         return player;
     }
 

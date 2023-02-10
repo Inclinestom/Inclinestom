@@ -8,7 +8,7 @@ public class SpellcasterIllagerMeta extends AbstractIllagerMeta {
     public static final byte OFFSET = AbstractIllagerMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 1;
 
-    protected SpellcasterIllagerMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
+    protected SpellcasterIllagerMeta(Entity entity, Metadata metadata) {
         super(entity, metadata);
     }
 
@@ -17,7 +17,7 @@ public class SpellcasterIllagerMeta extends AbstractIllagerMeta {
         return Spell.VALUES[super.metadata.getIndex(OFFSET, (byte) 0)];
     }
 
-    public void setSpell(@NotNull Spell spell) {
+    public void setSpell(Spell spell) {
         super.metadata.setIndex(OFFSET, Metadata.Byte((byte) spell.ordinal()));
     }
 

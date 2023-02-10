@@ -23,7 +23,7 @@ public class InventoryItemChangeEvent implements InventoryEvent, RecursiveEvent 
     private final ItemStack newItem;
 
     public InventoryItemChangeEvent(@Nullable Inventory inventory, int slot,
-                                    @NotNull ItemStack previousItem, @NotNull ItemStack newItem) {
+                                    ItemStack previousItem, ItemStack newItem) {
         this.inventory = inventory;
         this.slot = slot;
         this.previousItem = previousItem;
@@ -44,7 +44,7 @@ public class InventoryItemChangeEvent implements InventoryEvent, RecursiveEvent 
      *
      * @return a previous item that was on changed slot.
      */
-    public @NotNull ItemStack getPreviousItem() {
+    public ItemStack getPreviousItem() {
         return previousItem;
     }
 
@@ -53,7 +53,7 @@ public class InventoryItemChangeEvent implements InventoryEvent, RecursiveEvent 
      *
      * @return a new item on a changed slot.
      */
-    public @NotNull ItemStack getNewItem() {
+    public ItemStack getNewItem() {
         return newItem;
     }
 

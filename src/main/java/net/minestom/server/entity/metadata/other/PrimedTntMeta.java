@@ -9,7 +9,7 @@ public class PrimedTntMeta extends EntityMeta {
     public static final byte OFFSET = EntityMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 1;
 
-    public PrimedTntMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
+    public PrimedTntMeta(Entity entity, Metadata metadata) {
         super(entity, metadata);
     }
 

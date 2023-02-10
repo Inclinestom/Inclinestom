@@ -24,7 +24,7 @@ public class FollowTargetGoal extends GoalSelector {
      * @param entityCreature the entity
      * @param pathDuration   the time between each path update (to check if the target moved)
      */
-    public FollowTargetGoal(@NotNull EntityCreature entityCreature, @NotNull Duration pathDuration) {
+    public FollowTargetGoal(EntityCreature entityCreature, Duration pathDuration) {
         super(entityCreature);
         this.pathDuration = pathDuration;
     }

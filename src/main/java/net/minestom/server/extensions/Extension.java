@@ -68,11 +68,11 @@ public abstract class Extension {
         return getExtensionClassLoader().getLogger();
     }
 
-    public @NotNull EventNode<Event> getEventNode() {
+    public EventNode<Event> getEventNode() {
         return getExtensionClassLoader().getEventNode();
     }
 
-    public @NotNull Path getDataDirectory() {
+    public Path getDataDirectory() {
         return getOrigin().getDataDirectory();
     }
 
@@ -87,7 +87,7 @@ public abstract class Extension {
      * @param fileName The file to read
      * @return The file contents, or null if there was an issue reading the file.
      */
-    public @Nullable InputStream getResource(@NotNull String fileName) {
+    public @Nullable InputStream getResource(String fileName) {
         return getResource(Paths.get(fileName));
     }
 
@@ -102,7 +102,7 @@ public abstract class Extension {
      * @param target The file to read
      * @return The file contents, or null if there was an issue reading the file.
      */
-    public @Nullable InputStream getResource(@NotNull Path target) {
+    public @Nullable InputStream getResource(Path target) {
         final Path targetFile = getDataDirectory().resolve(target);
         try {
             // Copy from jar if the file does not exist in the extension data directory.
@@ -125,7 +125,7 @@ public abstract class Extension {
      * @param fileName The file to read
      * @return The file contents, or null if there was an issue reading the file.
      */
-    public @Nullable InputStream getPackagedResource(@NotNull String fileName) {
+    public @Nullable InputStream getPackagedResource(String fileName) {
         try {
             final URL url = getOrigin().getClassLoader().getResource(fileName);
             if (url == null) {
@@ -148,7 +148,7 @@ public abstract class Extension {
      * @param target The file to read
      * @return The file contents, or null if there was an issue reading the file.
      */
-    public @Nullable InputStream getPackagedResource(@NotNull Path target) {
+    public @Nullable InputStream getPackagedResource(Path target) {
         return getPackagedResource(target.toString().replace('\\', '/'));
     }
 
@@ -158,7 +158,7 @@ public abstract class Extension {
      * @param fileName The resource to save
      * @return True if the resource was saved successfully, null otherwise
      */
-    public boolean savePackagedResource(@NotNull String fileName) {
+    public boolean savePackagedResource(String fileName) {
         return savePackagedResource(Paths.get(fileName));
     }
 
@@ -168,7 +168,7 @@ public abstract class Extension {
      * @param target The resource to save
      * @return True if the resource was saved successfully, null otherwise
      */
-    public boolean savePackagedResource(@NotNull Path target) {
+    public boolean savePackagedResource(Path target) {
         final Path targetFile = getDataDirectory().resolve(target);
         try (InputStream is = getPackagedResource(target)) {
             if (is == null) {

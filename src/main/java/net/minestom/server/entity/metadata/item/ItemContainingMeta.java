@@ -13,7 +13,7 @@ class ItemContainingMeta extends EntityMeta {
 
     private final ItemStack defaultItem;
 
-    protected ItemContainingMeta(@NotNull Entity entity, @NotNull Metadata metadata, @NotNull Material defaultItemMaterial) {
+    protected ItemContainingMeta(Entity entity, Metadata metadata, Material defaultItemMaterial) {
         super(entity, metadata);
         this.defaultItem = ItemStack.of(defaultItemMaterial);
     }
@@ -23,7 +23,7 @@ class ItemContainingMeta extends EntityMeta {
         return super.metadata.getIndex(OFFSET, this.defaultItem);
     }
 
-    public void setItem(@NotNull ItemStack item) {
+    public void setItem(ItemStack item) {
         super.metadata.setIndex(OFFSET, Metadata.Slot(item));
     }
 

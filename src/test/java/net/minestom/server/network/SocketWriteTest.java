@@ -18,7 +18,7 @@ public class SocketWriteTest {
 
     record IntPacket(int value) implements ServerPacket {
         @Override
-        public void write(@NotNull NetworkBuffer writer) {
+        public void write(NetworkBuffer writer) {
             writer.write(INT, value);
         }
 
@@ -30,7 +30,7 @@ public class SocketWriteTest {
 
     record CompressiblePacket(String value) implements ServerPacket {
         @Override
-        public void write(@NotNull NetworkBuffer writer) {
+        public void write(NetworkBuffer writer) {
             writer.write(STRING, value);
         }
 

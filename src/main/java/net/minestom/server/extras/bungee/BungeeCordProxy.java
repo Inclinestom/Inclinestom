@@ -61,7 +61,7 @@ public final class BungeeCordProxy {
      * @param token The token to test
      * @return Whether the token is a valid BungeeGuard token
      */
-    public static boolean isValidBungeeGuardToken(@NotNull String token) {
+    public static boolean isValidBungeeGuardToken(String token) {
         return isBungeeGuardEnabled() && bungeeGuardTokens.contains(token);
     }
 

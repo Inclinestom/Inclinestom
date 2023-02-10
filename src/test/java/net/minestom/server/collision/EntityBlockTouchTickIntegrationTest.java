@@ -28,12 +28,12 @@ public class EntityBlockTouchTickIntegrationTest {
         Set<Point> positions = new HashSet<>();
         var handler = new BlockHandler() {
             @Override
-            public void onTouch(@NotNull Touch touch) {
+            public void onTouch(Touch touch) {
                 assertTrue(positions.add(touch.getBlockPosition()));
             }
 
             @Override
-            public @NotNull NamespaceID getNamespaceId() {
+            public NamespaceID getNamespaceId() {
                 return NamespaceID.from("minestom:test");
             }
         };
@@ -67,12 +67,12 @@ public class EntityBlockTouchTickIntegrationTest {
         Set<Point> positions = new HashSet<>();
         var handler = new BlockHandler() {
             @Override
-            public void onTouch(@NotNull Touch touch) {
+            public void onTouch(Touch touch) {
                 assertTrue(positions.add(touch.getBlockPosition()));
             }
 
             @Override
-            public @NotNull NamespaceID getNamespaceId() {
+            public NamespaceID getNamespaceId() {
                 return NamespaceID.from("minestom:test");
             }
         };
@@ -107,12 +107,12 @@ public class EntityBlockTouchTickIntegrationTest {
         Set<Point> positions = new HashSet<>();
         var handler = new BlockHandler() {
             @Override
-            public void onTouch(@NotNull Touch touch) {
+            public void onTouch(Touch touch) {
                 assertTrue(positions.add(touch.getBlockPosition()));
             }
 
             @Override
-            public @NotNull NamespaceID getNamespaceId() {
+            public NamespaceID getNamespaceId() {
                 return NamespaceID.from("minestom:test");
             }
         };
@@ -155,12 +155,12 @@ public class EntityBlockTouchTickIntegrationTest {
         Set<Point> positions = new HashSet<>();
         var handler = new BlockHandler() {
             @Override
-            public void onTouch(@NotNull Touch touch) {
+            public void onTouch(Touch touch) {
                 assertTrue(positions.add(touch.getBlockPosition()));
             }
 
             @Override
-            public @NotNull NamespaceID getNamespaceId() {
+            public NamespaceID getNamespaceId() {
                 return NamespaceID.from("minestom:test");
             }
         };

@@ -7,12 +7,12 @@ import org.jetbrains.annotations.NotNull;
 import static net.minestom.server.network.NetworkBuffer.VAR_INT;
 
 public record ClientTeleportConfirmPacket(int teleportId) implements ClientPacket {
-    public ClientTeleportConfirmPacket(@NotNull NetworkBuffer reader) {
+    public ClientTeleportConfirmPacket(NetworkBuffer reader) {
         this(reader.read(VAR_INT));
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(VAR_INT, teleportId);
     }
 }

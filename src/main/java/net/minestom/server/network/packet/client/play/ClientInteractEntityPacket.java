@@ -8,8 +8,8 @@ import org.jetbrains.annotations.NotNull;
 
 import static net.minestom.server.network.NetworkBuffer.*;
 
-public record ClientInteractEntityPacket(int targetId, @NotNull Type type, boolean sneaking) implements ClientPacket {
-    public ClientInteractEntityPacket(@NotNull NetworkBuffer reader) {
+public record ClientInteractEntityPacket(int targetId, Type type, boolean sneaking) implements ClientPacket {
+    public ClientInteractEntityPacket(NetworkBuffer reader) {
         this(reader.read(VAR_INT), switch (reader.read(VAR_INT)) {
             case 0 -> new Interact(reader);
             case 1 -> new Attack();
@@ -19,7 +19,7 @@ public record ClientInteractEntityPacket(int targetId, @NotNull Type type, boole
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(VAR_INT, targetId);
         writer.write(VAR_INT, type.id());
         writer.write(type);
@@ -31,13 +31,13 @@ public record ClientInteractEntityPacket(int targetId, @NotNull Type type, boole
         int id();
     }
 
-    public record Interact(Player.@NotNull Hand hand) implements Type {
-        public Interact(@NotNull NetworkBuffer reader) {
+    public record Interact(Player.Hand hand) implements Type {
+        public Interact(NetworkBuffer reader) {
             this(reader.readEnum(Player.Hand.class));
         }
 
         @Override
-        public void write(@NotNull NetworkBuffer writer) {
+        public void write(NetworkBuffer writer) {
             writer.writeEnum(Player.Hand.class, hand);
         }
 
@@ -49,7 +49,7 @@ public record ClientInteractEntityPacket(int targetId, @NotNull Type type, boole
 
     public record Attack() implements Type {
         @Override
-        public void write(@NotNull NetworkBuffer writer) {
+        public void write(NetworkBuffer writer) {
             // Empty
         }
 
@@ -60,14 +60,14 @@ public record ClientInteractEntityPacket(int targetId, @NotNull Type type, boole
     }
 
     public record InteractAt(float targetX, float targetY, float targetZ,
-                             Player.@NotNull Hand hand) implements Type {
-        public InteractAt(@NotNull NetworkBuffer reader) {
+                             Player.Hand hand) implements Type {
+        public InteractAt(NetworkBuffer reader) {
             this(reader.read(FLOAT), reader.read(FLOAT), reader.read(FLOAT),
                     reader.readEnum(Player.Hand.class));
         }
 
         @Override
-        public void write(@NotNull NetworkBuffer writer) {
+        public void write(NetworkBuffer writer) {
             writer.write(FLOAT, targetX);
             writer.write(FLOAT, targetY);
             writer.write(FLOAT, targetZ);

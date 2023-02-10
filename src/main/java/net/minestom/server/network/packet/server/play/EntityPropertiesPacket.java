@@ -19,7 +19,7 @@ public record EntityPropertiesPacket(int entityId, List<AttributeInstance> prope
         properties = List.copyOf(properties);
     }
 
-    public EntityPropertiesPacket(@NotNull NetworkBuffer reader) {
+    public EntityPropertiesPacket(NetworkBuffer reader) {
         this(reader.read(VAR_INT), reader.readCollection(r -> {
             final Attribute attribute = Attribute.fromKey(reader.read(STRING));
             final double value = reader.read(DOUBLE);
@@ -34,7 +34,7 @@ public record EntityPropertiesPacket(int entityId, List<AttributeInstance> prope
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(VAR_INT, entityId);
         writer.write(VAR_INT, properties.size());
         for (AttributeInstance instance : properties) {

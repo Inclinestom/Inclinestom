@@ -13,11 +13,11 @@ public class BeaconInventory extends Inventory {
     private PotionEffect firstPotionEffect;
     private PotionEffect secondPotionEffect;
 
-    public BeaconInventory(@NotNull Component title) {
+    public BeaconInventory(Component title) {
         super(InventoryType.BEACON, title);
     }
 
-    public BeaconInventory(@NotNull String title) {
+    public BeaconInventory(String title) {
         super(InventoryType.BEACON, title);
     }
 

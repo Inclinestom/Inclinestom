@@ -23,7 +23,7 @@ public interface Viewable {
      * @param player the viewer to add
      * @return true if the player has been added, false otherwise (could be because he is already a viewer)
      */
-    boolean addViewer(@NotNull Player player);
+    boolean addViewer(Player player);
 
     /**
      * Removes a viewer.
@@ -31,14 +31,14 @@ public interface Viewable {
      * @param player the viewer to remove
      * @return true if the player has been removed, false otherwise (could be because he was not a viewer)
      */
-    boolean removeViewer(@NotNull Player player);
+    boolean removeViewer(Player player);
 
     /**
      * Gets all the viewers of this viewable element.
      *
      * @return A Set containing all the element's viewers
      */
-    @NotNull Set<@NotNull Player> getViewers();
+    Set<Player> getViewers();
 
     /**
      * Gets if a player is seeing this viewable object.
@@ -46,7 +46,7 @@ public interface Viewable {
      * @param player the player to check
      * @return true if {@code player} is a viewer, false otherwise
      */
-    default boolean isViewer(@NotNull Player player) {
+    default boolean isViewer(Player player) {
         return getViewers().contains(player);
     }
 
@@ -58,7 +58,7 @@ public interface Viewable {
      *
      * @param packet the packet to send to all viewers
      */
-    default void sendPacketToViewers(@NotNull SendablePacket packet) {
+    default void sendPacketToViewers(SendablePacket packet) {
         if (packet instanceof ServerPacket serverPacket) {
             PacketUtils.sendGroupedPacket(getViewers(), serverPacket);
         } else {
@@ -66,11 +66,11 @@ public interface Viewable {
         }
     }
 
-    default void sendPacketsToViewers(@NotNull Collection<SendablePacket> packets) {
+    default void sendPacketsToViewers(Collection<SendablePacket> packets) {
         packets.forEach(this::sendPacketToViewers);
     }
 
-    default void sendPacketsToViewers(@NotNull SendablePacket... packets) {
+    default void sendPacketsToViewers(SendablePacket... packets) {
         sendPacketsToViewers(List.of(packets));
     }
 
@@ -81,7 +81,7 @@ public interface Viewable {
      *
      * @param packet the packet to send
      */
-    default void sendPacketToViewersAndSelf(@NotNull SendablePacket packet) {
+    default void sendPacketToViewersAndSelf(SendablePacket packet) {
         sendPacketToViewers(packet);
     }
 
@@ -90,7 +90,7 @@ public interface Viewable {
      *
      * @return the audience
      */
-    default @NotNull Audience getViewersAsAudience() {
+    default Audience getViewersAsAudience() {
         return PacketGroupingAudience.of(this.getViewers());
     }
 
@@ -100,7 +100,7 @@ public interface Viewable {
      *
      * @return the audiences
      */
-    default @NotNull Iterable<? extends Audience> getViewersAsAudiences() {
+    default Iterable<? extends Audience> getViewersAsAudiences() {
         return this.getViewers();
     }
 }

@@ -17,7 +17,7 @@ public class AbstractHorseMeta extends AnimalMeta {
     private final static byte REARING_BIT = 0x20;
     private final static byte MOUTH_OPEN_BIT = 0x40;
 
-    protected AbstractHorseMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
+    protected AbstractHorseMeta(Entity entity, Metadata metadata) {
         super(entity, metadata);
     }
 

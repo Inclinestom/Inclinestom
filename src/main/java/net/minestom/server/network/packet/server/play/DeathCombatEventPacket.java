@@ -14,13 +14,13 @@ import java.util.function.UnaryOperator;
 import static net.minestom.server.network.NetworkBuffer.*;
 
 public record DeathCombatEventPacket(int playerId, int entityId,
-                                     @NotNull Component message) implements ComponentHoldingServerPacket {
-    public DeathCombatEventPacket(@NotNull NetworkBuffer reader) {
+                                     Component message) implements ComponentHoldingServerPacket {
+    public DeathCombatEventPacket(NetworkBuffer reader) {
         this(reader.read(VAR_INT), reader.read(INT), reader.read(COMPONENT));
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(VAR_INT, playerId);
         writer.write(INT, entityId);
         writer.write(COMPONENT, message);
@@ -32,12 +32,12 @@ public record DeathCombatEventPacket(int playerId, int entityId,
     }
 
     @Override
-    public @NotNull Collection<Component> components() {
+    public Collection<Component> components() {
         return List.of(this.message);
     }
 
     @Override
-    public @NotNull ServerPacket copyWithOperator(@NotNull UnaryOperator<Component> operator) {
+    public ServerPacket copyWithOperator(UnaryOperator<Component> operator) {
         return new DeathCombatEventPacket(this.playerId, this.entityId, operator.apply(this.message));
     }
 }

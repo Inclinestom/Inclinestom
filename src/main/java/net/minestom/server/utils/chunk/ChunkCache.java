@@ -28,7 +28,7 @@ public final class ChunkCache implements Block.Getter {
     }
 
     @Override
-    public @UnknownNullability Block getBlock(int x, int y, int z, @NotNull Condition condition) {
+    public @UnknownNullability Block getBlock(int x, int y, int z, Condition condition) {
         Chunk chunk = this.chunk;
         final int chunkX = getChunkCoordinate(x);
         final int chunkZ = getChunkCoordinate(z);

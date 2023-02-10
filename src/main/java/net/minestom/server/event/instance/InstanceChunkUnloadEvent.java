@@ -13,13 +13,13 @@ public class InstanceChunkUnloadEvent implements InstanceEvent {
     private final Instance instance;
     private final Chunk chunk;
 
-    public InstanceChunkUnloadEvent(@NotNull Instance instance, @NotNull Chunk chunk) {
+    public InstanceChunkUnloadEvent(Instance instance, Chunk chunk) {
         this.instance = instance;
         this.chunk = chunk;
     }
 
     @Override
-    public @NotNull Instance getInstance() {
+    public Instance getInstance() {
         return instance;
     }
 
@@ -46,7 +46,7 @@ public class InstanceChunkUnloadEvent implements InstanceEvent {
      *
      * @return the chunk.
      */
-    public @NotNull Chunk getChunk() {
+    public Chunk getChunk() {
         return chunk;
     }
 }

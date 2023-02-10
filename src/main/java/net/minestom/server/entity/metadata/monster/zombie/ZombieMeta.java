@@ -10,7 +10,7 @@ public class ZombieMeta extends MonsterMeta {
     public static final byte OFFSET = MonsterMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 3;
 
-    public ZombieMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
+    public ZombieMeta(Entity entity, Metadata metadata) {
         super(entity, metadata);
     }
 

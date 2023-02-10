@@ -19,19 +19,19 @@ import java.util.stream.Collectors;
 import static net.minestom.server.network.NetworkBuffer.*;
 
 public record EntityEquipmentPacket(int entityId,
-                                    @NotNull Map<EquipmentSlot, ItemStack> equipments) implements ComponentHoldingServerPacket {
+                                    Map<EquipmentSlot, ItemStack> equipments) implements ComponentHoldingServerPacket {
     public EntityEquipmentPacket {
         equipments = Map.copyOf(equipments);
         if (equipments.isEmpty())
             throw new IllegalArgumentException("Equipments cannot be empty");
     }
 
-    public EntityEquipmentPacket(@NotNull NetworkBuffer reader) {
+    public EntityEquipmentPacket(NetworkBuffer reader) {
         this(reader.read(VAR_INT), readEquipments(reader));
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(VAR_INT, entityId);
         int index = 0;
         for (var entry : equipments.entrySet()) {
@@ -49,7 +49,7 @@ public record EntityEquipmentPacket(int entityId,
     }
 
     @Override
-    public @NotNull Collection<Component> components() {
+    public Collection<Component> components() {
         return this.equipments.values()
                 .stream()
                 .map(ItemStack::getDisplayName)
@@ -58,14 +58,14 @@ public record EntityEquipmentPacket(int entityId,
     }
 
     @Override
-    public @NotNull ServerPacket copyWithOperator(@NotNull UnaryOperator<Component> operator) {
+    public ServerPacket copyWithOperator(UnaryOperator<Component> operator) {
         final var map = new EnumMap<EquipmentSlot, ItemStack>(EquipmentSlot.class);
         this.equipments.forEach((key, value) -> map.put(key, value.withDisplayName(operator)));
 
         return new EntityEquipmentPacket(this.entityId, map);
     }
 
-    private static Map<EquipmentSlot, ItemStack> readEquipments(@NotNull NetworkBuffer reader) {
+    private static Map<EquipmentSlot, ItemStack> readEquipments(NetworkBuffer reader) {
         Map<EquipmentSlot, ItemStack> equipments = new EnumMap<>(EquipmentSlot.class);
         byte slot;
         do {

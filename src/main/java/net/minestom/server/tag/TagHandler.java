@@ -21,7 +21,7 @@ public interface TagHandler extends TagReadable, TagWritable {
      *
      * @return a copy of this handler
      */
-    @NotNull TagReadable readableCopy();
+    TagReadable readableCopy();
 
     /**
      * Creates a copy of this handler.
@@ -31,7 +31,7 @@ public interface TagHandler extends TagReadable, TagWritable {
      *
      * @return a copy of this handler
      */
-    @NotNull TagHandler copy();
+    TagHandler copy();
 
     /**
      * Updates the content of this handler.
@@ -40,29 +40,29 @@ public interface TagHandler extends TagReadable, TagWritable {
      *
      * @param compound the new content of this handler
      */
-    void updateContent(@NotNull NBTCompoundLike compound);
+    void updateContent(NBTCompoundLike compound);
 
     /**
      * Converts the content of this handler into a {@link NBTCompound}.
      *
      * @return a nbt compound representation of this handler
      */
-    @NotNull NBTCompound asCompound();
+    NBTCompound asCompound();
 
     @ApiStatus.Experimental
-    <T> void updateTag(@NotNull Tag<T> tag,
-                       @NotNull UnaryOperator<@UnknownNullability T> value);
+    <T> void updateTag(Tag<T> tag,
+                       UnaryOperator<@UnknownNullability T> value);
 
     @ApiStatus.Experimental
-    <T> @UnknownNullability T updateAndGetTag(@NotNull Tag<T> tag,
-                                              @NotNull UnaryOperator<@UnknownNullability T> value);
+    <T> @UnknownNullability T updateAndGetTag(Tag<T> tag,
+                                              UnaryOperator<@UnknownNullability T> value);
 
     @ApiStatus.Experimental
-    <T> @UnknownNullability T getAndUpdateTag(@NotNull Tag<T> tag,
-                                              @NotNull UnaryOperator<@UnknownNullability T> value);
+    <T> @UnknownNullability T getAndUpdateTag(Tag<T> tag,
+                                              UnaryOperator<@UnknownNullability T> value);
 
     @ApiStatus.Experimental
-    static @NotNull TagHandler newHandler() {
+    static TagHandler newHandler() {
         return new TagHandlerImpl();
     }
 
@@ -72,7 +72,7 @@ public interface TagHandler extends TagReadable, TagWritable {
      * @param compound the compound to read tags from
      * @return a new tag handler with the content of the given compound
      */
-    static @NotNull TagHandler fromCompound(@NotNull NBTCompoundLike compound) {
+    static TagHandler fromCompound(NBTCompoundLike compound) {
         return TagHandlerImpl.fromCompound(compound);
     }
 }

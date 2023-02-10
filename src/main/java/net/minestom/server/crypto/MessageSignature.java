@@ -5,13 +5,13 @@ import org.jetbrains.annotations.NotNull;
 
 import static net.minestom.server.network.NetworkBuffer.BYTE_ARRAY;
 
-public record MessageSignature(byte @NotNull [] signature) implements NetworkBuffer.Writer {
-    public MessageSignature(@NotNull NetworkBuffer reader) {
+public record MessageSignature(byte [] signature) implements NetworkBuffer.Writer {
+    public MessageSignature(NetworkBuffer reader) {
         this(reader.read(BYTE_ARRAY));
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(BYTE_ARRAY, signature);
     }
 }

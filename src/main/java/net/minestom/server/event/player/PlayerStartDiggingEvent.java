@@ -26,8 +26,8 @@ public class PlayerStartDiggingEvent implements PlayerInstanceEvent, BlockEvent,
 
     private boolean cancelled;
 
-    public PlayerStartDiggingEvent(@NotNull Player player, @NotNull Block block, @NotNull Point blockPosition,
-                                   @NotNull BlockFace blockFace) {
+    public PlayerStartDiggingEvent(Player player, Block block, Point blockPosition,
+                                   BlockFace blockFace) {
         this.player = player;
         this.block = block;
         this.blockPosition = blockPosition;
@@ -40,7 +40,7 @@ public class PlayerStartDiggingEvent implements PlayerInstanceEvent, BlockEvent,
      * @return the block
      */
     @Override
-    public @NotNull Block getBlock() {
+    public Block getBlock() {
         return block;
     }
 
@@ -49,7 +49,7 @@ public class PlayerStartDiggingEvent implements PlayerInstanceEvent, BlockEvent,
      *
      * @return the block position
      */
-    public @NotNull Point getBlockPosition() {
+    public Point getBlockPosition() {
         return blockPosition;
     }
 
@@ -58,7 +58,7 @@ public class PlayerStartDiggingEvent implements PlayerInstanceEvent, BlockEvent,
      *
      * @return the block face
      */
-    public @NotNull BlockFace getBlockFace() {
+    public BlockFace getBlockFace() {
         return blockFace;
     }
 
@@ -73,7 +73,7 @@ public class PlayerStartDiggingEvent implements PlayerInstanceEvent, BlockEvent,
     }
 
     @Override
-    public @NotNull Player getPlayer() {
+    public Player getPlayer() {
         return player;
     }
 }

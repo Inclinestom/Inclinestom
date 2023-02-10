@@ -16,7 +16,7 @@ public class PaintingMeta extends EntityMeta {
     private Motive motive = Motive.KEBAB;
     private Direction direction = Direction.SOUTH;
 
-    public PaintingMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
+    public PaintingMeta(Entity entity, Metadata metadata) {
         super(entity, metadata);
     }
 
@@ -31,7 +31,7 @@ public class PaintingMeta extends EntityMeta {
      *
      * @param motive motive of a painting.
      */
-    public void setMotive(@NotNull Motive motive) {
+    public void setMotive(Motive motive) {
         this.motive = motive;
     }
 
@@ -46,7 +46,7 @@ public class PaintingMeta extends EntityMeta {
      *
      * @param direction direction of a painting.
      */
-    public void setDirection(@NotNull Direction direction) {
+    public void setDirection(Direction direction) {
         Check.argCondition(direction == Direction.UP || direction == Direction.DOWN, "Painting can't look up or down!");
         this.direction = direction;
     }

@@ -38,16 +38,16 @@ public final class ThreadDispatcher<P> {
         this.threads.forEach(Thread::start);
     }
 
-    public static <P> @NotNull ThreadDispatcher<P> of(@NotNull ThreadProvider<P> provider, int threadCount) {
+    public static <P> ThreadDispatcher<P> of(ThreadProvider<P> provider, int threadCount) {
         return new ThreadDispatcher<>(provider, threadCount);
     }
 
-    public static <P> @NotNull ThreadDispatcher<P> singleThread() {
+    public static <P> ThreadDispatcher<P> singleThread() {
         return of(ThreadProvider.counter(), 1);
     }
 
     @Unmodifiable
-    public @NotNull List<@NotNull TickThread> threads() {
+    public List<TickThread> threads() {
         return threads;
     }
 
@@ -152,7 +152,7 @@ public final class ThreadDispatcher<P> {
         return threads.get(index);
     }
 
-    private void signalUpdate(@NotNull DispatchUpdate<P> update) {
+    private void signalUpdate(DispatchUpdate<P> update) {
         this.updates.relaxedOffer(update);
     }
 
@@ -214,11 +214,11 @@ public final class ThreadDispatcher<P> {
             this.thread = thread;
         }
 
-        public @NotNull TickThread thread() {
+        public TickThread thread() {
             return thread;
         }
 
-        public @NotNull List<Tickable> elements() {
+        public List<Tickable> elements() {
             return elements;
         }
     }
@@ -227,16 +227,16 @@ public final class ThreadDispatcher<P> {
     sealed interface DispatchUpdate<P> permits
             DispatchUpdate.PartitionLoad, DispatchUpdate.PartitionUnload,
             DispatchUpdate.ElementUpdate, DispatchUpdate.ElementRemove {
-        record PartitionLoad<P>(@NotNull P partition) implements DispatchUpdate<P> {
+        record PartitionLoad<P>(P partition) implements DispatchUpdate<P> {
         }
 
-        record PartitionUnload<P>(@NotNull P partition) implements DispatchUpdate<P> {
+        record PartitionUnload<P>(P partition) implements DispatchUpdate<P> {
         }
 
-        record ElementUpdate<P>(@NotNull Tickable tickable, P partition) implements DispatchUpdate<P> {
+        record ElementUpdate<P>(Tickable tickable, P partition) implements DispatchUpdate<P> {
         }
 
-        record ElementRemove<P>(@NotNull Tickable tickable) implements DispatchUpdate<P> {
+        record ElementRemove<P>(Tickable tickable) implements DispatchUpdate<P> {
         }
     }
 }

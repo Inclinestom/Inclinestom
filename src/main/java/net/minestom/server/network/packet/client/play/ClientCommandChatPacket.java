@@ -8,23 +8,23 @@ import org.jetbrains.annotations.NotNull;
 
 import static net.minestom.server.network.NetworkBuffer.*;
 
-public record ClientCommandChatPacket(@NotNull String message, long timestamp,
-                                      long salt, @NotNull ArgumentSignatures signatures,
+public record ClientCommandChatPacket(String message, long timestamp,
+                                      long salt, ArgumentSignatures signatures,
                                       boolean signedPreview,
-                                      LastSeenMessages.@NotNull Update lastSeenMessages) implements ClientPacket {
+                                      LastSeenMessages.Update lastSeenMessages) implements ClientPacket {
     public ClientCommandChatPacket {
         if (message.length() > 256) {
             throw new IllegalArgumentException("Message length cannot be greater than 256");
         }
     }
 
-    public ClientCommandChatPacket(@NotNull NetworkBuffer reader) {
+    public ClientCommandChatPacket(NetworkBuffer reader) {
         this(reader.read(STRING), reader.read(LONG),
                 reader.read(LONG), new ArgumentSignatures(reader), reader.read(BOOLEAN), new LastSeenMessages.Update(reader));
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(STRING, message);
         writer.write(LONG, timestamp);
         writer.write(LONG, salt);

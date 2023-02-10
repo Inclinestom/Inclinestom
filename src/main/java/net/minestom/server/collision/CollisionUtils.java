@@ -27,7 +27,7 @@ public final class CollisionUtils {
      * @param entity the entity to move
      * @return the result of physics simulation
      */
-    public static PhysicsResult handlePhysics(@NotNull Entity entity, @NotNull Vec entityVelocity,
+    public static PhysicsResult handlePhysics(Entity entity, Vec entityVelocity,
                                               @Nullable PhysicsResult lastPhysicsResult) {
         final Instance instance = entity.getInstance();
         assert instance != null;
@@ -46,9 +46,9 @@ public final class CollisionUtils {
      * @param boundingBox the bounding box to move
      * @return the result of physics simulation
      */
-    public static PhysicsResult handlePhysics(@NotNull Instance instance, @Nullable Chunk chunk,
-                                              @NotNull BoundingBox boundingBox,
-                                              @NotNull Pos position, @NotNull Vec velocity,
+    public static PhysicsResult handlePhysics(Instance instance, @Nullable Chunk chunk,
+                                              BoundingBox boundingBox,
+                                              Pos position, Vec velocity,
                                               @Nullable PhysicsResult lastPhysicsResult) {
         final Block.Getter getter = new ChunkCache(instance, chunk != null ? chunk : instance.getChunkAt(position), Block.STONE);
         return BlockCollision.handlePhysics(boundingBox,
@@ -67,9 +67,9 @@ public final class CollisionUtils {
      * @param shape    shape to check.
      * @return true is shape is reachable by the given line of sight; false otherwise.
      */
-    public static boolean isLineOfSightReachingShape(@NotNull Instance instance, @Nullable Chunk chunk,
-                                                     @NotNull Point start, @NotNull Point end,
-                                                     @NotNull Shape shape) {
+    public static boolean isLineOfSightReachingShape(Instance instance, @Nullable Chunk chunk,
+                                                     Point start, Point end,
+                                                     Shape shape) {
         final PhysicsResult result = handlePhysics(instance, chunk,
                 BoundingBox.ZERO,
                 Pos.fromPoint(start), Vec.fromPoint(end.sub(start)),
@@ -77,7 +77,7 @@ public final class CollisionUtils {
         return shape.intersectBox(end.sub(result.newPosition()).sub(Vec.EPSILON), BoundingBox.ZERO);
     }
 
-    public static PhysicsResult handlePhysics(@NotNull Entity entity, @NotNull Vec entityVelocity) {
+    public static PhysicsResult handlePhysics(Entity entity, Vec entityVelocity) {
         return handlePhysics(entity, entityVelocity, null);
     }
 
@@ -93,8 +93,8 @@ public final class CollisionUtils {
      * @param newPosition     the future target position
      * @return the position with the world border collision applied (can be {@code newPosition} if not changed)
      */
-    public static @NotNull Pos applyWorldBorder(@NotNull Instance instance,
-                                                @NotNull Pos currentPosition, @NotNull Pos newPosition) {
+    public static Pos applyWorldBorder(Instance instance,
+                                                Pos currentPosition, Pos newPosition) {
         final WorldBorder worldBorder = instance.getWorldBorder();
         final WorldBorder.CollisionAxis collisionAxis = worldBorder.getCollisionAxis(newPosition);
         return switch (collisionAxis) {

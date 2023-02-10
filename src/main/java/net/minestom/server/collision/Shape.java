@@ -13,7 +13,7 @@ public interface Shape {
      * @param boundingBox      Bounding box to check for intersections with
      * @return is an intersection found
      */
-    boolean intersectBox(@NotNull Point positionRelative, @NotNull BoundingBox boundingBox);
+    boolean intersectBox(Point positionRelative, BoundingBox boundingBox);
 
     /**
      * Checks if a moving bounding box will hit this shape.
@@ -25,20 +25,20 @@ public interface Shape {
      * @param finalResult  Stores final SweepResult
      * @return is an intersection found
      */
-    boolean intersectBoxSwept(@NotNull Point rayStart, @NotNull Point rayDirection,
-                              @NotNull Point shapePos, @NotNull BoundingBox moving, @NotNull SweepResult finalResult);
+    boolean intersectBoxSwept(Point rayStart, Point rayDirection,
+                              Point shapePos, BoundingBox moving, SweepResult finalResult);
 
     /**
      * Relative Start
      *
      * @return Start of shape
      */
-    @NotNull Point relativeStart();
+    Point relativeStart();
 
     /**
      * Relative End
      *
      * @return End of shape
      */
-    @NotNull Point relativeEnd();
+    Point relativeEnd();
 }

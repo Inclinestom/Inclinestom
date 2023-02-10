@@ -12,7 +12,7 @@ public class BeeMeta extends AnimalMeta {
     private final static byte HAS_STUNG_BIT = 0x04;
     private final static byte HAS_NECTAR_BIT = 0x08;
 
-    public BeeMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
+    public BeeMeta(Entity entity, Metadata metadata) {
         super(entity, metadata);
     }
 

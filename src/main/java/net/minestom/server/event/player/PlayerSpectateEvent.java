@@ -23,7 +23,7 @@ public class PlayerSpectateEvent implements PlayerEvent {
     }
 
     @Override
-    public @NotNull Player getPlayer() {
+    public Player getPlayer() {
         return player;
     }
 }

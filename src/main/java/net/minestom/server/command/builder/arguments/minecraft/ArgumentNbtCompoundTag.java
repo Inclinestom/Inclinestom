@@ -25,7 +25,7 @@ public class ArgumentNbtCompoundTag extends Argument<NBTCompound> {
 
     @NotNull
     @Override
-    public NBTCompound parse(@NotNull String input) throws ArgumentSyntaxException {
+    public NBTCompound parse(String input) throws ArgumentSyntaxException {
         try {
             NBT nbt = new SNBTParser(new StringReader(input)).parse();
 

@@ -8,13 +8,13 @@ import org.jetbrains.annotations.NotNull;
 import static net.minestom.server.network.NetworkBuffer.BLOCK_POSITION;
 import static net.minestom.server.network.NetworkBuffer.VAR_INT;
 
-public record ClientQueryBlockNbtPacket(int transactionId, @NotNull Point blockPosition) implements ClientPacket {
-    public ClientQueryBlockNbtPacket(@NotNull NetworkBuffer reader) {
+public record ClientQueryBlockNbtPacket(int transactionId, Point blockPosition) implements ClientPacket {
+    public ClientQueryBlockNbtPacket(NetworkBuffer reader) {
         this(reader.read(VAR_INT), reader.read(BLOCK_POSITION));
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(VAR_INT, transactionId);
         writer.write(BLOCK_POSITION, blockPosition);
     }

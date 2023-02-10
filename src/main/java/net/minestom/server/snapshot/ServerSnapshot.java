@@ -14,9 +14,9 @@ import java.util.Collection;
  */
 public sealed interface ServerSnapshot extends Snapshot
         permits SnapshotImpl.Server {
-    @NotNull Collection<@NotNull InstanceSnapshot> instances();
+    Collection<InstanceSnapshot> instances();
 
-    @NotNull Collection<EntitySnapshot> entities();
+    Collection<EntitySnapshot> entities();
 
     @UnknownNullability EntitySnapshot entity(int id);
 

@@ -15,7 +15,7 @@ import net.minestom.server.network.packet.server.play.ChunkDataPacket;
 import net.minestom.server.network.packet.server.play.UpdateLightPacket;
 import net.minestom.server.network.packet.server.play.data.ChunkData;
 import net.minestom.server.network.packet.server.play.data.LightData;
-import net.minestom.server.snapshot.ChunkSnapshot;
+import net.minestom.server.snapshot.SectionStorageSnapshot;
 import net.minestom.server.snapshot.SnapshotImpl;
 import net.minestom.server.snapshot.SnapshotUpdater;
 import net.minestom.server.utils.ArrayUtils;
@@ -23,7 +23,6 @@ import net.minestom.server.utils.MathUtils;
 import net.minestom.server.utils.ObjectPool;
 import net.minestom.server.utils.chunk.ChunkUtils;
 import net.minestom.server.world.biomes.Biome;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jglrxavpok.hephaistos.nbt.NBT;
 import org.jglrxavpok.hephaistos.nbt.NBTCompound;
@@ -49,7 +48,7 @@ public class DynamicChunk extends Chunk {
     final CachedPacket chunkCache = new CachedPacket(this::createChunkPacket);
     final CachedPacket lightCache = new CachedPacket(this::createLightPacket);
 
-    public DynamicChunk(@NotNull Instance instance, int chunkX, int chunkZ) {
+    public DynamicChunk(Instance instance, int chunkX, int chunkZ) {
         super(instance, chunkX, chunkZ, true);
         var sectionsTemp = new Section[maxSection - minSection];
         Arrays.setAll(sectionsTemp, value -> new Section());
@@ -57,7 +56,7 @@ public class DynamicChunk extends Chunk {
     }
 
     @Override
-    public void setBlock(int x, int y, int z, @NotNull Block block) {
+    public void setBlock(int x, int y, int z, Block block) {
         assertLock();
         this.lastChange = System.currentTimeMillis();
         this.chunkCache.invalidate();
@@ -89,7 +88,7 @@ public class DynamicChunk extends Chunk {
     }
 
     @Override
-    public void setBiome(int x, int y, int z, @NotNull Biome biome) {
+    public void setBiome(int x, int y, int z, Biome biome) {
         assertLock();
         this.chunkCache.invalidate();
         Section section = getSectionAt(y);
@@ -100,12 +99,12 @@ public class DynamicChunk extends Chunk {
     }
 
     @Override
-    public @NotNull List<Section> getSections() {
+    public List<Section> getSections() {
         return sections;
     }
 
     @Override
-    public @NotNull Section getSection(int section) {
+    public Section getSection(int section) {
         return sections.get(section - minSection);
     }
 
@@ -123,7 +122,7 @@ public class DynamicChunk extends Chunk {
     }
 
     @Override
-    public @Nullable Block getBlock(int x, int y, int z, @NotNull Condition condition) {
+    public @Nullable Block getBlock(int x, int y, int z, Condition condition) {
         assertLock();
         if (y < minSection * CHUNK_SECTION_SIZE || y >= maxSection * CHUNK_SECTION_SIZE)
             return Block.AIR; // Out of bounds
@@ -144,7 +143,7 @@ public class DynamicChunk extends Chunk {
     }
 
     @Override
-    public @NotNull Biome getBiome(int x, int y, int z) {
+    public Biome getBiome(int x, int y, int z) {
         assertLock();
         final Section section = getSectionAt(y);
         final int id = section.biomePalette()
@@ -158,7 +157,7 @@ public class DynamicChunk extends Chunk {
     }
 
     @Override
-    public void sendChunk(@NotNull Player player) {
+    public void sendChunk(Player player) {
         if (!isLoaded()) return;
         player.sendPacket(chunkCache);
     }
@@ -170,7 +169,7 @@ public class DynamicChunk extends Chunk {
     }
 
     @Override
-    public @NotNull Chunk copy(@NotNull Instance instance, int chunkX, int chunkZ) {
+    public Chunk copy(Instance instance, int chunkX, int chunkZ) {
         DynamicChunk dynamicChunk = new DynamicChunk(instance, chunkX, chunkZ);
         dynamicChunk.sections = sections.stream().map(Section::clone).toList();
         dynamicChunk.entries.putAll(entries);
@@ -183,7 +182,7 @@ public class DynamicChunk extends Chunk {
         this.entries.clear();
     }
 
-    private synchronized @NotNull ChunkDataPacket createChunkPacket() {
+    private synchronized ChunkDataPacket createChunkPacket() {
         final NBTCompound heightmapsNBT;
         // TODO: don't hardcode heightmaps
         // Heightmap
@@ -212,7 +211,7 @@ public class DynamicChunk extends Chunk {
                 createLightData());
     }
 
-    private synchronized @NotNull UpdateLightPacket createLightPacket() {
+    private synchronized UpdateLightPacket createLightPacket() {
         return new UpdateLightPacket(chunkX, chunkZ, createLightData());
     }
 
@@ -249,13 +248,13 @@ public class DynamicChunk extends Chunk {
     }
 
     @Override
-    public @NotNull ChunkSnapshot updateSnapshot(@NotNull SnapshotUpdater updater) {
+    public SectionStorageSnapshot updateSnapshot(SnapshotUpdater updater) {
         Section[] clonedSections = new Section[sections.size()];
         for (int i = 0; i < clonedSections.length; i++)
             clonedSections[i] = sections.get(i).clone();
         var entities = instance.getEntityTracker().chunkEntities(chunkX, chunkZ, EntityTracker.Target.ENTITIES);
         final int[] entityIds = ArrayUtils.mapToIntArray(entities, Entity::getEntityId);
-        return new SnapshotImpl.Chunk(minSection, chunkX, chunkZ,
+        return new SnapshotImpl.SectionStorage(minSection, chunkX, chunkZ,
                 clonedSections, entries.clone(), entityIds, updater.reference(instance),
                 tagHandler().readableCopy());
     }

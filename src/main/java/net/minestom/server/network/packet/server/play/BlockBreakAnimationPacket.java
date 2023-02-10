@@ -8,14 +8,14 @@ import org.jetbrains.annotations.NotNull;
 
 import static net.minestom.server.network.NetworkBuffer.*;
 
-public record BlockBreakAnimationPacket(int entityId, @NotNull Point blockPosition,
+public record BlockBreakAnimationPacket(int entityId, Point blockPosition,
                                         byte destroyStage) implements ServerPacket {
-    public BlockBreakAnimationPacket(@NotNull NetworkBuffer reader) {
+    public BlockBreakAnimationPacket(NetworkBuffer reader) {
         this(reader.read(VAR_INT), reader.read(BLOCK_POSITION), reader.read(BYTE));
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(VAR_INT, entityId);
         writer.write(BLOCK_POSITION, blockPosition);
         writer.write(BYTE, destroyStage);

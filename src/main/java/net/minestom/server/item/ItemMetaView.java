@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 public interface ItemMetaView<T extends ItemMetaView.Builder> extends TagReadable {
     @ApiStatus.Experimental
     non-sealed interface Builder extends ItemMeta.Builder {
-        default @NotNull ItemMeta build() {
+        default ItemMeta build() {
             return new ItemMetaImpl(tagHandler().copy());
         }
     }

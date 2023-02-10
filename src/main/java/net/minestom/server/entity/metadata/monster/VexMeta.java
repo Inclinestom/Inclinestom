@@ -10,7 +10,7 @@ public class VexMeta extends MonsterMeta {
 
     private final static byte ATTACKING_BIT = 0x01;
 
-    public VexMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
+    public VexMeta(Entity entity, Metadata metadata) {
         super(entity, metadata);
     }
 

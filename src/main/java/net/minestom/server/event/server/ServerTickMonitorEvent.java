@@ -7,11 +7,11 @@ import org.jetbrains.annotations.NotNull;
 public final class ServerTickMonitorEvent implements Event {
     private final TickMonitor tickMonitor;
 
-    public ServerTickMonitorEvent(@NotNull TickMonitor tickMonitor) {
+    public ServerTickMonitorEvent(TickMonitor tickMonitor) {
         this.tickMonitor = tickMonitor;
     }
 
-    public @NotNull TickMonitor getTickMonitor() {
+    public TickMonitor getTickMonitor() {
         return tickMonitor;
     }
 }

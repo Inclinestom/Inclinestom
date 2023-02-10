@@ -9,12 +9,12 @@ import org.jglrxavpok.hephaistos.nbt.NBTCompound;
 import static net.minestom.server.network.NetworkBuffer.*;
 
 public record NbtQueryResponsePacket(int transactionId, NBTCompound data) implements ServerPacket {
-    public NbtQueryResponsePacket(@NotNull NetworkBuffer reader) {
+    public NbtQueryResponsePacket(NetworkBuffer reader) {
         this(reader.read(VAR_INT), (NBTCompound) reader.read(NBT));
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(VAR_INT, transactionId);
         if (data != null) {
             writer.write(NBT, data);

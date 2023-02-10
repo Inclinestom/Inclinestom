@@ -8,12 +8,12 @@ import org.jetbrains.annotations.NotNull;
 import static net.minestom.server.network.NetworkBuffer.DOUBLE;
 
 public record WorldBorderSizePacket(double diameter) implements ServerPacket {
-    public WorldBorderSizePacket(@NotNull NetworkBuffer reader) {
+    public WorldBorderSizePacket(NetworkBuffer reader) {
         this(reader.read(DOUBLE));
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(DOUBLE, diameter);
     }
 

@@ -15,7 +15,7 @@ public class AdvancementTabEvent implements PlayerInstanceEvent {
     private final AdvancementAction action;
     private final String tabId;
 
-    public AdvancementTabEvent(@NotNull Player player, @NotNull AdvancementAction action, @NotNull String tabId) {
+    public AdvancementTabEvent(Player player, AdvancementAction action, String tabId) {
         this.player = player;
         this.action = action;
         this.tabId = tabId;
@@ -44,7 +44,7 @@ public class AdvancementTabEvent implements PlayerInstanceEvent {
     }
 
     @Override
-    public @NotNull Player getPlayer() {
+    public Player getPlayer() {
         return player;
     }
 }

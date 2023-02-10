@@ -8,12 +8,12 @@ import org.jetbrains.annotations.NotNull;
 import static net.minestom.server.network.NetworkBuffer.DOUBLE;
 
 public record WorldBorderCenterPacket(double x, double z) implements ServerPacket {
-    public WorldBorderCenterPacket(@NotNull NetworkBuffer reader) {
+    public WorldBorderCenterPacket(NetworkBuffer reader) {
         this(reader.read(DOUBLE), reader.read(DOUBLE));
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(DOUBLE, x);
         writer.write(DOUBLE, z);
     }

@@ -15,7 +15,7 @@ public record ClientUpdateStructureBlockPacket(Point location, Action action,
                                                Mirror mirror, Rotation rotation,
                                                String metadata, float integrity,
                                                long seed, byte flags) implements ClientPacket {
-    public ClientUpdateStructureBlockPacket(@NotNull NetworkBuffer reader) {
+    public ClientUpdateStructureBlockPacket(NetworkBuffer reader) {
         this(reader.read(BLOCK_POSITION), reader.readEnum(Action.class),
                 reader.readEnum(Mode.class), reader.read(STRING),
                 new Vec(reader.read(BYTE), reader.read(BYTE), reader.read(BYTE)), new Vec(reader.read(BYTE), reader.read(BYTE), reader.read(BYTE)),
@@ -33,7 +33,7 @@ public record ClientUpdateStructureBlockPacket(Point location, Action action,
     public static final byte SHOW_BOUNDING_BOX = 0x4;
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(BLOCK_POSITION, location);
         writer.writeEnum(Action.class, action);
         writer.writeEnum(Mode.class, mode);

@@ -113,12 +113,12 @@ public class ThreadDispatcherTest {
         final int threadCount = 10;
         ThreadDispatcher<Updater> dispatcher = ThreadDispatcher.of(new ThreadProvider<>() {
             @Override
-            public int findThread(@NotNull Updater partition) {
+            public int findThread(Updater partition) {
                 return partition.getValue();
             }
 
             @Override
-            public @NotNull RefreshType refreshType() {
+            public RefreshType refreshType() {
                 return RefreshType.ALWAYS;
             }
         }, threadCount);

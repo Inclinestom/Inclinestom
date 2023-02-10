@@ -31,7 +31,7 @@ public class WorldBorder {
     private int warningTime;
     private int warningBlocks;
 
-    protected WorldBorder(@NotNull Instance instance) {
+    protected WorldBorder(Instance instance) {
         this.instance = instance;
 
         this.oldDiameter = Double.MAX_VALUE;
@@ -162,7 +162,7 @@ public class WorldBorder {
      * @param point the point to check
      * @return the axis where the position collides with the world border
      */
-    public @NotNull CollisionAxis getCollisionAxis(@NotNull Point point) {
+    public CollisionAxis getCollisionAxis(Point point) {
         final double radius = getDiameter() / 2d;
         final boolean checkX = point.x() <= getCenterX() + radius && point.x() >= getCenterX() - radius;
         final boolean checkZ = point.z() <= getCenterZ() + radius && point.z() >= getCenterZ() - radius;
@@ -184,7 +184,7 @@ public class WorldBorder {
      * @param point the point to check
      * @return true if {@code position} is inside the world border, false otherwise
      */
-    public boolean isInside(@NotNull Point point) {
+    public boolean isInside(Point point) {
         return getCollisionAxis(point) == CollisionAxis.NONE;
     }
 
@@ -194,7 +194,7 @@ public class WorldBorder {
      * @param entity the entity to check
      * @return true if {@code entity} is inside the world border, false otherwise
      */
-    public boolean isInside(@NotNull Entity entity) {
+    public boolean isInside(Entity entity) {
         return isInside(entity.getPosition());
     }
 
@@ -228,7 +228,7 @@ public class WorldBorder {
      * @param player the player to send the packet to
      */
     @ApiStatus.Internal
-    public void init(@NotNull Player player) {
+    public void init(Player player) {
         player.sendPacket(new InitializeWorldBorderPacket(centerX, centerZ,
                 oldDiameter, newDiameter, speed, portalTeleportBoundary, warningTime, warningBlocks));
     }
@@ -250,7 +250,7 @@ public class WorldBorder {
         sendPacket(new WorldBorderCenterPacket(centerX, centerZ));
     }
 
-    private void sendPacket(@NotNull ServerPacket packet) {
+    private void sendPacket(ServerPacket packet) {
         PacketUtils.sendGroupedPacket(instance.getPlayers(), packet);
     }
 

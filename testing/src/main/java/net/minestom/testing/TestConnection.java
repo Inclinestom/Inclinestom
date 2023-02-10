@@ -9,11 +9,11 @@ import org.jetbrains.annotations.NotNull;
 import java.util.concurrent.CompletableFuture;
 
 public interface TestConnection {
-    @NotNull CompletableFuture<@NotNull Player> connect(@NotNull Instance instance, @NotNull Pos pos);
+    CompletableFuture<Player> connect(Instance instance, Pos pos);
 
-    <T extends ServerPacket> @NotNull Collector<T> trackIncoming(@NotNull Class<T> type);
+    <T extends ServerPacket> Collector<T> trackIncoming(Class<T> type);
 
-    default @NotNull Collector<ServerPacket> trackIncoming() {
+    default Collector<ServerPacket> trackIncoming() {
         return trackIncoming(ServerPacket.class);
     }
 }

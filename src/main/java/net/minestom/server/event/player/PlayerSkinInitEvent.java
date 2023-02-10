@@ -14,7 +14,7 @@ public class PlayerSkinInitEvent implements PlayerEvent {
     private final Player player;
     private PlayerSkin skin;
 
-    public PlayerSkinInitEvent(@NotNull Player player, @Nullable PlayerSkin currentSkin) {
+    public PlayerSkinInitEvent(Player player, @Nullable PlayerSkin currentSkin) {
         this.player = player;
         this.skin = currentSkin;
     }
@@ -39,7 +39,7 @@ public class PlayerSkinInitEvent implements PlayerEvent {
     }
 
     @Override
-    public @NotNull Player getPlayer() {
+    public Player getPlayer() {
         return player;
     }
 }

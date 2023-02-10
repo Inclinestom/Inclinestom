@@ -15,7 +15,7 @@ public class ArmorStandMeta extends LivingEntityMeta {
     private final static byte HAS_NO_BASE_PLATE_BIT = 0x08;
     private final static byte IS_MARKER_BIT = 0x10;
 
-    public ArmorStandMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
+    public ArmorStandMeta(Entity entity, Metadata metadata) {
         super(entity, metadata);
     }
 
@@ -56,7 +56,7 @@ public class ArmorStandMeta extends LivingEntityMeta {
         return super.metadata.getIndex(OFFSET + 1, Vec.ZERO);
     }
 
-    public void setHeadRotation(@NotNull Vec value) {
+    public void setHeadRotation(Vec value) {
         super.metadata.setIndex(OFFSET + 1, Metadata.Rotation(value));
     }
 
@@ -65,7 +65,7 @@ public class ArmorStandMeta extends LivingEntityMeta {
         return super.metadata.getIndex(OFFSET + 2, Vec.ZERO);
     }
 
-    public void setBodyRotation(@NotNull Vec value) {
+    public void setBodyRotation(Vec value) {
         super.metadata.setIndex(OFFSET + 2, Metadata.Rotation(value));
     }
 
@@ -74,7 +74,7 @@ public class ArmorStandMeta extends LivingEntityMeta {
         return super.metadata.getIndex(OFFSET + 3, new Vec(-10D, 0D, -10D));
     }
 
-    public void setLeftArmRotation(@NotNull Vec value) {
+    public void setLeftArmRotation(Vec value) {
         super.metadata.setIndex(OFFSET + 3, Metadata.Rotation(value));
     }
 
@@ -83,7 +83,7 @@ public class ArmorStandMeta extends LivingEntityMeta {
         return super.metadata.getIndex(OFFSET + 4, new Vec(-15D, 0D, 10D));
     }
 
-    public void setRightArmRotation(@NotNull Vec value) {
+    public void setRightArmRotation(Vec value) {
         super.metadata.setIndex(OFFSET + 4, Metadata.Rotation(value));
     }
 
@@ -92,7 +92,7 @@ public class ArmorStandMeta extends LivingEntityMeta {
         return super.metadata.getIndex(OFFSET + 5, new Vec(-1D, 0D, -1D));
     }
 
-    public void setLeftLegRotation(@NotNull Vec value) {
+    public void setLeftLegRotation(Vec value) {
         super.metadata.setIndex(OFFSET + 5, Metadata.Rotation(value));
     }
 
@@ -101,7 +101,7 @@ public class ArmorStandMeta extends LivingEntityMeta {
         return super.metadata.getIndex(OFFSET + 6, new Vec(1D, 0D, 1D));
     }
 
-    public void setRightLegRotation(@NotNull Vec value) {
+    public void setRightLegRotation(Vec value) {
         super.metadata.setIndex(OFFSET + 6, Metadata.Rotation(value));
     }
 

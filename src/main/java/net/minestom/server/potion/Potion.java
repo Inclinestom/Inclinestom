@@ -11,7 +11,7 @@ import java.util.Objects;
 import static net.minestom.server.network.NetworkBuffer.BYTE;
 import static net.minestom.server.network.NetworkBuffer.VAR_INT;
 
-public record Potion(@NotNull PotionEffect effect, byte amplifier,
+public record Potion(PotionEffect effect, byte amplifier,
                      int duration, byte flags) implements NetworkBuffer.Writer {
     /**
      * A flag indicating that this Potion is ambient (it came from a beacon).
@@ -40,11 +40,11 @@ public record Potion(@NotNull PotionEffect effect, byte amplifier,
      */
     public static final byte ICON_FLAG = 0x04;
 
-    public Potion(@NotNull PotionEffect effect, byte amplifier, int duration) {
+    public Potion(PotionEffect effect, byte amplifier, int duration) {
         this(effect, amplifier, duration, (byte) 0);
     }
 
-    public Potion(@NotNull NetworkBuffer reader) {
+    public Potion(NetworkBuffer reader) {
         this(Objects.requireNonNull(PotionEffect.fromId(reader.read(VAR_INT))), reader.read(BYTE),
                 reader.read(VAR_INT), reader.read(BYTE));
     }
@@ -95,7 +95,7 @@ public record Potion(@NotNull PotionEffect effect, byte amplifier,
      *
      * @param entity the entity to add the effect to
      */
-    public void sendAddPacket(@NotNull Entity entity) {
+    public void sendAddPacket(Entity entity) {
         entity.sendPacketToViewersAndSelf(new EntityEffectPacket(entity.getEntityId(), this, null));
     }
 
@@ -106,12 +106,12 @@ public record Potion(@NotNull PotionEffect effect, byte amplifier,
      *
      * @param entity the entity to remove the effect from
      */
-    public void sendRemovePacket(@NotNull Entity entity) {
+    public void sendRemovePacket(Entity entity) {
         entity.sendPacketToViewersAndSelf(new RemoveEntityEffectPacket(entity.getEntityId(), effect));
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(VAR_INT, effect.id());
         writer.write(BYTE, amplifier);
         writer.write(VAR_INT, duration);

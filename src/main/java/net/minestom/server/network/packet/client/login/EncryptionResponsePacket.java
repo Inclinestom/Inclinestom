@@ -34,12 +34,12 @@ public record EncryptionResponsePacket(byte[] sharedSecret,
                                        Either<byte[], SaltSignaturePair> nonceOrSignature) implements ClientPreplayPacket {
     private static final Gson GSON = new Gson();
 
-    public EncryptionResponsePacket(@NotNull NetworkBuffer reader) {
+    public EncryptionResponsePacket(NetworkBuffer reader) {
         this(reader.read(BYTE_ARRAY), reader.readEither(networkBuffer -> networkBuffer.read(BYTE_ARRAY), SaltSignaturePair::new));
     }
 
     @Override
-    public void process(@NotNull PlayerConnection connection) {
+    public void process(PlayerConnection connection) {
         // Encryption is only support for socket connection
         if (!(connection instanceof PlayerSocketConnection socketConnection)) return;
         AsyncUtils.runAsync(() -> {
@@ -109,7 +109,7 @@ public record EncryptionResponsePacket(byte[] sharedSecret,
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(BYTE_ARRAY, sharedSecret);
         writer.writeEither(nonceOrSignature, (networkBuffer, bytes) -> networkBuffer.write(BYTE_ARRAY, bytes),
                 InterfaceUtils.flipBiConsumer(SaltSignaturePair::write));

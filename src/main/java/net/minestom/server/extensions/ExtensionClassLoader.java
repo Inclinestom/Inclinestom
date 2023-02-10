@@ -29,11 +29,11 @@ public final class ExtensionClassLoader extends URLClassLoader {
     }
 
     @Override
-    public void addURL(@NotNull URL url) {
+    public void addURL(URL url) {
         super.addURL(url);
     }
 
-    public void addChild(@NotNull ExtensionClassLoader loader) {
+    public void addChild(ExtensionClassLoader loader) {
         children.add(loader);
     }
 
@@ -51,7 +51,7 @@ public final class ExtensionClassLoader extends URLClassLoader {
         }
     }
 
-    public InputStream getResourceAsStreamWithChildren(@NotNull String name) {
+    public InputStream getResourceAsStreamWithChildren(String name) {
         InputStream in = getResourceAsStream(name);
         if (in != null) return in;
 

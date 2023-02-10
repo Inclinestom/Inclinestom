@@ -9,12 +9,12 @@ import static net.minestom.server.network.NetworkBuffer.BYTE;
 import static net.minestom.server.network.NetworkBuffer.INT;
 
 public record EntityStatusPacket(int entityId, byte status) implements ServerPacket {
-    public EntityStatusPacket(@NotNull NetworkBuffer reader) {
+    public EntityStatusPacket(NetworkBuffer reader) {
         this(reader.read(INT), reader.read(BYTE));
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(INT, entityId);
         writer.write(BYTE, status);
     }

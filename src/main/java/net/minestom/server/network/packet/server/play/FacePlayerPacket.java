@@ -11,7 +11,7 @@ import static net.minestom.server.network.NetworkBuffer.*;
 
 public record FacePlayerPacket(FacePosition facePosition,
                                Point target, int entityId, FacePosition entityFacePosition) implements ServerPacket {
-    public FacePlayerPacket(@NotNull NetworkBuffer reader) {
+    public FacePlayerPacket(NetworkBuffer reader) {
         this(FacePosition.values()[reader.read(VAR_INT)],
                 new Vec(reader.read(DOUBLE), reader.read(DOUBLE), reader.read(DOUBLE)),
                 reader.read(BOOLEAN) ? reader.read(VAR_INT) : 0,
@@ -19,7 +19,7 @@ public record FacePlayerPacket(FacePosition facePosition,
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(VAR_INT, facePosition.ordinal());
         writer.write(DOUBLE, target.x());
         writer.write(DOUBLE, target.y());

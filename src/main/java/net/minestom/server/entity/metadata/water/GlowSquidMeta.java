@@ -8,7 +8,7 @@ public class GlowSquidMeta extends WaterAnimalMeta {
     public static final byte OFFSET = WaterAnimalMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 1;
 
-    public GlowSquidMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
+    public GlowSquidMeta(Entity entity, Metadata metadata) {
         super(entity, metadata);
     }
 

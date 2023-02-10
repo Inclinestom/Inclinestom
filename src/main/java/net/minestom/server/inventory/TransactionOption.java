@@ -41,13 +41,13 @@ public interface TransactionOption<T> {
      */
     TransactionOption<Boolean> DRY_RUN = (inventory, result, itemChangesMap) -> result.isAir();
 
-    @NotNull T fill(@NotNull AbstractInventory inventory,
-                    @NotNull ItemStack result,
-                    @NotNull Map<@NotNull Integer, @NotNull ItemStack> itemChangesMap);
+    T fill(AbstractInventory inventory,
+                    ItemStack result,
+                    Map<Integer, ItemStack> itemChangesMap);
 
-    default @NotNull T fill(@NotNull TransactionType type,
-                            @NotNull AbstractInventory inventory,
-                            @NotNull ItemStack itemStack) {
+    default T fill(TransactionType type,
+                            AbstractInventory inventory,
+                            ItemStack itemStack) {
         var pair = type.process(inventory, itemStack);
         return fill(inventory, pair.left(), pair.right());
     }

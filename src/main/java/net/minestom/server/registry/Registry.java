@@ -29,27 +29,27 @@ import java.util.function.Supplier;
  */
 public final class Registry {
     @ApiStatus.Internal
-    public static BlockEntry block(String namespace, @NotNull Properties main) {
+    public static BlockEntry block(String namespace, Properties main) {
         return new BlockEntry(namespace, main, null);
     }
 
     @ApiStatus.Internal
-    public static MaterialEntry material(String namespace, @NotNull Properties main) {
+    public static MaterialEntry material(String namespace, Properties main) {
         return new MaterialEntry(namespace, main, null);
     }
 
     @ApiStatus.Internal
-    public static EntityEntry entity(String namespace, @NotNull Properties main) {
+    public static EntityEntry entity(String namespace, Properties main) {
         return new EntityEntry(namespace, main, null);
     }
 
     @ApiStatus.Internal
-    public static EnchantmentEntry enchantment(String namespace, @NotNull Properties main) {
+    public static EnchantmentEntry enchantment(String namespace, Properties main) {
         return new EnchantmentEntry(namespace, main, null);
     }
 
     @ApiStatus.Internal
-    public static PotionEffectEntry potionEffect(String namespace, @NotNull Properties main) {
+    public static PotionEffectEntry potionEffect(String namespace, Properties main) {
         return new PotionEffectEntry(namespace, main, null);
     }
 
@@ -93,11 +93,11 @@ public final class Registry {
             ids.trim();
         }
 
-        public T get(@NotNull String namespace) {
+        public T get(String namespace) {
             return namespaces.get(namespace);
         }
 
-        public T getSafe(@NotNull String namespace) {
+        public T getSafe(String namespace) {
             return get(namespace.contains(":") ? namespace : "minecraft:" + namespace);
         }
 
@@ -105,7 +105,7 @@ public final class Registry {
             return ids.get(id);
         }
 
-        public int toId(@NotNull String namespace) {
+        public int toId(String namespace) {
             return get(namespace).id();
         }
 
@@ -209,7 +209,7 @@ public final class Registry {
             }
         }
 
-        public @NotNull NamespaceID namespace() {
+        public NamespaceID namespace() {
             return namespace;
         }
 
@@ -322,7 +322,7 @@ public final class Registry {
             }
         }
 
-        public @NotNull NamespaceID namespace() {
+        public NamespaceID namespace() {
             return namespace;
         }
 
@@ -542,7 +542,7 @@ public final class Registry {
         Map<String, Object> asMap();
 
         @Override
-        default @NotNull Iterator<Map.Entry<String, Object>> iterator() {
+        default Iterator<Map.Entry<String, Object>> iterator() {
             return asMap().entrySet().iterator();
         }
 

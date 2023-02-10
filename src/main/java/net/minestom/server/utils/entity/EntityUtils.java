@@ -11,7 +11,7 @@ public final class EntityUtils {
     private EntityUtils() {
     }
 
-    public static boolean isOnGround(@NotNull Entity entity) {
+    public static boolean isOnGround(Entity entity) {
         final Chunk chunk = entity.getChunk();
         if (chunk == null)
             return false;

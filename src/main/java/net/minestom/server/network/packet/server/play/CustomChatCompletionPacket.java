@@ -9,18 +9,18 @@ import java.util.List;
 
 import static net.minestom.server.network.NetworkBuffer.STRING;
 
-public record CustomChatCompletionPacket(@NotNull Action action,
-                                         @NotNull List<@NotNull String> entries) implements ServerPacket {
+public record CustomChatCompletionPacket(Action action,
+                                         List<String> entries) implements ServerPacket {
     public CustomChatCompletionPacket {
         entries = List.copyOf(entries);
     }
 
-    public CustomChatCompletionPacket(@NotNull NetworkBuffer reader) {
+    public CustomChatCompletionPacket(NetworkBuffer reader) {
         this(reader.readEnum(Action.class), reader.readCollection(STRING));
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.writeEnum(Action.class, action);
         writer.writeCollection(STRING, entries);
     }

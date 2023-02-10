@@ -11,7 +11,7 @@ final class TaskScheduleImpl {
     static TaskSchedule STOP = new Stop();
     static TaskSchedule IMMEDIATE = new Immediate();
 
-    record DurationSchedule(@NotNull Duration duration) implements TaskSchedule {
+    record DurationSchedule(Duration duration) implements TaskSchedule {
     }
 
     record TickSchedule(int tick) implements TaskSchedule {

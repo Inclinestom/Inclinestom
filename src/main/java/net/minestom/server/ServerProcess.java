@@ -34,111 +34,111 @@ public interface ServerProcess extends Snapshotable {
     /**
      * Handles incoming connections/players.
      */
-    @NotNull ConnectionManager connection();
+    ConnectionManager connection();
 
     /**
      * Handles registered instances.
      */
-    @NotNull InstanceManager instance();
+    InstanceManager instance();
 
     /**
      * Handles {@link net.minestom.server.instance.block.BlockHandler block handlers}
      * and {@link BlockPlacementRule placement rules}.
      */
-    @NotNull BlockManager block();
+    BlockManager block();
 
     /**
      * Handles registered commands.
      */
-    @NotNull CommandManager command();
+    CommandManager command();
 
     /**
      * Handles registered recipes shown to clients.
      */
-    @NotNull RecipeManager recipe();
+    RecipeManager recipe();
 
     /**
      * Handles registered teams.
      */
-    @NotNull TeamManager team();
+    TeamManager team();
 
     /**
      * Gets the global event handler.
      * <p>
      * Used to register event callback at a global scale.
      */
-    @NotNull GlobalEventHandler eventHandler();
+    GlobalEventHandler eventHandler();
 
     /**
      * Main scheduler ticked at the server rate.
      */
-    @NotNull SchedulerManager scheduler();
+    SchedulerManager scheduler();
 
-    @NotNull BenchmarkManager benchmark();
+    BenchmarkManager benchmark();
 
     /**
      * Handles registered dimensions.
      */
-    @NotNull DimensionTypeManager dimension();
+    DimensionTypeManager dimension();
 
     /**
      * Handles registered biomes.
      */
-    @NotNull BiomeManager biome();
+    BiomeManager biome();
 
     /**
      * Handles registered advancements.
      */
-    @NotNull AdvancementManager advancement();
+    AdvancementManager advancement();
 
     /**
      * Handles registered boss bars.
      */
-    @NotNull BossBarManager bossBar();
+    BossBarManager bossBar();
 
     /**
      * Loads and handle extensions.
      */
-    @NotNull ExtensionManager extension();
+    ExtensionManager extension();
 
     /**
      * Handles registry tags.
      */
-    @NotNull TagManager tag();
+    TagManager tag();
 
     /**
      * Handles all thrown exceptions from the server.
      */
-    @NotNull ExceptionManager exception();
+    ExceptionManager exception();
 
     /**
      * Handles incoming packets.
      */
-    @NotNull PacketListenerManager packetListener();
+    PacketListenerManager packetListener();
 
     /**
      * Gets the object handling the client packets processing.
      * <p>
      * Can be used if you want to convert a buffer to a client packet object.
      */
-    @NotNull PacketProcessor packetProcessor();
+    PacketProcessor packetProcessor();
 
     /**
      * Exposed socket server.
      */
-    @NotNull Server server();
+    Server server();
 
     /**
      * Dispatcher for tickable game objects.
      */
-    @NotNull ThreadDispatcher<Chunk> dispatcher();
+    ThreadDispatcher<Chunk> dispatcher();
 
     /**
      * Handles the server ticks.
      */
-    @NotNull Ticker ticker();
+    Ticker ticker();
 
-    void start(@NotNull SocketAddress socketAddress);
+    void start(SocketAddress socketAddress);
 
     void stop();
 

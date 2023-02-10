@@ -12,13 +12,13 @@ public class InstanceTickEvent implements InstanceEvent {
     private final Instance instance;
     private final int duration;
 
-    public InstanceTickEvent(@NotNull Instance instance, long time, long lastTickAge) {
+    public InstanceTickEvent(Instance instance, long time, long lastTickAge) {
         this.instance = instance;
         this.duration = (int) (time - lastTickAge);
     }
 
     @Override
-    public @NotNull Instance getInstance() {
+    public Instance getInstance() {
         return instance;
     }
 

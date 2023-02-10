@@ -11,13 +11,13 @@ import java.util.UUID;
  * Contrary to its name, it is actually used to teleport the player to the entity they are switching to,
  * rather than spectating them.
  */
-public record ClientSpectatePacket(@NotNull UUID target) implements ClientPacket {
-    public ClientSpectatePacket(@NotNull NetworkBuffer reader) {
+public record ClientSpectatePacket(UUID target) implements ClientPacket {
+    public ClientSpectatePacket(NetworkBuffer reader) {
         this(reader.read(NetworkBuffer.UUID));
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(NetworkBuffer.UUID, target);
     }
 }

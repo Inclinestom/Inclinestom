@@ -15,7 +15,7 @@ public class ResourcePack {
     private final boolean forced;
     private final Component prompt;
 
-    private ResourcePack(@NotNull String url, @Nullable String hash, boolean forced, @Nullable Component prompt) {
+    private ResourcePack(String url, @Nullable String hash, boolean forced, @Nullable Component prompt) {
         this.url = url;
         // Optional, set to empty if null
         this.hash = hash == null ? "" : hash;
@@ -23,19 +23,19 @@ public class ResourcePack {
         this.prompt = prompt;
     }
 
-    public static ResourcePack optional(@NotNull String url, @Nullable String hash, @Nullable Component prompt) {
+    public static ResourcePack optional(String url, @Nullable String hash, @Nullable Component prompt) {
         return new ResourcePack(url, hash, false, prompt);
     }
 
-    public static ResourcePack optional(@NotNull String url, @Nullable String hash) {
+    public static ResourcePack optional(String url, @Nullable String hash) {
         return optional(url, hash, null);
     }
 
-    public static ResourcePack forced(@NotNull String url, @Nullable String hash, @Nullable Component prompt) {
+    public static ResourcePack forced(String url, @Nullable String hash, @Nullable Component prompt) {
         return new ResourcePack(url, hash, true, prompt);
     }
 
-    public static ResourcePack forced(@NotNull String url, @Nullable String hash) {
+    public static ResourcePack forced(String url, @Nullable String hash) {
         return forced(url, hash, null);
     }
 
@@ -44,7 +44,7 @@ public class ResourcePack {
      *
      * @return the resource pack URL
      */
-    public @NotNull String getUrl() {
+    public String getUrl() {
         return url;
     }
 
@@ -56,7 +56,7 @@ public class ResourcePack {
      *
      * @return the resource pack hash, can be empty
      */
-    public @NotNull String getHash() {
+    public String getHash() {
         return hash;
     }
 

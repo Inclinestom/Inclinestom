@@ -52,18 +52,18 @@ public class AnvilLoader implements IChunkLoader {
     // thread local to avoid contention issues with locks
     private final ThreadLocal<Int2ObjectMap<BlockState>> blockStateId2ObjectCacheTLS = ThreadLocal.withInitial(Int2ObjectArrayMap::new);
 
-    public AnvilLoader(@NotNull Path path) {
+    public AnvilLoader(Path path) {
         this.path = path;
         this.levelPath = path.resolve("level.dat");
         this.regionPath = path.resolve("region");
     }
 
-    public AnvilLoader(@NotNull String path) {
+    public AnvilLoader(String path) {
         this(Path.of(path));
     }
 
     @Override
-    public void loadInstance(@NotNull Instance instance) {
+    public void loadInstance(Instance instance) {
         if (!Files.exists(levelPath)) {
             return;
         }
@@ -77,7 +77,7 @@ public class AnvilLoader implements IChunkLoader {
     }
 
     @Override
-    public @NotNull CompletableFuture<@Nullable Chunk> loadChunk(@NotNull Instance instance, int chunkX, int chunkZ) {
+    public CompletableFuture<@Nullable Chunk> loadChunk(Instance instance, int chunkX, int chunkZ) {
         LOGGER.debug("Attempt loading at {} {}", chunkX, chunkZ);
         if (!Files.exists(path)) {
             // No world folder
@@ -91,7 +91,7 @@ public class AnvilLoader implements IChunkLoader {
         return CompletableFuture.completedFuture(null);
     }
 
-    private @NotNull CompletableFuture<@Nullable Chunk> loadMCA(Instance instance, int chunkX, int chunkZ) throws IOException, AnvilException {
+    private CompletableFuture<@Nullable Chunk> loadMCA(Instance instance, int chunkX, int chunkZ) throws IOException, AnvilException {
         final RegionFile mcaFile = getMCAFile(instance, chunkX, chunkZ);
         if (mcaFile == null)
             return CompletableFuture.completedFuture(null);
@@ -302,7 +302,7 @@ public class AnvilLoader implements IChunkLoader {
     }
 
     @Override
-    public @NotNull CompletableFuture<Void> saveInstance(@NotNull Instance instance) {
+    public CompletableFuture<Void> saveInstance(Instance instance) {
         final NBTCompound nbt = instance.tagHandler().asCompound();
         if (nbt.isEmpty()) {
             // Instance has no data
@@ -317,7 +317,7 @@ public class AnvilLoader implements IChunkLoader {
     }
 
     @Override
-    public @NotNull CompletableFuture<Void> saveChunk(@NotNull Chunk chunk) {
+    public CompletableFuture<Void> saveChunk(Chunk chunk) {
         final int chunkX = chunk.getChunkX();
         final int chunkZ = chunk.getChunkZ();
         RegionFile mcaFile;

@@ -9,7 +9,7 @@ public class AnimalMeta extends AgeableMobMeta {
     public static final byte OFFSET = AgeableMobMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 0;
 
-    protected AnimalMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
+    protected AnimalMeta(Entity entity, Metadata metadata) {
         super(entity, metadata);
     }
 

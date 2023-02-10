@@ -32,11 +32,11 @@ public final class Metadata {
         return new MetadataImpl.EntryImpl<>(TYPE_FLOAT, value, NetworkBuffer.FLOAT);
     }
 
-    public static Entry<String> String(@NotNull String value) {
+    public static Entry<String> String(String value) {
         return new MetadataImpl.EntryImpl<>(TYPE_STRING, value, NetworkBuffer.STRING);
     }
 
-    public static Entry<Component> Chat(@NotNull Component value) {
+    public static Entry<Component> Chat(Component value) {
         return new MetadataImpl.EntryImpl<>(TYPE_CHAT, value, NetworkBuffer.COMPONENT);
     }
 
@@ -44,7 +44,7 @@ public final class Metadata {
         return new MetadataImpl.EntryImpl<>(TYPE_OPTCHAT, value, NetworkBuffer.OPT_CHAT);
     }
 
-    public static Entry<ItemStack> Slot(@NotNull ItemStack value) {
+    public static Entry<ItemStack> Slot(ItemStack value) {
         return new MetadataImpl.EntryImpl<>(TYPE_SLOT, value, NetworkBuffer.ITEM);
     }
 
@@ -52,11 +52,11 @@ public final class Metadata {
         return new MetadataImpl.EntryImpl<>(TYPE_BOOLEAN, value, NetworkBuffer.BOOLEAN);
     }
 
-    public static Entry<Point> Rotation(@NotNull Point value) {
+    public static Entry<Point> Rotation(Point value) {
         return new MetadataImpl.EntryImpl<>(TYPE_ROTATION, value, NetworkBuffer.ROTATION);
     }
 
-    public static Entry<Point> Position(@NotNull Point value) {
+    public static Entry<Point> Position(Point value) {
         return new MetadataImpl.EntryImpl<>(TYPE_POSITION, value, NetworkBuffer.BLOCK_POSITION);
     }
 
@@ -64,7 +64,7 @@ public final class Metadata {
         return new MetadataImpl.EntryImpl<>(TYPE_OPTPOSITION, value, NetworkBuffer.OPT_BLOCK_POSITION);
     }
 
-    public static Entry<Direction> Direction(@NotNull Direction value) {
+    public static Entry<Direction> Direction(Direction value) {
         return new MetadataImpl.EntryImpl<>(TYPE_DIRECTION, value, NetworkBuffer.DIRECTION);
     }
 
@@ -76,7 +76,7 @@ public final class Metadata {
         return new MetadataImpl.EntryImpl<>(TYPE_OPTBLOCKID, value, NetworkBuffer.OPT_BLOCK_ID);
     }
 
-    public static Entry<NBT> NBT(@NotNull NBT nbt) {
+    public static Entry<NBT> NBT(NBT nbt) {
         return new MetadataImpl.EntryImpl<>(TYPE_NBT, nbt, NetworkBuffer.NBT);
     }
 
@@ -91,7 +91,7 @@ public final class Metadata {
         return new MetadataImpl.EntryImpl<>(TYPE_OPTVARINT, value, NetworkBuffer.OPT_VAR_INT);
     }
 
-    public static Entry<Entity.Pose> Pose(@NotNull Entity.Pose value) {
+    public static Entry<Entity.Pose> Pose(Entity.Pose value) {
         return new MetadataImpl.EntryImpl<>(TYPE_POSE, value, NetworkBuffer.POSE);
     }
 
@@ -145,7 +145,7 @@ public final class Metadata {
         return entry != null ? (T) entry.value() : defaultValue;
     }
 
-    public void setIndex(int index, @NotNull Entry<?> entry) {
+    public void setIndex(int index, Entry<?> entry) {
         Entry<?>[] entries = this.entries;
         // Resize array if necessary
         if (index >= entries.length) {
@@ -186,7 +186,7 @@ public final class Metadata {
         entity.sendPacketToViewersAndSelf(new EntityMetaDataPacket(entity.getEntityId(), entries));
     }
 
-    public @NotNull Map<Integer, Entry<?>> getEntries() {
+    public Map<Integer, Entry<?>> getEntries() {
         Map<Integer, Entry<?>> map = entryMap;
         if (map == null) {
             map = new HashMap<>();
@@ -207,7 +207,7 @@ public final class Metadata {
         @UnknownNullability T value();
 
         @ApiStatus.Internal
-        static @NotNull Entry<?> read(int type, @NotNull NetworkBuffer reader) {
+        static Entry<?> read(int type, NetworkBuffer reader) {
             return MetadataImpl.EntryImpl.read(type, reader);
         }
     }

@@ -29,7 +29,7 @@ public enum GameMode {
         return canTakeDamage;
     }
 
-    public static @NotNull GameMode fromId(int id) {
+    public static GameMode fromId(int id) {
         return switch (id) {
             case 0 -> SURVIVAL;
             case 1 -> CREATIVE;

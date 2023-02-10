@@ -8,7 +8,7 @@ public class GiantMeta extends MonsterMeta {
     public static final byte OFFSET = MonsterMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 0;
 
-    public GiantMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
+    public GiantMeta(Entity entity, Metadata metadata) {
         super(entity, metadata);
     }
 

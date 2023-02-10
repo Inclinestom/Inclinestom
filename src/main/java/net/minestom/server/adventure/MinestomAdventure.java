@@ -40,7 +40,7 @@ public final class MinestomAdventure {
      *
      * @return the default locale
      */
-    public static @NotNull Locale getDefaultLocale() {
+    public static Locale getDefaultLocale() {
         return defaultLocale;
     }
 

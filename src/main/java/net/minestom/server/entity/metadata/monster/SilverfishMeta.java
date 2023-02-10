@@ -8,7 +8,7 @@ public class SilverfishMeta extends MonsterMeta {
     public static final byte OFFSET = MonsterMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 0;
 
-    public SilverfishMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
+    public SilverfishMeta(Entity entity, Metadata metadata) {
         super(entity, metadata);
     }
 

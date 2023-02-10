@@ -9,7 +9,7 @@ public class UpdateTagListEvent implements Event {
 
     private TagsPacket packet;
 
-    public UpdateTagListEvent(@NotNull TagsPacket packet) {
+    public UpdateTagListEvent(TagsPacket packet) {
         this.packet = packet;
     }
 

@@ -10,19 +10,19 @@ import org.jetbrains.annotations.NotNull;
 
 public class AxisPlacementRule extends BlockPlacementRule {
 
-    public AxisPlacementRule(@NotNull Block block) {
+    public AxisPlacementRule(Block block) {
         super(block);
     }
 
     @Override
-    public @NotNull Block blockUpdate(@NotNull Instance instance, @NotNull Point blockPosition, @NotNull Block block) {
+    public Block blockUpdate(Instance instance, Point blockPosition, Block block) {
         return block;
     }
 
     @Override
-    public Block blockPlace(@NotNull Instance instance,
-                            @NotNull Block block, @NotNull BlockFace blockFace, @NotNull Point blockPosition,
-                            @NotNull Player pl) {
+    public Block blockPlace(Instance instance,
+                            Block block, BlockFace blockFace, Point blockPosition,
+                            Player pl) {
         String axis = "y";
         if (blockFace == BlockFace.WEST || blockFace == BlockFace.EAST) {
             axis = "x";

@@ -11,14 +11,14 @@ import static net.minestom.server.network.NetworkBuffer.*;
 public record RespawnPacket(String dimensionType, String worldName,
                             long hashedSeed, GameMode gameMode, GameMode previousGameMode,
                             boolean isDebug, boolean isFlat, boolean copyMeta) implements ServerPacket {
-    public RespawnPacket(@NotNull NetworkBuffer reader) {
+    public RespawnPacket(NetworkBuffer reader) {
         this(reader.read(STRING), reader.read(STRING),
                 reader.read(LONG), GameMode.values()[reader.read(BYTE)], GameMode.values()[reader.read(BYTE)],
                 reader.read(BOOLEAN), reader.read(BOOLEAN), reader.read(BOOLEAN));
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(STRING, dimensionType);
         writer.write(STRING, worldName);
         writer.write(LONG, hashedSeed);

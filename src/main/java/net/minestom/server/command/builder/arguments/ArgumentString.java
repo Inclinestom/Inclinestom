@@ -25,7 +25,7 @@ public class ArgumentString extends Argument<String> {
 
     @NotNull
     @Override
-    public String parse(@NotNull String input) throws ArgumentSyntaxException {
+    public String parse(String input) throws ArgumentSyntaxException {
         return staticParse(input);
     }
 
@@ -45,7 +45,7 @@ public class ArgumentString extends Argument<String> {
      * @deprecated use {@link Argument#parse(Argument)}
      */
     @Deprecated
-    public static String staticParse(@NotNull String input) throws ArgumentSyntaxException {
+    public static String staticParse(String input) throws ArgumentSyntaxException {
         // Return if not quoted
         if (!input.contains(String.valueOf(DOUBLE_QUOTE)) &&
                 !input.contains(String.valueOf(QUOTE)) &&

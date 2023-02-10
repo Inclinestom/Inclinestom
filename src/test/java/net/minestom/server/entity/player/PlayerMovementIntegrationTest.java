@@ -70,7 +70,7 @@ public class PlayerMovementIntegrationTest {
         ChunkUtils.forChunksInRange(0, 0, viewDiameter+2, (x, z) -> chunks.add(flatInstance.loadChunk(x, z)));
         CompletableFuture.allOf(chunks.toArray(CompletableFuture[]::new)).join();
         final TestConnection connection = env.createConnection();
-        final CompletableFuture<@NotNull Player> future = connection.connect(flatInstance, new Pos(0.5, 40, 0.5));
+        final CompletableFuture<Player> future = connection.connect(flatInstance, new Pos(0.5, 40, 0.5));
         Collector<ChunkDataPacket> chunkDataPacketCollector = connection.trackIncoming(ChunkDataPacket.class);
         final Player player = future.join();
         // Initial join

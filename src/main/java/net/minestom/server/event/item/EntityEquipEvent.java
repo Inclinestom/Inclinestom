@@ -13,21 +13,21 @@ public class EntityEquipEvent implements EntityInstanceEvent, ItemEvent {
     private ItemStack equippedItem;
     private final EquipmentSlot slot;
 
-    public EntityEquipEvent(@NotNull Entity entity, @NotNull ItemStack equippedItem, @NotNull EquipmentSlot slot) {
+    public EntityEquipEvent(Entity entity, ItemStack equippedItem, EquipmentSlot slot) {
         this.entity = entity;
         this.equippedItem = equippedItem;
         this.slot = slot;
     }
 
-    public @NotNull ItemStack getEquippedItem() {
+    public ItemStack getEquippedItem() {
         return equippedItem;
     }
 
-    public void setEquippedItem(@NotNull ItemStack armorItem) {
+    public void setEquippedItem(ItemStack armorItem) {
         this.equippedItem = armorItem;
     }
 
-    public @NotNull EquipmentSlot getSlot() {
+    public EquipmentSlot getSlot() {
         return slot;
     }
 
@@ -35,12 +35,12 @@ public class EntityEquipEvent implements EntityInstanceEvent, ItemEvent {
      * Same as {@link #getEquippedItem()}.
      */
     @Override
-    public @NotNull ItemStack getItemStack() {
+    public ItemStack getItemStack() {
         return equippedItem;
     }
 
     @Override
-    public @NotNull Entity getEntity() {
+    public Entity getEntity() {
         return entity;
     }
 }

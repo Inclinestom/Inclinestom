@@ -10,7 +10,7 @@ public class IronGolemMeta extends AbstractGolemMeta {
 
     private final static byte PLAYER_CREATED_BIT = 0x01;
 
-    public IronGolemMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
+    public IronGolemMeta(Entity entity, Metadata metadata) {
         super(entity, metadata);
     }
 

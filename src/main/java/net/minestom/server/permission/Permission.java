@@ -25,7 +25,7 @@ public class Permission {
      * @param permissionName the name of the permission
      * @param data           the optional data of the permission
      */
-    public Permission(@NotNull String permissionName, @Nullable NBTCompound data) {
+    public Permission(String permissionName, @Nullable NBTCompound data) {
         this.permissionName = permissionName;
         this.data = data;
     }
@@ -35,7 +35,7 @@ public class Permission {
      *
      * @param permissionName the name of the permission
      */
-    public Permission(@NotNull String permissionName) {
+    public Permission(String permissionName) {
         this(permissionName, null);
     }
 

@@ -7,15 +7,15 @@ import org.jetbrains.annotations.NotNull;
 
 import static net.minestom.server.network.NetworkBuffer.*;
 
-public record ClientPlayerPositionAndRotationPacket(@NotNull Pos position,
+public record ClientPlayerPositionAndRotationPacket(Pos position,
                                                     boolean onGround) implements ClientPacket {
-    public ClientPlayerPositionAndRotationPacket(@NotNull NetworkBuffer reader) {
+    public ClientPlayerPositionAndRotationPacket(NetworkBuffer reader) {
         this(new Pos(reader.read(DOUBLE), reader.read(DOUBLE), reader.read(DOUBLE),
                 reader.read(FLOAT), reader.read(FLOAT)), reader.read(BOOLEAN));
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(DOUBLE, position.x());
         writer.write(DOUBLE, position.y());
         writer.write(DOUBLE, position.z());

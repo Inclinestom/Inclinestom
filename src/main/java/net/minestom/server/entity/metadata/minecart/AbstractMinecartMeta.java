@@ -10,7 +10,7 @@ public abstract class AbstractMinecartMeta extends EntityMeta implements ObjectD
     public static final byte OFFSET = EntityMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 6;
 
-    protected AbstractMinecartMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
+    protected AbstractMinecartMeta(Entity entity, Metadata metadata) {
         super(entity, metadata);
     }
 

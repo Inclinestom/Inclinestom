@@ -8,5 +8,5 @@ import org.jetbrains.annotations.NotNull;
  * All pathfinder methods are available with {@link #getNavigator()}.
  */
 public interface NavigableEntity {
-    @NotNull Navigator getNavigator();
+    Navigator getNavigator();
 }

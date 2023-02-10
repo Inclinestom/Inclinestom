@@ -14,13 +14,13 @@ import java.util.function.UnaryOperator;
 import static net.minestom.server.network.NetworkBuffer.BOOLEAN;
 import static net.minestom.server.network.NetworkBuffer.COMPONENT;
 
-public record SystemChatPacket(@NotNull Component message, boolean overlay) implements ComponentHoldingServerPacket {
-    public SystemChatPacket(@NotNull NetworkBuffer reader) {
+public record SystemChatPacket(Component message, boolean overlay) implements ComponentHoldingServerPacket {
+    public SystemChatPacket(NetworkBuffer reader) {
         this(reader.read(COMPONENT), reader.read(BOOLEAN));
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(COMPONENT, message);
         writer.write(BOOLEAN, overlay);
     }
@@ -31,12 +31,12 @@ public record SystemChatPacket(@NotNull Component message, boolean overlay) impl
     }
 
     @Override
-    public @NotNull Collection<Component> components() {
+    public Collection<Component> components() {
         return List.of(message);
     }
 
     @Override
-    public @NotNull ServerPacket copyWithOperator(@NotNull UnaryOperator<Component> operator) {
+    public ServerPacket copyWithOperator(UnaryOperator<Component> operator) {
         return new SystemChatPacket(operator.apply(message), overlay);
     }
 }

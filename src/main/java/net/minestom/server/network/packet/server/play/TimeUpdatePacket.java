@@ -8,12 +8,12 @@ import org.jetbrains.annotations.NotNull;
 import static net.minestom.server.network.NetworkBuffer.LONG;
 
 public record TimeUpdatePacket(long worldAge, long timeOfDay) implements ServerPacket {
-    public TimeUpdatePacket(@NotNull NetworkBuffer reader) {
+    public TimeUpdatePacket(NetworkBuffer reader) {
         this(reader.read(LONG), reader.read(LONG));
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(LONG, worldAge);
         writer.write(LONG, timeOfDay);
     }

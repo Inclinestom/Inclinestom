@@ -8,13 +8,13 @@ import org.jetbrains.annotations.NotNull;
 import static net.minestom.server.network.NetworkBuffer.BYTE;
 import static net.minestom.server.network.NetworkBuffer.VAR_INT;
 
-public record EntityAnimationPacket(int entityId, @NotNull Animation animation) implements ServerPacket {
-    public EntityAnimationPacket(@NotNull NetworkBuffer reader) {
+public record EntityAnimationPacket(int entityId, Animation animation) implements ServerPacket {
+    public EntityAnimationPacket(NetworkBuffer reader) {
         this(reader.read(VAR_INT), Animation.values()[reader.read(BYTE)]);
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(VAR_INT, entityId);
         writer.write(BYTE, (byte) animation.ordinal());
     }

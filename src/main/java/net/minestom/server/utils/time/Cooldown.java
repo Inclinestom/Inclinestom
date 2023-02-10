@@ -35,7 +35,7 @@ public final class Cooldown {
      * @param cooldown     the value of the cooldown
      * @return true if the cooldown is in progress, false otherwise
      */
-    public static boolean hasCooldown(long currentTime, long lastUpdate, @NotNull TemporalUnit temporalUnit, long cooldown) {
+    public static boolean hasCooldown(long currentTime, long lastUpdate, TemporalUnit temporalUnit, long cooldown) {
         return hasCooldown(currentTime, lastUpdate, Duration.of(cooldown, temporalUnit));
     }
 
@@ -47,7 +47,7 @@ public final class Cooldown {
      * @param duration    the cooldown
      * @return true if the cooldown is in progress, false otherwise
      */
-    public static boolean hasCooldown(long currentTime, long lastUpdate, @NotNull Duration duration) {
+    public static boolean hasCooldown(long currentTime, long lastUpdate, Duration duration) {
         final long cooldownMs = duration.toMillis();
         return currentTime - lastUpdate < cooldownMs;
     }
@@ -60,7 +60,7 @@ public final class Cooldown {
      * @param cooldown     the value of the cooldown
      * @return true if the cooldown is in progress, false otherwise
      */
-    public static boolean hasCooldown(long lastUpdate, @NotNull TemporalUnit temporalUnit, int cooldown) {
+    public static boolean hasCooldown(long lastUpdate, TemporalUnit temporalUnit, int cooldown) {
         return hasCooldown(System.currentTimeMillis(), lastUpdate, temporalUnit, cooldown);
     }
 }

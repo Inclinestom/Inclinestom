@@ -30,12 +30,12 @@ public class ServerSender implements CommandSender {
     }
 
     @Override
-    public @NotNull TagHandler tagHandler() {
+    public TagHandler tagHandler() {
         return tagHandler;
     }
 
     @Override
-    public @NotNull Identity identity() {
+    public Identity identity() {
         return Identity.nil();
     }
 }

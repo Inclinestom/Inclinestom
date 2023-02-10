@@ -12,9 +12,9 @@ public abstract class SmeltingRecipe extends Recipe {
     private int cookingTime;
 
     protected SmeltingRecipe(
-            @NotNull String recipeId,
-            @NotNull String group,
-            @NotNull ItemStack result,
+            String recipeId,
+            String group,
+            ItemStack result,
             float experience,
             int cookingTime
     ) {
@@ -30,7 +30,7 @@ public abstract class SmeltingRecipe extends Recipe {
         return group;
     }
 
-    public void setGroup(@NotNull String group) {
+    public void setGroup(String group) {
         this.group = group;
     }
 
@@ -39,7 +39,7 @@ public abstract class SmeltingRecipe extends Recipe {
         return ingredient;
     }
 
-    public void setIngredient(@NotNull DeclareRecipesPacket.Ingredient ingredient) {
+    public void setIngredient(DeclareRecipesPacket.Ingredient ingredient) {
         this.ingredient = ingredient;
     }
 
@@ -48,7 +48,7 @@ public abstract class SmeltingRecipe extends Recipe {
         return result;
     }
 
-    public void setResult(@NotNull ItemStack result) {
+    public void setResult(ItemStack result) {
         this.result = result;
     }
 

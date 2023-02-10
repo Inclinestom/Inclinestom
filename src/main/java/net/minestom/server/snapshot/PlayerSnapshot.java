@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 
 public sealed interface PlayerSnapshot extends EntitySnapshot
         permits SnapshotImpl.Player {
-    @NotNull String username();
+    String username();
 
-    @NotNull GameMode gameMode();
+    GameMode gameMode();
 }

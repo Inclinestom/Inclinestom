@@ -10,11 +10,11 @@ record SoundEventImpl(NamespaceID namespace, int id) implements SoundEvent {
     private static final Registry.Container<SoundEvent> CONTAINER = Registry.createContainer(Registry.Resource.SOUNDS,
             (namespace, properties) -> new SoundEventImpl(NamespaceID.from(namespace), properties.getInt("id")));
 
-    static SoundEvent get(@NotNull String namespace) {
+    static SoundEvent get(String namespace) {
         return CONTAINER.get(namespace);
     }
 
-    static SoundEvent getSafe(@NotNull String namespace) {
+    static SoundEvent getSafe(String namespace) {
         return CONTAINER.getSafe(namespace);
     }
 

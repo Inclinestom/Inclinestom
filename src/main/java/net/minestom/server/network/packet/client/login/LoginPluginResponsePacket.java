@@ -26,12 +26,12 @@ public record LoginPluginResponsePacket(int messageId, byte @Nullable [] data) i
     private final static ConnectionManager CONNECTION_MANAGER = MinecraftServer.getConnectionManager();
     public static final Component INVALID_PROXY_RESPONSE = Component.text("Invalid proxy response!", NamedTextColor.RED);
 
-    public LoginPluginResponsePacket(@NotNull NetworkBuffer reader) {
+    public LoginPluginResponsePacket(NetworkBuffer reader) {
         this(reader.read(VAR_INT), reader.readOptional(RAW_BYTES));
     }
 
     @Override
-    public void process(@NotNull PlayerConnection connection) {
+    public void process(PlayerConnection connection) {
         // Proxy support
         if (connection instanceof PlayerSocketConnection socketConnection) {
             final String channel = socketConnection.getPluginRequestChannel(messageId);
@@ -75,7 +75,7 @@ public record LoginPluginResponsePacket(int messageId, byte @Nullable [] data) i
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(VAR_INT, messageId);
         writer.writeOptional(RAW_BYTES, data);
     }

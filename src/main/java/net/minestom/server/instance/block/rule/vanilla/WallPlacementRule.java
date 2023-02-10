@@ -12,12 +12,12 @@ import java.util.Map;
 
 public class WallPlacementRule extends BlockPlacementRule {
 
-    public WallPlacementRule(@NotNull Block block) {
+    public WallPlacementRule(Block block) {
         super(block);
     }
 
     @Override
-    public @NotNull Block blockUpdate(@NotNull Instance instance, @NotNull Point blockPosition, @NotNull Block block) {
+    public Block blockUpdate(Instance instance, Point blockPosition, Block block) {
         final int x = blockPosition.blockX();
         final int y = blockPosition.blockY();
         final int z = blockPosition.blockZ();
@@ -55,9 +55,9 @@ public class WallPlacementRule extends BlockPlacementRule {
     }
 
     @Override
-    public Block blockPlace(@NotNull Instance instance,
-                            @NotNull Block block, @NotNull BlockFace blockFace, @NotNull Point blockPosition,
-                            @NotNull Player pl) {
+    public Block blockPlace(Instance instance,
+                            Block block, BlockFace blockFace, Point blockPosition,
+                            Player pl) {
         return block;
     }
 

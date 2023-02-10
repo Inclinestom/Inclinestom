@@ -13,13 +13,13 @@ public interface PlayerEvent extends EntityEvent {
      *
      * @return the player
      */
-    @NotNull Player getPlayer();
+    Player getPlayer();
 
     /**
      * Returns {@link #getPlayer()}.
      */
     @Override
-    default @NotNull Player getEntity() {
+    default Player getEntity() {
         return getPlayer();
     }
 }

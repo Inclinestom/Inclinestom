@@ -44,20 +44,20 @@ final class MetadataImpl {
     }
 
     record EntryImpl<T>(int type, @UnknownNullability T value,
-                        @NotNull NetworkBuffer.Type<T> serializer) implements Metadata.Entry<T> {
-        static Entry<?> read(int type, @NotNull NetworkBuffer reader) {
+                        NetworkBuffer.Type<T> serializer) implements Metadata.Entry<T> {
+        static Entry<?> read(int type, NetworkBuffer reader) {
             final EntryImpl<?> value = (EntryImpl<?>) EMPTY_VALUES.get(type);
             if (value == null) throw new UnsupportedOperationException("Unknown value type: " + type);
             return value.withValue(reader);
         }
 
         @Override
-        public void write(@NotNull NetworkBuffer writer) {
+        public void write(NetworkBuffer writer) {
             writer.write(VAR_INT, type);
             writer.write(serializer, value);
         }
 
-        private EntryImpl<T> withValue(@NotNull NetworkBuffer reader) {
+        private EntryImpl<T> withValue(NetworkBuffer reader) {
             return new EntryImpl<>(type, reader.read(serializer), serializer);
         }
     }

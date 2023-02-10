@@ -19,7 +19,7 @@ public interface ComponentHolder<T> {
      *
      * @return the components
      */
-    @NotNull Collection<Component> components();
+    Collection<Component> components();
 
     /**
      * Returns a copy of this object. For each component this object holds, the operator
@@ -28,14 +28,14 @@ public interface ComponentHolder<T> {
      * @param operator the operator
      * @return the copy
      */
-    @NotNull T copyWithOperator(@NotNull UnaryOperator<Component> operator);
+    T copyWithOperator(UnaryOperator<Component> operator);
 
     /**
      * Visits each component held by this object.
      *
      * @param visitor the visitor
      */
-    default void visitComponents(@NotNull Consumer<Component> visitor) {
+    default void visitComponents(Consumer<Component> visitor) {
         for (Component component : this.components()) {
             visitor.accept(component);
         }

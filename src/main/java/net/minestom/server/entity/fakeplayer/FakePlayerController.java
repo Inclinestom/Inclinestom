@@ -36,7 +36,7 @@ public class FakePlayerController {
      *
      * @param fakePlayer The fake player that should used the controller.
      */
-    public FakePlayerController(@NotNull FakePlayer fakePlayer) {
+    public FakePlayerController(FakePlayer fakePlayer) {
         this.fakePlayer = fakePlayer;
     }
 

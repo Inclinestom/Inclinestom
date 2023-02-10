@@ -10,10 +10,10 @@ public abstract class StonecutterRecipe extends Recipe {
     private ItemStack result;
 
     protected StonecutterRecipe(
-            @NotNull String recipeId,
-            @NotNull String group,
-            @NotNull DeclareRecipesPacket.Ingredient ingredient,
-            @NotNull ItemStack result
+            String recipeId,
+            String group,
+            DeclareRecipesPacket.Ingredient ingredient,
+            ItemStack result
     ) {
         super(Type.STONECUTTING, recipeId);
         this.group = group;
@@ -26,7 +26,7 @@ public abstract class StonecutterRecipe extends Recipe {
         return group;
     }
 
-    public void setGroup(@NotNull String group) {
+    public void setGroup(String group) {
         this.group = group;
     }
 
@@ -35,7 +35,7 @@ public abstract class StonecutterRecipe extends Recipe {
         return ingredient;
     }
 
-    public void setIngredient(@NotNull DeclareRecipesPacket.Ingredient ingredient) {
+    public void setIngredient(DeclareRecipesPacket.Ingredient ingredient) {
         this.ingredient = ingredient;
     }
 
@@ -44,7 +44,7 @@ public abstract class StonecutterRecipe extends Recipe {
         return result;
     }
 
-    public void setResult(@NotNull ItemStack result) {
+    public void setResult(ItemStack result) {
         this.result = result;
     }
 }

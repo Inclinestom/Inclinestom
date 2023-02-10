@@ -8,7 +8,7 @@ public class LlamaMeta extends ChestedHorseMeta {
     public static final byte OFFSET = ChestedHorseMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 3;
 
-    public LlamaMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
+    public LlamaMeta(Entity entity, Metadata metadata) {
         super(entity, metadata);
     }
 

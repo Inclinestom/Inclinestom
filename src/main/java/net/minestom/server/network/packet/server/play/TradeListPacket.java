@@ -10,21 +10,21 @@ import java.util.List;
 
 import static net.minestom.server.network.NetworkBuffer.*;
 
-public record TradeListPacket(int windowId, @NotNull List<Trade> trades,
+public record TradeListPacket(int windowId, List<Trade> trades,
                               int villagerLevel, int experience,
                               boolean regularVillager, boolean canRestock) implements ServerPacket {
     public TradeListPacket {
         trades = List.copyOf(trades);
     }
 
-    public TradeListPacket(@NotNull NetworkBuffer reader) {
+    public TradeListPacket(NetworkBuffer reader) {
         this(reader.read(VAR_INT), reader.readCollection(Trade::new),
                 reader.read(VAR_INT), reader.read(VAR_INT),
                 reader.read(BOOLEAN), reader.read(BOOLEAN));
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(VAR_INT, windowId);
         writer.writeCollection(trades);
         writer.write(VAR_INT, villagerLevel);
@@ -42,7 +42,7 @@ public record TradeListPacket(int windowId, @NotNull List<Trade> trades,
                         ItemStack inputItem2, boolean tradeDisabled,
                         int tradeUsesNumber, int maxTradeUsesNumber, int exp,
                         int specialPrice, float priceMultiplier, int demand) implements NetworkBuffer.Writer {
-        public Trade(@NotNull NetworkBuffer reader) {
+        public Trade(NetworkBuffer reader) {
             this(reader.read(ITEM), reader.read(ITEM),
                     reader.readOptional(ITEM), reader.read(BOOLEAN),
                     reader.read(INT), reader.read(INT), reader.read(INT),
@@ -50,7 +50,7 @@ public record TradeListPacket(int windowId, @NotNull List<Trade> trades,
         }
 
         @Override
-        public void write(@NotNull NetworkBuffer writer) {
+        public void write(NetworkBuffer writer) {
             writer.write(ITEM, inputItem1);
             writer.write(ITEM, result);
             writer.writeOptional(ITEM, inputItem2);

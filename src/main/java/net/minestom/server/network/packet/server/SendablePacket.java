@@ -12,7 +12,7 @@ public sealed interface SendablePacket
         permits CachedPacket, FramedPacket, LazyPacket, ServerPacket {
 
     @ApiStatus.Experimental
-    static @NotNull ServerPacket extractServerPacket(@NotNull SendablePacket packet) {
+    static ServerPacket extractServerPacket(SendablePacket packet) {
         if (packet instanceof ServerPacket serverPacket) {
             return serverPacket;
         } else if (packet instanceof CachedPacket cachedPacket) {

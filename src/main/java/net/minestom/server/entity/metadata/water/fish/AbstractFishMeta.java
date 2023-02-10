@@ -9,7 +9,7 @@ public class AbstractFishMeta extends WaterAnimalMeta {
     public static final byte OFFSET = WaterAnimalMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 1;
 
-    protected AbstractFishMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
+    protected AbstractFishMeta(Entity entity, Metadata metadata) {
         super(entity, metadata);
     }
 

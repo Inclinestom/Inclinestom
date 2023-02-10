@@ -11,7 +11,7 @@ public class ExperienceOrbMeta extends EntityMeta {
 
     private int count = 1;
 
-    public ExperienceOrbMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
+    public ExperienceOrbMeta(Entity entity, Metadata metadata) {
         super(entity, metadata);
     }
 

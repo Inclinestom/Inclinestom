@@ -12,7 +12,7 @@ public class PlayerChunkLoadEvent implements PlayerInstanceEvent {
     private final Player player;
     private final int chunkX, chunkZ;
 
-    public PlayerChunkLoadEvent(@NotNull Player player, int chunkX, int chunkZ) {
+    public PlayerChunkLoadEvent(Player player, int chunkX, int chunkZ) {
         this.player = player;
         this.chunkX = chunkX;
         this.chunkZ = chunkZ;
@@ -37,7 +37,7 @@ public class PlayerChunkLoadEvent implements PlayerInstanceEvent {
     }
 
     @Override
-    public @NotNull Player getPlayer() {
+    public Player getPlayer() {
         return player;
     }
 }

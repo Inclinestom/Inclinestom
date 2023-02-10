@@ -10,13 +10,13 @@ import static net.minestom.server.network.NetworkBuffer.*;
 
 public record PlayerPositionAndLookPacket(Pos position, byte flags, int teleportId,
                                           boolean dismountVehicle) implements ServerPacket {
-    public PlayerPositionAndLookPacket(@NotNull NetworkBuffer reader) {
+    public PlayerPositionAndLookPacket(NetworkBuffer reader) {
         this(new Pos(reader.read(DOUBLE), reader.read(DOUBLE), reader.read(DOUBLE), reader.read(FLOAT), reader.read(FLOAT)),
                 reader.read(BYTE), reader.read(VAR_INT), reader.read(BOOLEAN));
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(DOUBLE, position.x());
         writer.write(DOUBLE, position.y());
         writer.write(DOUBLE, position.z());

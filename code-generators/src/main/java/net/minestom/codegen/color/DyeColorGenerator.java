@@ -23,7 +23,7 @@ public class DyeColorGenerator extends MinestomCodeGenerator {
     private final InputStream dyeColorsFile;
     private final File outputFolder;
 
-    public DyeColorGenerator(@Nullable InputStream dyeColorsFile, @NotNull File outputFolder) {
+    public DyeColorGenerator(@Nullable InputStream dyeColorsFile, File outputFolder) {
         this.dyeColorsFile = dyeColorsFile;
         this.outputFolder = outputFolder;
     }

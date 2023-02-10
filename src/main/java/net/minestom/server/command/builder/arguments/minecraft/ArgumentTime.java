@@ -28,7 +28,7 @@ public class ArgumentTime extends Argument<Duration> {
 
     @NotNull
     @Override
-    public Duration parse(@NotNull String input) throws ArgumentSyntaxException {
+    public Duration parse(String input) throws ArgumentSyntaxException {
         final char lastChar = input.charAt(input.length() - 1);
 
         TemporalUnit timeUnit;

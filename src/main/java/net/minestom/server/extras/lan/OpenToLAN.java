@@ -56,7 +56,7 @@ public class OpenToLAN {
      * @param config the configuration
      * @return {@code true} if it was opened successfully, {@code false} otherwise
      */
-    public static boolean open(@NotNull OpenToLANConfig config) {
+    public static boolean open(OpenToLANConfig config) {
         Objects.requireNonNull(config, "config");
         if (socket != null) return false;
 

@@ -11,13 +11,13 @@ import static net.minestom.server.network.NetworkBuffer.VAR_INT;
 
 public record ClientSetBeaconEffectPacket(@Nullable PotionType primaryEffect,
                                           @Nullable PotionType secondaryEffect) implements ClientPacket {
-    public ClientSetBeaconEffectPacket(@NotNull NetworkBuffer reader) {
+    public ClientSetBeaconEffectPacket(NetworkBuffer reader) {
         this(reader.read(BOOLEAN) ? PotionType.fromId(reader.read(VAR_INT)) : null,
                 reader.read(BOOLEAN) ? PotionType.fromId(reader.read(VAR_INT)) : null);
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(BOOLEAN, primaryEffect != null);
         if (primaryEffect != null) writer.write(VAR_INT, primaryEffect.id());
         writer.write(BOOLEAN, secondaryEffect != null);

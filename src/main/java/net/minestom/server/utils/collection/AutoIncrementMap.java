@@ -17,7 +17,7 @@ public final class AutoIncrementMap<K> {
     }
 
     @Contract(pure = true)
-    public int get(@NotNull K key) {
+    public int get(K key) {
         int index = read.getInt(key);
         if (index == -1) {
             synchronized (write) {

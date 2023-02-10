@@ -26,7 +26,7 @@ public interface ChunkGenerator {
      * @param chunkX the chunk X
      * @param chunkZ the chunk Z
      */
-    void generateChunkData(@NotNull ChunkBatch batch, int chunkX, int chunkZ);
+    void generateChunkData(ChunkBatch batch, int chunkX, int chunkZ);
 
     /**
      * Gets all the {@link ChunkPopulator} of this generator.

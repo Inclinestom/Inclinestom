@@ -8,7 +8,7 @@ public class PufferfishMeta extends AbstractFishMeta {
     public static final byte OFFSET = AbstractFishMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 1;
 
-    public PufferfishMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
+    public PufferfishMeta(Entity entity, Metadata metadata) {
         super(entity, metadata);
         updateBoundingBox(State.UNPUFFED);
     }

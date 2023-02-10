@@ -8,7 +8,7 @@ public class VindicatorMeta extends AbstractIllagerMeta {
     public static final byte OFFSET = AbstractIllagerMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 0;
 
-    public VindicatorMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
+    public VindicatorMeta(Entity entity, Metadata metadata) {
         super(entity, metadata);
     }
 

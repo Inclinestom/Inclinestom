@@ -20,28 +20,28 @@ public interface EquipmentHandler {
      *
      * @return the {@link ItemStack} in main hand
      */
-    @NotNull ItemStack getItemInMainHand();
+    ItemStack getItemInMainHand();
 
     /**
      * Changes the main hand {@link ItemStack}.
      *
      * @param itemStack the main hand {@link ItemStack}
      */
-    void setItemInMainHand(@NotNull ItemStack itemStack);
+    void setItemInMainHand(ItemStack itemStack);
 
     /**
      * Gets the {@link ItemStack} in off hand.
      *
      * @return the item in off hand
      */
-    @NotNull ItemStack getItemInOffHand();
+    ItemStack getItemInOffHand();
 
     /**
      * Changes the off hand {@link ItemStack}.
      *
      * @param itemStack the off hand {@link ItemStack}
      */
-    void setItemInOffHand(@NotNull ItemStack itemStack);
+    void setItemInOffHand(ItemStack itemStack);
 
     /**
      * Gets the {@link ItemStack} in the specific hand.
@@ -49,7 +49,7 @@ public interface EquipmentHandler {
      * @param hand the Hand to get the {@link ItemStack} from
      * @return the {@link ItemStack} in {@code hand}
      */
-    default @NotNull ItemStack getItemInHand(@NotNull Player.Hand hand) {
+    default ItemStack getItemInHand(Player.Hand hand) {
         return switch (hand) {
             case MAIN -> getItemInMainHand();
             case OFF -> getItemInOffHand();
@@ -62,7 +62,7 @@ public interface EquipmentHandler {
      * @param hand  the hand to set the item to
      * @param stack the {@link ItemStack} to set
      */
-    default void setItemInHand(@NotNull Player.Hand hand, @NotNull ItemStack stack) {
+    default void setItemInHand(Player.Hand hand, ItemStack stack) {
         switch (hand) {
             case MAIN -> setItemInMainHand(stack);
             case OFF -> setItemInOffHand(stack);
@@ -74,56 +74,56 @@ public interface EquipmentHandler {
      *
      * @return the helmet
      */
-    @NotNull ItemStack getHelmet();
+    ItemStack getHelmet();
 
     /**
      * Changes the helmet.
      *
      * @param itemStack the helmet
      */
-    void setHelmet(@NotNull ItemStack itemStack);
+    void setHelmet(ItemStack itemStack);
 
     /**
      * Gets the chestplate.
      *
      * @return the chestplate
      */
-    @NotNull ItemStack getChestplate();
+    ItemStack getChestplate();
 
     /**
      * Changes the chestplate.
      *
      * @param itemStack the chestplate
      */
-    void setChestplate(@NotNull ItemStack itemStack);
+    void setChestplate(ItemStack itemStack);
 
     /**
      * Gets the leggings.
      *
      * @return the leggings
      */
-    @NotNull ItemStack getLeggings();
+    ItemStack getLeggings();
 
     /**
      * Changes the leggings.
      *
      * @param itemStack the leggings
      */
-    void setLeggings(@NotNull ItemStack itemStack);
+    void setLeggings(ItemStack itemStack);
 
     /**
      * Gets the boots.
      *
      * @return the boots
      */
-    @NotNull ItemStack getBoots();
+    ItemStack getBoots();
 
     /**
      * Changes the boots.
      *
      * @param itemStack the boots
      */
-    void setBoots(@NotNull ItemStack itemStack);
+    void setBoots(ItemStack itemStack);
 
     /**
      * Gets the equipment in a specific slot.
@@ -131,7 +131,7 @@ public interface EquipmentHandler {
      * @param slot the equipment to get the item from
      * @return the equipment {@link ItemStack}
      */
-    default @NotNull ItemStack getEquipment(@NotNull EquipmentSlot slot) {
+    default ItemStack getEquipment(EquipmentSlot slot) {
         return switch (slot) {
             case MAIN_HAND -> getItemInMainHand();
             case OFF_HAND -> getItemInOffHand();
@@ -142,7 +142,7 @@ public interface EquipmentHandler {
         };
     }
 
-    default void setEquipment(@NotNull EquipmentSlot slot, @NotNull ItemStack itemStack) {
+    default void setEquipment(EquipmentSlot slot, ItemStack itemStack) {
         switch (slot) {
             case MAIN_HAND -> setItemInMainHand(itemStack);
             case OFF_HAND -> setItemInOffHand(itemStack);
@@ -153,7 +153,7 @@ public interface EquipmentHandler {
         }
     }
 
-    default boolean hasEquipment(@NotNull EquipmentSlot slot) {
+    default boolean hasEquipment(EquipmentSlot slot) {
         return !getEquipment(slot).isAir();
     }
 
@@ -162,7 +162,7 @@ public interface EquipmentHandler {
      *
      * @param slot the slot of the equipment
      */
-    default void syncEquipment(@NotNull EquipmentSlot slot) {
+    default void syncEquipment(EquipmentSlot slot) {
         Check.stateCondition(!(this instanceof Entity), "Only accessible for Entity");
 
         Entity entity = (Entity) this;
@@ -176,7 +176,7 @@ public interface EquipmentHandler {
      * @return the packet with the equipments
      * @throws IllegalStateException if 'this' is not an {@link Entity}
      */
-    default @NotNull EntityEquipmentPacket getEquipmentsPacket() {
+    default EntityEquipmentPacket getEquipmentsPacket() {
         Check.stateCondition(!(this instanceof Entity), "Only accessible for Entity");
         return new EntityEquipmentPacket(((Entity) this).getEntityId(), Map.of(
                 EquipmentSlot.MAIN_HAND, getItemInMainHand(),

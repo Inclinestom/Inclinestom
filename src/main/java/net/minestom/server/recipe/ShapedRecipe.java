@@ -16,12 +16,12 @@ public abstract class ShapedRecipe extends Recipe {
     private final List<DeclareRecipesPacket.Ingredient> ingredients;
     private ItemStack result;
 
-    protected ShapedRecipe(@NotNull String recipeId,
+    protected ShapedRecipe(String recipeId,
                            int width,
                            int height,
-                           @NotNull String group,
+                           String group,
                            @Nullable List<DeclareRecipesPacket.Ingredient> ingredients,
-                           @NotNull ItemStack result) {
+                           ItemStack result) {
         super(Type.SHAPED, recipeId);
         this.width = width;
         this.height = height;
@@ -43,7 +43,7 @@ public abstract class ShapedRecipe extends Recipe {
         return group;
     }
 
-    public void setGroup(@NotNull String group) {
+    public void setGroup(String group) {
         this.group = group;
     }
 
@@ -65,7 +65,7 @@ public abstract class ShapedRecipe extends Recipe {
         return result;
     }
 
-    public void setResult(@NotNull ItemStack result) {
+    public void setResult(ItemStack result) {
         this.result = result;
     }
 }

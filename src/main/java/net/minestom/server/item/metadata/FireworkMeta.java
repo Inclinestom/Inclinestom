@@ -18,7 +18,7 @@ public record FireworkMeta(TagReadable readable) implements ItemMetaView<Firewor
             .path("Fireworks").list().defaultValue(List.of());
     private static final Tag<Byte> FLIGHT_DURATION = Tag.Byte("Flight").path("Fireworks");
 
-    public @NotNull List<FireworkEffect> getEffects() {
+    public List<FireworkEffect> getEffects() {
         return getTag(EFFECTS);
     }
 
@@ -27,7 +27,7 @@ public record FireworkMeta(TagReadable readable) implements ItemMetaView<Firewor
     }
 
     @Override
-    public <T> @UnknownNullability T getTag(@NotNull Tag<T> tag) {
+    public <T> @UnknownNullability T getTag(Tag<T> tag) {
         return readable.getTag(tag);
     }
 

@@ -76,7 +76,7 @@ public class PlayerSocketConnection extends PlayerConnection {
 
     private final ListenerHandle<PlayerPacketOutEvent> outgoing = EventDispatcher.getHandle(PlayerPacketOutEvent.class);
 
-    public PlayerSocketConnection(@NotNull Worker worker, @NotNull SocketChannel channel, SocketAddress remoteAddress) {
+    public PlayerSocketConnection(Worker worker, SocketChannel channel, SocketAddress remoteAddress) {
         super();
         this.worker = worker;
         this.workerQueue = worker.queue();
@@ -136,7 +136,7 @@ public class PlayerSocketConnection extends PlayerConnection {
      * @param secretKey the secret key to use in the encryption
      * @throws IllegalStateException if encryption is already enabled for this connection
      */
-    public void setEncryptionKey(@NotNull SecretKey secretKey) {
+    public void setEncryptionKey(SecretKey secretKey) {
         Check.stateCondition(encryptionContext != null, "Encryption is already enabled!");
         this.encryptionContext = new EncryptionContext(MojangCrypt.getCipher(1, secretKey), MojangCrypt.getCipher(2, secretKey));
     }
@@ -155,13 +155,13 @@ public class PlayerSocketConnection extends PlayerConnection {
     }
 
     @Override
-    public void sendPacket(@NotNull SendablePacket packet) {
+    public void sendPacket(SendablePacket packet) {
         final boolean compressed = this.compressed;
         this.workerQueue.relaxedOffer(() -> writePacketSync(packet, compressed));
     }
 
     @Override
-    public void sendPackets(@NotNull Collection<SendablePacket> packets) {
+    public void sendPackets(Collection<SendablePacket> packets) {
         final List<SendablePacket> packetsCopy = List.copyOf(packets);
         final boolean compressed = this.compressed;
         this.workerQueue.relaxedOffer(() -> {
@@ -170,17 +170,17 @@ public class PlayerSocketConnection extends PlayerConnection {
     }
 
     @ApiStatus.Internal
-    public void write(@NotNull ByteBuffer buffer, int index, int length) {
+    public void write(ByteBuffer buffer, int index, int length) {
         this.workerQueue.relaxedOffer(() -> writeBufferSync(buffer, index, length));
     }
 
     @ApiStatus.Internal
-    public void write(@NotNull ByteBuffer buffer) {
+    public void write(ByteBuffer buffer) {
         write(buffer, buffer.position(), buffer.remaining());
     }
 
     @Override
-    public @NotNull SocketAddress getRemoteAddress() {
+    public SocketAddress getRemoteAddress() {
         return remoteAddress;
     }
 
@@ -192,7 +192,7 @@ public class PlayerSocketConnection extends PlayerConnection {
      * @param remoteAddress the new connection remote address
      */
     @ApiStatus.Internal
-    public void setRemoteAddress(@NotNull SocketAddress remoteAddress) {
+    public void setRemoteAddress(SocketAddress remoteAddress) {
         this.remoteAddress = remoteAddress;
     }
 
@@ -208,7 +208,7 @@ public class PlayerSocketConnection extends PlayerConnection {
         });
     }
 
-    public @NotNull SocketChannel getChannel() {
+    public SocketChannel getChannel() {
         return channel;
     }
 
@@ -216,7 +216,7 @@ public class PlayerSocketConnection extends PlayerConnection {
         return gameProfile;
     }
 
-    public void UNSAFE_setProfile(@NotNull GameProfile gameProfile) {
+    public void UNSAFE_setProfile(GameProfile gameProfile) {
         this.gameProfile = gameProfile;
     }
 
@@ -236,7 +236,7 @@ public class PlayerSocketConnection extends PlayerConnection {
      *
      * @param loginUsername the new login username field
      */
-    public void UNSAFE_setLoginUsername(@NotNull String loginUsername) {
+    public void UNSAFE_setLoginUsername(String loginUsername) {
         this.loginUsername = loginUsername;
     }
 
@@ -296,7 +296,7 @@ public class PlayerSocketConnection extends PlayerConnection {
      * @param channel   the packet channel
      * @throws IllegalStateException if a messageId with the value {@code messageId} already exists for this connection
      */
-    public void addPluginRequestEntry(int messageId, @NotNull String channel) {
+    public void addPluginRequestEntry(int messageId, String channel) {
         if (!getConnectionState().equals(ConnectionState.LOGIN)) {
             return;
         }
@@ -317,7 +317,7 @@ public class PlayerSocketConnection extends PlayerConnection {
     }
 
     @Override
-    public void setConnectionState(@NotNull ConnectionState connectionState) {
+    public void setConnectionState(ConnectionState connectionState) {
         super.setConnectionState(connectionState);
         // Clear the plugin request map (since it is not used anymore)
         if (connectionState.equals(ConnectionState.PLAY)) {
@@ -374,7 +374,7 @@ public class PlayerSocketConnection extends PlayerConnection {
         }
     }
 
-    private void writeBufferSync(@NotNull ByteBuffer buffer, int index, int length) {
+    private void writeBufferSync(ByteBuffer buffer, int index, int length) {
         // Encrypt data
         final EncryptionContext encryptionContext = this.encryptionContext;
         if (encryptionContext != null) { // Encryption support
@@ -392,7 +392,7 @@ public class PlayerSocketConnection extends PlayerConnection {
         writeBufferSync0(buffer, index, length);
     }
 
-    private void writeBufferSync0(@NotNull ByteBuffer buffer, int index, int length) {
+    private void writeBufferSync0(ByteBuffer buffer, int index, int length) {
         BinaryBuffer localBuffer = tickBuffer.getPlain();
         if (localBuffer == null)
             return; // Socket is closed

@@ -9,7 +9,7 @@ public class LeashKnotMeta extends EntityMeta {
     public static final byte OFFSET = EntityMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 0;
 
-    public LeashKnotMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
+    public LeashKnotMeta(Entity entity, Metadata metadata) {
         super(entity, metadata);
     }
 

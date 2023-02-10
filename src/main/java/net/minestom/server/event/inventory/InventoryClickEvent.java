@@ -22,9 +22,9 @@ public class InventoryClickEvent implements InventoryEvent, PlayerInstanceEvent 
     private final ItemStack clickedItem;
     private final ItemStack cursorItem;
 
-    public InventoryClickEvent(@Nullable Inventory inventory, @NotNull Player player,
-                               int slot, @NotNull ClickType clickType,
-                               @NotNull ItemStack clicked, @NotNull ItemStack cursor) {
+    public InventoryClickEvent(@Nullable Inventory inventory, Player player,
+                               int slot, ClickType clickType,
+                               ItemStack clicked, ItemStack cursor) {
         this.inventory = inventory;
         this.player = player;
         this.slot = slot;

@@ -6,14 +6,14 @@ import org.jetbrains.annotations.NotNull;
 
 import static net.minestom.server.network.NetworkBuffer.BOOLEAN;
 
-public record ClientSetRecipeBookStatePacket(@NotNull BookType bookType,
+public record ClientSetRecipeBookStatePacket(BookType bookType,
                                              boolean bookOpen, boolean filterActive) implements ClientPacket {
-    public ClientSetRecipeBookStatePacket(@NotNull NetworkBuffer reader) {
+    public ClientSetRecipeBookStatePacket(NetworkBuffer reader) {
         this(reader.readEnum(BookType.class), reader.read(BOOLEAN), reader.read(BOOLEAN));
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.writeEnum(BookType.class, bookType);
         writer.write(BOOLEAN, bookOpen);
         writer.write(BOOLEAN, filterActive);

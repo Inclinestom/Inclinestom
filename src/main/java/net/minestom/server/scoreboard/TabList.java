@@ -50,7 +50,7 @@ public class TabList implements Scoreboard {
     }
 
     @Override
-    public boolean addViewer(@NotNull Player player) {
+    public boolean addViewer(Player player) {
         final boolean result = this.viewers.add(player);
         if (result) {
             player.sendPacket(this.getCreationObjectivePacket(Component.empty(), this.type));
@@ -60,7 +60,7 @@ public class TabList implements Scoreboard {
     }
 
     @Override
-    public boolean removeViewer(@NotNull Player player) {
+    public boolean removeViewer(Player player) {
         final boolean result = this.viewers.remove(player);
         if (result) {
             player.sendPacket(this.getDestructionObjectivePacket());

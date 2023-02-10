@@ -30,7 +30,7 @@ public class EntityProjectile extends Entity {
 
     private final Entity shooter;
 
-    public EntityProjectile(@Nullable Entity shooter, @NotNull EntityType entityType) {
+    public EntityProjectile(@Nullable Entity shooter, EntityType entityType) {
         super(entityType);
         this.shooter = shooter;
         setup();
@@ -59,7 +59,7 @@ public class EntityProjectile extends Entity {
         shoot(from, to, shootEvent.getPower(), shootEvent.getSpread());
     }
 
-    private void shoot(@NotNull Point from, @NotNull Point to, double power, double spread) {
+    private void shoot(Point from, Point to, double power, double spread) {
         double dx = to.x() - from.x();
         double dy = to.y() - from.y();
         double dz = to.z() - from.z();

@@ -12,7 +12,7 @@ public class MobMeta extends LivingEntityMeta {
     private final static byte IS_LEFT_HANDED_BIT = 0x02;
     private final static byte IS_AGGRESSIVE_BIT = 0x04;
 
-    protected MobMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
+    protected MobMeta(Entity entity, Metadata metadata) {
         super(entity, metadata);
     }
 

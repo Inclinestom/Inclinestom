@@ -17,12 +17,12 @@ public record WritableBookMeta(TagReadable readable) implements ItemMetaView<Wri
                     textComponent -> LegacyComponentSerializer.legacySection().serialize(textComponent))
             .list().defaultValue(List.of());
 
-    public @NotNull List<@NotNull Component> getPages() {
+    public List<Component> getPages() {
         return getTag(PAGES);
     }
 
     @Override
-    public <T> @UnknownNullability T getTag(@NotNull Tag<T> tag) {
+    public <T> @UnknownNullability T getTag(Tag<T> tag) {
         return readable.getTag(tag);
     }
 
@@ -31,7 +31,7 @@ public record WritableBookMeta(TagReadable readable) implements ItemMetaView<Wri
             this(TagHandler.newHandler());
         }
 
-        public Builder pages(@NotNull List<@NotNull Component> pages) {
+        public Builder pages(List<Component> pages) {
             setTag(PAGES, pages);
             return this;
         }

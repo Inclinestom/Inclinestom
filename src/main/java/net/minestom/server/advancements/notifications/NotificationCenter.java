@@ -31,7 +31,7 @@ public final class NotificationCenter {
      * @param notification the {@link Notification} to send
      * @param player       the player to send the notification to
      */
-    public static void send(@NotNull Notification notification, @NotNull Player player) {
+    public static void send(Notification notification, Player player) {
         player.sendPacket(createPacket(notification));
         player.sendPacket(REMOVE_PACKET);
     }
@@ -42,7 +42,7 @@ public final class NotificationCenter {
      * @param notification the {@link Notification} to send
      * @param players      the collection of players to send the notification to
      */
-    public static void send(@NotNull Notification notification, @NotNull Collection<Player> players) {
+    public static void send(Notification notification, Collection<Player> players) {
         // Can't use PacketWriterUtils because we need the packets to come in the correct order
         players.forEach(player -> send(notification, player));
     }

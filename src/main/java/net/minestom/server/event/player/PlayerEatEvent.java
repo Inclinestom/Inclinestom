@@ -15,7 +15,7 @@ public class PlayerEatEvent implements ItemEvent, PlayerInstanceEvent {
     private final ItemStack foodItem;
     private final Player.Hand hand;
 
-    public PlayerEatEvent(@NotNull Player player, @NotNull ItemStack foodItem, @NotNull Player.Hand hand) {
+    public PlayerEatEvent(Player player, ItemStack foodItem, Player.Hand hand) {
         this.player = player;
         this.foodItem = foodItem;
         this.hand = hand;
@@ -28,16 +28,16 @@ public class PlayerEatEvent implements ItemEvent, PlayerInstanceEvent {
      * @deprecated use getItemStack() for the eaten item
      */
     @Deprecated
-    public @NotNull ItemStack getFoodItem() {
+    public ItemStack getFoodItem() {
         return foodItem;
     }
 
-    public @NotNull Player.Hand getHand() {
+    public Player.Hand getHand() {
         return hand;
     }
 
     @Override
-    public @NotNull Player getPlayer() {
+    public Player getPlayer() {
         return player;
     }
 
@@ -47,5 +47,5 @@ public class PlayerEatEvent implements ItemEvent, PlayerInstanceEvent {
      * @return the food item
      */
     @Override
-    public @NotNull ItemStack getItemStack() { return foodItem; }
+    public ItemStack getItemStack() { return foodItem; }
 }

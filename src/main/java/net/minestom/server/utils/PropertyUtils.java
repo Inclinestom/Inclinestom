@@ -20,7 +20,7 @@ public final class PropertyUtils {
     }
 
     @Contract("_, null -> null; _, !null -> !null")
-    public static String getString(@NotNull String name, @Nullable String defaultValue) {
+    public static String getString(String name, @Nullable String defaultValue) {
         return System.getProperty(name, defaultValue);
     }
 }

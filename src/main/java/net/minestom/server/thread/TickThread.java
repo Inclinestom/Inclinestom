@@ -92,7 +92,7 @@ public final class TickThread extends MinestomThread {
      *
      * @return the thread lock
      */
-    public @NotNull ReentrantLock lock() {
+    public ReentrantLock lock() {
         return lock;
     }
 

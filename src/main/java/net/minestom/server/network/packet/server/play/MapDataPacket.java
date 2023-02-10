@@ -12,13 +12,13 @@ import java.util.List;
 import static net.minestom.server.network.NetworkBuffer.*;
 
 public record MapDataPacket(int mapId, byte scale, boolean locked,
-                            boolean trackingPosition, @NotNull List<Icon> icons,
+                            boolean trackingPosition, List<Icon> icons,
                             @Nullable MapDataPacket.ColorContent colorContent) implements ServerPacket {
     public MapDataPacket {
         icons = List.copyOf(icons);
     }
 
-    public MapDataPacket(@NotNull NetworkBuffer reader) {
+    public MapDataPacket(NetworkBuffer reader) {
         this(read(reader));
     }
 
@@ -28,7 +28,7 @@ public record MapDataPacket(int mapId, byte scale, boolean locked,
                 packet.colorContent);
     }
 
-    private static MapDataPacket read(@NotNull NetworkBuffer reader) {
+    private static MapDataPacket read(NetworkBuffer reader) {
         var mapId = reader.read(VAR_INT);
         var scale = reader.read(BYTE);
         var locked = reader.read(BOOLEAN);
@@ -47,7 +47,7 @@ public record MapDataPacket(int mapId, byte scale, boolean locked,
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(VAR_INT, mapId);
         writer.write(BYTE, scale);
         writer.write(BOOLEAN, locked);
@@ -67,12 +67,12 @@ public record MapDataPacket(int mapId, byte scale, boolean locked,
 
     public record Icon(int type, byte x, byte z, byte direction,
                        @Nullable Component displayName) implements NetworkBuffer.Writer {
-        public Icon(@NotNull NetworkBuffer reader) {
+        public Icon(NetworkBuffer reader) {
             this(reader.read(VAR_INT), reader.read(BYTE), reader.read(BYTE), reader.read(BYTE),
                     reader.read(BOOLEAN) ? reader.read(COMPONENT) : null);
         }
 
-        public void write(@NotNull NetworkBuffer writer) {
+        public void write(NetworkBuffer writer) {
             writer.write(VAR_INT, type);
             writer.write(BYTE, x);
             writer.write(BYTE, z);
@@ -83,13 +83,13 @@ public record MapDataPacket(int mapId, byte scale, boolean locked,
     }
 
     public record ColorContent(byte columns, byte rows, byte x, byte z,
-                               byte @NotNull [] data) implements NetworkBuffer.Writer {
-        public ColorContent(@NotNull NetworkBuffer reader) {
+                               byte [] data) implements NetworkBuffer.Writer {
+        public ColorContent(NetworkBuffer reader) {
             this(reader.read(BYTE), reader.read(BYTE), reader.read(BYTE), reader.read(BYTE),
                     reader.read(BYTE_ARRAY));
         }
 
-        public void write(@NotNull NetworkBuffer writer) {
+        public void write(NetworkBuffer writer) {
             writer.write(BYTE, columns);
             writer.write(BYTE, rows);
             writer.write(BYTE, x);

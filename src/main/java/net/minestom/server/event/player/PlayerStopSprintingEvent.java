@@ -11,12 +11,12 @@ public class PlayerStopSprintingEvent implements PlayerInstanceEvent {
 
     private final Player player;
 
-    public PlayerStopSprintingEvent(@NotNull Player player) {
+    public PlayerStopSprintingEvent(Player player) {
         this.player = player;
     }
 
     @Override
-    public @NotNull Player getPlayer() {
+    public Player getPlayer() {
         return player;
     }
 }

@@ -15,7 +15,7 @@ public class FallingBlockMeta extends EntityMeta implements ObjectDataProvider {
 
     private Block block = Block.STONE;
 
-    public FallingBlockMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
+    public FallingBlockMeta(Entity entity, Metadata metadata) {
         super(entity, metadata);
     }
 
@@ -38,7 +38,7 @@ public class FallingBlockMeta extends EntityMeta implements ObjectDataProvider {
      *
      * @param block which block to display.
      */
-    public void setBlock(@NotNull Block block) {
+    public void setBlock(Block block) {
         this.block = block;
     }
 

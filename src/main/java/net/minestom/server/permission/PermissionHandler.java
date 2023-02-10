@@ -32,7 +32,7 @@ public interface PermissionHandler {
      *
      * @param permission the permission to add
      */
-    default void addPermission(@NotNull Permission permission) {
+    default void addPermission(Permission permission) {
         getAllPermissions().add(permission);
     }
 
@@ -41,7 +41,7 @@ public interface PermissionHandler {
      *
      * @param permission the permission to remove
      */
-    default void removePermission(@NotNull Permission permission) {
+    default void removePermission(Permission permission) {
         getAllPermissions().remove(permission);
     }
 
@@ -50,7 +50,7 @@ public interface PermissionHandler {
      *
      * @param permissionName the permission name
      */
-    default void removePermission(@NotNull String permissionName) {
+    default void removePermission(String permissionName) {
         getAllPermissions().removeIf(permission -> permission.getPermissionName().equals(permissionName));
     }
 
@@ -62,7 +62,7 @@ public interface PermissionHandler {
      * @param permission the permission to check
      * @return true if the handler has the permission, false otherwise
      */
-    default boolean hasPermission(@NotNull Permission permission) {
+    default boolean hasPermission(Permission permission) {
         for (Permission permissionLoop : getAllPermissions()) {
             if (permissionLoop.equals(permission)) {
                 return true;
@@ -80,7 +80,7 @@ public interface PermissionHandler {
      * @return the permission from its name, null if not found
      */
     @Nullable
-    default Permission getPermission(@NotNull String permissionName) {
+    default Permission getPermission(String permissionName) {
         for (Permission permission : getAllPermissions()) {
             // Verify permission name equality
             if (permission.getPermissionName().equals(permissionName)) {
@@ -99,7 +99,7 @@ public interface PermissionHandler {
      *                           null means that only the permission name will be used
      * @return true if the handler has the permission, false otherwise
      */
-    default boolean hasPermission(@NotNull String permissionName, @Nullable PermissionVerifier permissionVerifier) {
+    default boolean hasPermission(String permissionName, @Nullable PermissionVerifier permissionVerifier) {
         final Permission permission = getPermission(permissionName);
 
         if (permission != null) {
@@ -115,7 +115,7 @@ public interface PermissionHandler {
      * @param permissionName the permission name
      * @return true if the handler has the permission, false otherwise
      */
-    default boolean hasPermission(@NotNull String permissionName) {
+    default boolean hasPermission(String permissionName) {
         return hasPermission(permissionName, null);
     }
 

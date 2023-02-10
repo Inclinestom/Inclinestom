@@ -20,7 +20,7 @@ public class EntityShootEvent implements EntityInstanceEvent, CancellableEvent {
 
     private boolean cancelled;
 
-    public EntityShootEvent(@NotNull Entity entity, @NotNull Entity projectile, @NotNull Point to, double power, double spread) {
+    public EntityShootEvent(Entity entity, Entity projectile, Point to, double power, double spread) {
         this.entity = entity;
         this.projectile = projectile;
         this.to = to;
@@ -93,7 +93,7 @@ public class EntityShootEvent implements EntityInstanceEvent, CancellableEvent {
     }
 
     @Override
-    public @NotNull Entity getEntity() {
+    public Entity getEntity() {
         return entity;
     }
 }

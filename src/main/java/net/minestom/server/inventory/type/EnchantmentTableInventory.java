@@ -14,11 +14,11 @@ public class EnchantmentTableInventory extends Inventory {
     private final short[] enchantmentShown = new short[EnchantmentSlot.values().length];
     private final short[] enchantmentLevel = new short[EnchantmentSlot.values().length];
 
-    public EnchantmentTableInventory(@NotNull Component title) {
+    public EnchantmentTableInventory(Component title) {
         super(InventoryType.ENCHANTMENT, title);
     }
 
-    public EnchantmentTableInventory(@NotNull String title) {
+    public EnchantmentTableInventory(String title) {
         super(InventoryType.ENCHANTMENT, title);
     }
 

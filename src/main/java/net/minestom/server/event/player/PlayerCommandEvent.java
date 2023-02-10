@@ -15,7 +15,7 @@ public class PlayerCommandEvent implements PlayerInstanceEvent, CancellableEvent
 
     private boolean cancelled;
 
-    public PlayerCommandEvent(@NotNull Player player, @NotNull String command) {
+    public PlayerCommandEvent(Player player, String command) {
         this.player = player;
         this.command = command;
     }
@@ -35,7 +35,7 @@ public class PlayerCommandEvent implements PlayerInstanceEvent, CancellableEvent
      *
      * @param command the new command
      */
-    public void setCommand(@NotNull String command) {
+    public void setCommand(String command) {
         this.command = command;
     }
 
@@ -50,7 +50,7 @@ public class PlayerCommandEvent implements PlayerInstanceEvent, CancellableEvent
     }
 
     @Override
-    public @NotNull Player getPlayer() {
+    public Player getPlayer() {
         return player;
     }
 }

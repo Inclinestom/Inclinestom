@@ -29,9 +29,9 @@ public class PlayerBlockInteractEvent implements PlayerInstanceEvent, BlockEvent
 
     private boolean cancelled;
 
-    public PlayerBlockInteractEvent(@NotNull Player player, @NotNull Player.Hand hand,
-                                    @NotNull Block block, @NotNull Point blockPosition, @NotNull Point cursorPosition,
-                                    @NotNull BlockFace blockFace) {
+    public PlayerBlockInteractEvent(Player player, Player.Hand hand,
+                                    Block block, Point blockPosition, Point cursorPosition,
+                                    BlockFace blockFace) {
         this.player = player;
         this.hand = hand;
         this.block = block;
@@ -53,7 +53,7 @@ public class PlayerBlockInteractEvent implements PlayerInstanceEvent, BlockEvent
     }
 
     @Override
-    public @NotNull Block getBlock() {
+    public Block getBlock() {
         return block;
     }
 
@@ -62,7 +62,7 @@ public class PlayerBlockInteractEvent implements PlayerInstanceEvent, BlockEvent
      *
      * @return the block position
      */
-    public @NotNull Point getBlockPosition() {
+    public Point getBlockPosition() {
         return blockPosition;
     }
 
@@ -71,7 +71,7 @@ public class PlayerBlockInteractEvent implements PlayerInstanceEvent, BlockEvent
      *
      * @return the hand used
      */
-    public @NotNull Player.Hand getHand() {
+    public Player.Hand getHand() {
         return hand;
     }
 
@@ -80,7 +80,7 @@ public class PlayerBlockInteractEvent implements PlayerInstanceEvent, BlockEvent
      *
      * @return the block face
      */
-    public @NotNull BlockFace getBlockFace() {
+    public BlockFace getBlockFace() {
         return blockFace;
     }
 
@@ -95,7 +95,7 @@ public class PlayerBlockInteractEvent implements PlayerInstanceEvent, BlockEvent
     }
 
     @Override
-    public @NotNull Player getPlayer() {
+    public Player getPlayer() {
         return player;
     }
 }

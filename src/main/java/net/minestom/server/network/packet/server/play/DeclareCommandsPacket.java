@@ -12,13 +12,13 @@ import java.util.function.Function;
 
 import static net.minestom.server.network.NetworkBuffer.*;
 
-public record DeclareCommandsPacket(@NotNull List<Node> nodes,
+public record DeclareCommandsPacket(List<Node> nodes,
                                     int rootIndex) implements ServerPacket {
     public DeclareCommandsPacket {
         nodes = List.copyOf(nodes);
     }
 
-    public DeclareCommandsPacket(@NotNull NetworkBuffer reader) {
+    public DeclareCommandsPacket(NetworkBuffer reader) {
         this(reader.readCollection(r -> {
             Node node = new Node();
             node.read(r);
@@ -27,7 +27,7 @@ public record DeclareCommandsPacket(@NotNull List<Node> nodes,
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.writeCollection(nodes);
         writer.write(VAR_INT, rootIndex);
     }
@@ -47,7 +47,7 @@ public record DeclareCommandsPacket(@NotNull List<Node> nodes,
         public String suggestionsType = ""; // Only if flags 0x10
 
         @Override
-        public void write(@NotNull NetworkBuffer writer) {
+        public void write(NetworkBuffer writer) {
             writer.write(BYTE, flags);
 
             if (children != null && children.length > 262114) {
@@ -76,7 +76,7 @@ public record DeclareCommandsPacket(@NotNull List<Node> nodes,
             }
         }
 
-        public void read(@NotNull NetworkBuffer reader) {
+        public void read(NetworkBuffer reader) {
             flags = reader.read(BYTE);
             children = reader.read(VAR_INT_ARRAY);
             if ((flags & 0x08) != 0) {
@@ -98,7 +98,7 @@ public record DeclareCommandsPacket(@NotNull List<Node> nodes,
             }
         }
 
-        private byte[] getProperties(@NotNull NetworkBuffer reader, String parser) {
+        private byte[] getProperties(NetworkBuffer reader, String parser) {
             final Function<Function<NetworkBuffer, ?>, byte[]> minMaxExtractor = (via) -> reader.extractBytes((extractor) -> {
                 byte flags = extractor.read(BYTE);
                 if ((flags & 0x01) == 0x01) {
@@ -131,7 +131,7 @@ public record DeclareCommandsPacket(@NotNull List<Node> nodes,
         }
     }
 
-    public static byte getFlag(@NotNull NodeType type, boolean executable, boolean redirect, boolean suggestionType) {
+    public static byte getFlag(NodeType type, boolean executable, boolean redirect, boolean suggestionType) {
         byte result = (byte) type.ordinal();
         if (executable) result |= 0x04;
         if (redirect) result |= 0x08;

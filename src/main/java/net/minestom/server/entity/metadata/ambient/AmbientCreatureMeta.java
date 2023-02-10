@@ -9,7 +9,7 @@ public class AmbientCreatureMeta extends MobMeta {
     public static final byte OFFSET = MobMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 0;
 
-    protected AmbientCreatureMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
+    protected AmbientCreatureMeta(Entity entity, Metadata metadata) {
         super(entity, metadata);
     }
 

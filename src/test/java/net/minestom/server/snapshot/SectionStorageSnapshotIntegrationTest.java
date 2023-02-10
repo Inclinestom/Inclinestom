@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @EnvTest
-public class ChunkSnapshotIntegrationTest {
+public class SectionStorageSnapshotIntegrationTest {
 
     @Test
     public void blocks(Env env) {

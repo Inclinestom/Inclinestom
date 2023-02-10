@@ -11,7 +11,7 @@ public enum SuggestionType {
 
     private final String identifier;
 
-    SuggestionType(@NotNull String identifier) {
+    SuggestionType(String identifier) {
         this.identifier = identifier;
     }
 

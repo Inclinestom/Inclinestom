@@ -44,7 +44,7 @@ public record Vec(double x, double y, double z) implements Point {
      * @param point the point to convert
      * @return the converted vector
      */
-    public static @NotNull Vec fromPoint(@NotNull Point point) {
+    public static Vec fromPoint(Point point) {
         if (point instanceof Vec vec) return vec;
         return new Vec(point.x(), point.y(), point.z());
     }
@@ -56,143 +56,143 @@ public record Vec(double x, double y, double z) implements Point {
      * @return the created point
      */
     @Contract(pure = true)
-    public @NotNull Vec apply(@NotNull Operator operator) {
+    public Vec apply(Operator operator) {
         return operator.apply(x, y, z);
     }
 
     @Override
     @Contract(pure = true)
-    public @NotNull Vec withX(@NotNull DoubleUnaryOperator operator) {
+    public Vec withX(DoubleUnaryOperator operator) {
         return new Vec(operator.applyAsDouble(x), y, z);
     }
 
     @Override
     @Contract(pure = true)
-    public @NotNull Vec withX(double x) {
+    public Vec withX(double x) {
         return new Vec(x, y, z);
     }
 
     @Override
     @Contract(pure = true)
-    public @NotNull Vec withY(@NotNull DoubleUnaryOperator operator) {
+    public Vec withY(DoubleUnaryOperator operator) {
         return new Vec(x, operator.applyAsDouble(y), z);
     }
 
     @Override
     @Contract(pure = true)
-    public @NotNull Vec withY(double y) {
+    public Vec withY(double y) {
         return new Vec(x, y, z);
     }
 
     @Override
     @Contract(pure = true)
-    public @NotNull Vec withZ(@NotNull DoubleUnaryOperator operator) {
+    public Vec withZ(DoubleUnaryOperator operator) {
         return new Vec(x, y, operator.applyAsDouble(z));
     }
 
     @Override
     @Contract(pure = true)
-    public @NotNull Vec withZ(double z) {
+    public Vec withZ(double z) {
         return new Vec(x, y, z);
     }
 
     @Override
-    public @NotNull Vec add(double x, double y, double z) {
+    public Vec add(double x, double y, double z) {
         return new Vec(this.x + x, this.y + y, this.z + z);
     }
 
     @Override
-    public @NotNull Vec add(@NotNull Point point) {
+    public Vec add(Point point) {
         return add(point.x(), point.y(), point.z());
     }
 
     @Override
-    public @NotNull Vec add(double value) {
+    public Vec add(double value) {
         return add(value, value, value);
     }
 
     @Override
-    public @NotNull Vec sub(double x, double y, double z) {
+    public Vec sub(double x, double y, double z) {
         return new Vec(this.x - x, this.y - y, this.z - z);
     }
 
     @Override
-    public @NotNull Vec sub(@NotNull Point point) {
+    public Vec sub(Point point) {
         return sub(point.x(), point.y(), point.z());
     }
 
     @Override
-    public @NotNull Vec sub(double value) {
+    public Vec sub(double value) {
         return sub(value, value, value);
     }
 
     @Override
-    public @NotNull Vec mul(double x, double y, double z) {
+    public Vec mul(double x, double y, double z) {
         return new Vec(this.x * x, this.y * y, this.z * z);
     }
 
     @Override
-    public @NotNull Vec mul(@NotNull Point point) {
+    public Vec mul(Point point) {
         return mul(point.x(), point.y(), point.z());
     }
 
     @Override
-    public @NotNull Vec mul(double value) {
+    public Vec mul(double value) {
         return mul(value, value, value);
     }
 
     @Override
-    public @NotNull Vec div(double x, double y, double z) {
+    public Vec div(double x, double y, double z) {
         return new Vec(this.x / x, this.y / y, this.z / z);
     }
 
     @Override
-    public @NotNull Vec div(@NotNull Point point) {
+    public Vec div(Point point) {
         return div(point.x(), point.y(), point.z());
     }
 
     @Override
-    public @NotNull Vec div(double value) {
+    public Vec div(double value) {
         return div(value, value, value);
     }
 
     @Override
-    public @NotNull Vec relative(@NotNull BlockFace face) {
+    public Vec relative(BlockFace face) {
         return (Vec) Point.super.relative(face);
     }
 
     @Contract(pure = true)
-    public @NotNull Vec neg() {
+    public Vec neg() {
         return new Vec(-x, -y, -z);
     }
 
     @Contract(pure = true)
-    public @NotNull Vec abs() {
+    public Vec abs() {
         return new Vec(Math.abs(x), Math.abs(y), Math.abs(z));
     }
 
     @Contract(pure = true)
-    public @NotNull Vec min(@NotNull Point point) {
+    public Vec min(Point point) {
         return new Vec(Math.min(x, point.x()), Math.min(y, point.y()), Math.min(z, point.z()));
     }
 
     @Contract(pure = true)
-    public @NotNull Vec min(double value) {
+    public Vec min(double value) {
         return new Vec(Math.min(x, value), Math.min(y, value), Math.min(z, value));
     }
 
     @Contract(pure = true)
-    public @NotNull Vec max(@NotNull Point point) {
+    public Vec max(Point point) {
         return new Vec(Math.max(x, point.x()), Math.max(y, point.y()), Math.max(z, point.z()));
     }
 
     @Contract(pure = true)
-    public @NotNull Vec max(double value) {
+    public Vec max(double value) {
         return new Vec(Math.max(x, value), Math.max(y, value), Math.max(z, value));
     }
 
     @Contract(pure = true)
-    public @NotNull Pos asPosition() {
+    public Pos asPosition() {
         return new Pos(x, y, z);
     }
 
@@ -226,7 +226,7 @@ public record Vec(double x, double y, double z) implements Point {
      * @return the same vector
      */
     @Contract(pure = true)
-    public @NotNull Vec normalize() {
+    public Vec normalize() {
         final double length = length();
         return new Vec(x / length, y / length, z / length);
     }
@@ -247,7 +247,7 @@ public record Vec(double x, double y, double z) implements Point {
      * @return angle in radians
      */
     @Contract(pure = true)
-    public double angle(@NotNull Vec vec) {
+    public double angle(Vec vec) {
         final double dot = MathUtils.clamp(dot(vec) / (length() * vec.length()), -1.0, 1.0);
         return Math.acos(dot);
     }
@@ -260,7 +260,7 @@ public record Vec(double x, double y, double z) implements Point {
      * @return dot product
      */
     @Contract(pure = true)
-    public double dot(@NotNull Vec vec) {
+    public double dot(Vec vec) {
         return x * vec.x + y * vec.y + z * vec.z;
     }
 
@@ -277,7 +277,7 @@ public record Vec(double x, double y, double z) implements Point {
      * @return the same vector
      */
     @Contract(pure = true)
-    public @NotNull Vec cross(@NotNull Vec o) {
+    public Vec cross(Vec o) {
         return new Vec(y * o.z - o.y * z,
                 z * o.x - o.z * x,
                 x * o.y - o.x * y);
@@ -296,7 +296,7 @@ public record Vec(double x, double y, double z) implements Point {
      * @return a new, rotated vector
      */
     @Contract(pure = true)
-    public @NotNull Vec rotateAroundX(double angle) {
+    public Vec rotateAroundX(double angle) {
         double angleCos = Math.cos(angle);
         double angleSin = Math.sin(angle);
 
@@ -318,7 +318,7 @@ public record Vec(double x, double y, double z) implements Point {
      * @return a new, rotated vector
      */
     @Contract(pure = true)
-    public @NotNull Vec rotateAroundY(double angle) {
+    public Vec rotateAroundY(double angle) {
         double angleCos = Math.cos(angle);
         double angleSin = Math.sin(angle);
 
@@ -340,7 +340,7 @@ public record Vec(double x, double y, double z) implements Point {
      * @return a new, rotated vector
      */
     @Contract(pure = true)
-    public @NotNull Vec rotateAroundZ(double angle) {
+    public Vec rotateAroundZ(double angle) {
         double angleCos = Math.cos(angle);
         double angleSin = Math.sin(angle);
 
@@ -350,12 +350,12 @@ public record Vec(double x, double y, double z) implements Point {
     }
 
     @Contract(pure = true)
-    public @NotNull Vec rotate(double angleX, double angleY, double angleZ) {
+    public Vec rotate(double angleX, double angleY, double angleZ) {
         return rotateAroundX(angleX).rotateAroundY(angleY).rotateAroundZ(angleZ);
     }
 
     @Contract(pure = true)
-    public @NotNull Vec rotateFromView(float yawDegrees, float pitchDegrees) {
+    public Vec rotateFromView(float yawDegrees, float pitchDegrees) {
         double yaw = Math.toRadians(-1 * (yawDegrees + 90));
         double pitch = Math.toRadians(-pitchDegrees);
 
@@ -383,7 +383,7 @@ public record Vec(double x, double y, double z) implements Point {
     }
 
     @Contract(pure = true)
-    public @NotNull Vec rotateFromView(@NotNull Pos pos) {
+    public Vec rotateFromView(Pos pos) {
         return rotateFromView(pos.yaw(), pos.pitch());
     }
 
@@ -407,7 +407,7 @@ public record Vec(double x, double y, double z) implements Point {
      * @return a new vector
      */
     @Contract(pure = true)
-    public @NotNull Vec rotateAroundAxis(@NotNull Vec axis, double angle) throws IllegalArgumentException {
+    public Vec rotateAroundAxis(Vec axis, double angle) throws IllegalArgumentException {
         return rotateAroundNonUnitAxis(axis.isNormalized() ? axis : axis.normalize(), angle);
     }
 
@@ -430,7 +430,7 @@ public record Vec(double x, double y, double z) implements Point {
      * @return a new vector
      */
     @Contract(pure = true)
-    public @NotNull Vec rotateAroundNonUnitAxis(@NotNull Vec axis, double angle) throws IllegalArgumentException {
+    public Vec rotateAroundNonUnitAxis(Vec axis, double angle) throws IllegalArgumentException {
         double x = x(), y = y(), z = z();
         double x2 = axis.x(), y2 = axis.y(), z2 = axis.z();
         double cosTheta = Math.cos(angle);
@@ -459,14 +459,14 @@ public record Vec(double x, double y, double z) implements Point {
      * @return Linear interpolated vector
      */
     @Contract(pure = true)
-    public @NotNull Vec lerp(@NotNull Vec vec, double alpha) {
+    public Vec lerp(Vec vec, double alpha) {
         return new Vec(x + (alpha * (vec.x - x)),
                 y + (alpha * (vec.y - y)),
                 z + (alpha * (vec.z - z)));
     }
 
     @Contract(pure = true)
-    public @NotNull Vec interpolate(@NotNull Vec target, double alpha, @NotNull Interpolation interpolation) {
+    public Vec interpolate(Vec target, double alpha, Interpolation interpolation) {
         return lerp(target, interpolation.apply(alpha));
     }
 
@@ -487,7 +487,7 @@ public record Vec(double x, double y, double z) implements Point {
                 Math.floor(z)
         );
 
-        @NotNull Vec apply(double x, double y, double z);
+        Vec apply(double x, double y, double z);
     }
 
     @FunctionalInterface

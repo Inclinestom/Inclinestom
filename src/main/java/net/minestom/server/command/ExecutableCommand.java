@@ -9,12 +9,12 @@ import org.jetbrains.annotations.NotNull;
 @ApiStatus.Internal
 @ApiStatus.Experimental
 public interface ExecutableCommand {
-    @NotNull Result execute(@NotNull CommandSender sender);
+    Result execute(CommandSender sender);
 
     interface Result {
-        @NotNull Type type();
+        Type type();
 
-        @NotNull CommandData commandData();
+        CommandData commandData();
 
         enum Type {
             /**

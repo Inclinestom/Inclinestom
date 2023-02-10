@@ -17,17 +17,17 @@ import java.util.function.UnaryOperator;
 import static net.minestom.server.network.NetworkBuffer.*;
 
 public record TabCompletePacket(int transactionId, int start, int length,
-                                @NotNull List<Match> matches) implements ComponentHoldingServerPacket {
+                                List<Match> matches) implements ComponentHoldingServerPacket {
     public TabCompletePacket {
         matches = List.copyOf(matches);
     }
 
-    public TabCompletePacket(@NotNull NetworkBuffer reader) {
+    public TabCompletePacket(NetworkBuffer reader) {
         this(reader.read(VAR_INT), reader.read(VAR_INT), reader.read(VAR_INT), reader.readCollection(Match::new));
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(VAR_INT, transactionId);
         writer.write(VAR_INT, start);
         writer.write(VAR_INT, length);
@@ -40,7 +40,7 @@ public record TabCompletePacket(int transactionId, int start, int length,
     }
 
     @Override
-    public @NotNull Collection<Component> components() {
+    public Collection<Component> components() {
         if (matches.isEmpty()) return List.of();
         List<Component> components = new ArrayList<>(matches.size());
         for (Match match : matches) {
@@ -52,32 +52,32 @@ public record TabCompletePacket(int transactionId, int start, int length,
     }
 
     @Override
-    public @NotNull ServerPacket copyWithOperator(@NotNull UnaryOperator<Component> operator) {
+    public ServerPacket copyWithOperator(UnaryOperator<Component> operator) {
         if (matches.isEmpty()) return this;
         final List<Match> updatedMatches = matches.stream().map(match -> match.copyWithOperator(operator)).toList();
         return new TabCompletePacket(transactionId, start, length, updatedMatches);
 
     }
 
-    public record Match(@NotNull String match,
+    public record Match(String match,
                         @Nullable Component tooltip) implements NetworkBuffer.Writer, ComponentHolder<Match> {
-        public Match(@NotNull NetworkBuffer reader) {
+        public Match(NetworkBuffer reader) {
             this(reader.read(STRING), reader.read(BOOLEAN) ? reader.read(COMPONENT) : null);
         }
 
         @Override
-        public void write(@NotNull NetworkBuffer writer) {
+        public void write(NetworkBuffer writer) {
             writer.write(STRING, match);
             writer.writeOptional(COMPONENT, tooltip);
         }
 
         @Override
-        public @NotNull Collection<Component> components() {
+        public Collection<Component> components() {
             return tooltip != null ? List.of(tooltip) : List.of();
         }
 
         @Override
-        public @NotNull Match copyWithOperator(@NotNull UnaryOperator<Component> operator) {
+        public Match copyWithOperator(UnaryOperator<Component> operator) {
             return tooltip != null ? new Match(match, operator.apply(tooltip)) : this;
         }
     }

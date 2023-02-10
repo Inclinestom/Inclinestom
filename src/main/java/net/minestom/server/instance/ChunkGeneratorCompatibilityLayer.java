@@ -13,9 +13,9 @@ import java.util.List;
  * Provides full compatibility for the deprecated {@link ChunkGenerator}
  */
 @SuppressWarnings("deprecation")
-record ChunkGeneratorCompatibilityLayer(@NotNull ChunkGenerator chunkGenerator) implements Generator {
+record ChunkGeneratorCompatibilityLayer(ChunkGenerator chunkGenerator) implements Generator {
     @Override
-    public void generate(@NotNull GenerationUnit unit) {
+    public void generate(GenerationUnit unit) {
         if (!(unit instanceof GeneratorImpl.UnitImpl impl) ||
                 !(impl.modifier() instanceof GeneratorImpl.AreaModifierImpl modifier && modifier.chunk() != null)) {
             throw new IllegalArgumentException("Invalid unit");
@@ -24,7 +24,7 @@ record ChunkGeneratorCompatibilityLayer(@NotNull ChunkGenerator chunkGenerator) 
         final int startY = unit.absoluteStart().blockY();
         ChunkBatch batch = new ChunkBatch() {
             @Override
-            public void setBlock(int x, int y, int z, @NotNull Block block) {
+            public void setBlock(int x, int y, int z, Block block) {
                 unit.modifier().setRelative(x, y - startY, z, block);
             }
         };

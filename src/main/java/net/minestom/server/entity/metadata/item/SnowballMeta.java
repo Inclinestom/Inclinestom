@@ -9,7 +9,7 @@ public class SnowballMeta extends ItemContainingMeta {
     public static final byte OFFSET = ItemContainingMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 0;
 
-    public SnowballMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
+    public SnowballMeta(Entity entity, Metadata metadata) {
         super(entity, metadata, Material.SNOWBALL);
     }
 

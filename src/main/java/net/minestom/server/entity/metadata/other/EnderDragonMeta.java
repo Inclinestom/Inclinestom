@@ -9,7 +9,7 @@ public class EnderDragonMeta extends MobMeta {
     public static final byte OFFSET = MobMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 0;
 
-    public EnderDragonMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
+    public EnderDragonMeta(Entity entity, Metadata metadata) {
         super(entity, metadata);
     }
 
@@ -18,7 +18,7 @@ public class EnderDragonMeta extends MobMeta {
         return Phase.VALUES[super.metadata.getIndex(OFFSET, 0)];
     }
 
-    public void setPhase(@NotNull Phase value) {
+    public void setPhase(Phase value) {
         super.metadata.setIndex(OFFSET, Metadata.VarInt(value.ordinal()));
     }
 

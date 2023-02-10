@@ -32,7 +32,7 @@ public final class ChunkUtils {
      * @param eachCallback the optional callback when a chunk get loaded
      * @return a {@link CompletableFuture} completed once all chunks have been processed
      */
-    public static @NotNull CompletableFuture<Void> optionalLoadAll(@NotNull Instance instance, long @NotNull [] chunks,
+    public static CompletableFuture<Void> optionalLoadAll(Instance instance, long [] chunks,
                                                                    @Nullable Consumer<Chunk> eachCallback) {
         CompletableFuture<Void> completableFuture = new CompletableFuture<>();
         AtomicInteger counter = new AtomicInteger(0);
@@ -62,12 +62,12 @@ public final class ChunkUtils {
      * @param z        instance Z coordinate
      * @return true if the chunk is loaded, false otherwise
      */
-    public static boolean isLoaded(@NotNull Instance instance, double x, double z) {
+    public static boolean isLoaded(Instance instance, double x, double z) {
         final Chunk chunk = instance.getChunk(getChunkCoordinate(x), getChunkCoordinate(z));
         return isLoaded(chunk);
     }
 
-    public static boolean isLoaded(@NotNull Instance instance, @NotNull Point point) {
+    public static boolean isLoaded(Instance instance, Point point) {
         final Chunk chunk = instance.getChunk(point.chunkX(), point.chunkZ());
         return isLoaded(chunk);
     }
@@ -111,11 +111,11 @@ public final class ChunkUtils {
         return (((long) chunkX) << 32) | (chunkZ & 0xffffffffL);
     }
 
-    public static long getChunkIndex(@NotNull Chunk chunk) {
+    public static long getChunkIndex(Chunk chunk) {
         return getChunkIndex(chunk.getChunkX(), chunk.getChunkZ());
     }
 
-    public static long getChunkIndex(@NotNull Point point) {
+    public static long getChunkIndex(Point point) {
         return getChunkIndex(point.chunkX(), point.chunkZ());
     }
 
@@ -149,7 +149,7 @@ public final class ChunkUtils {
 
     public static void forDifferingChunksInRange(int newChunkX, int newChunkZ,
                                                  int oldChunkX, int oldChunkZ,
-                                                 int range, @NotNull IntegerBiConsumer callback) {
+                                                 int range, IntegerBiConsumer callback) {
         for (int x = newChunkX - range; x <= newChunkX + range; x++) {
             for (int z = newChunkZ - range; z <= newChunkZ + range; z++) {
                 if (Math.abs(x - oldChunkX) > range || Math.abs(z - oldChunkZ) > range) {
@@ -162,7 +162,7 @@ public final class ChunkUtils {
     public static void forDifferingChunksInRange(int newChunkX, int newChunkZ,
                                                  int oldChunkX, int oldChunkZ,
                                                  int range,
-                                                 @NotNull IntegerBiConsumer newCallback, @NotNull IntegerBiConsumer oldCallback) {
+                                                 IntegerBiConsumer newCallback, IntegerBiConsumer oldCallback) {
         // Find the new chunks
         forDifferingChunksInRange(newChunkX, newChunkZ, oldChunkX, oldChunkZ, range, newCallback);
         // Find the old chunks
@@ -177,7 +177,7 @@ public final class ChunkUtils {
         }
     }
 
-    public static void forChunksInRange(@NotNull Point point, int range, IntegerBiConsumer consumer) {
+    public static void forChunksInRange(Point point, int range, IntegerBiConsumer consumer) {
         forChunksInRange(point.chunkX(), point.chunkZ(), range, consumer);
     }
 
@@ -210,7 +210,7 @@ public final class ChunkUtils {
      * @param chunkZ the chunk Z
      * @return the instance position of the block located in {@code index}
      */
-    public static @NotNull Point getBlockPosition(int index, int chunkX, int chunkZ) {
+    public static Point getBlockPosition(int index, int chunkX, int chunkZ) {
         final int x = blockIndexToChunkPositionX(index) + Chunk.CHUNK_SIZE_X * chunkX;
         final int y = blockIndexToChunkPositionY(index);
         final int z = blockIndexToChunkPositionZ(index) + Chunk.CHUNK_SIZE_Z * chunkZ;

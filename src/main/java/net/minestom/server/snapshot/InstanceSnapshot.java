@@ -5,7 +5,6 @@ import net.minestom.server.instance.block.Block;
 import net.minestom.server.tag.TagReadable;
 import net.minestom.server.world.DimensionType;
 import net.minestom.server.world.biomes.Biome;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
 
@@ -16,33 +15,33 @@ import static net.minestom.server.utils.chunk.ChunkUtils.getChunkCoordinate;
 
 public sealed interface InstanceSnapshot extends Snapshot, Block.Getter, Biome.Getter, TagReadable
         permits SnapshotImpl.Instance {
-    @NotNull DimensionType dimensionType();
+    DimensionType dimensionType();
 
     long worldAge();
 
     long time();
 
     @Override
-    default @UnknownNullability Block getBlock(int x, int y, int z, @NotNull Condition condition) {
-        ChunkSnapshot chunk = chunk(getChunkCoordinate(x), getChunkCoordinate(z));
+    default @UnknownNullability Block getBlock(int x, int y, int z, Condition condition) {
+        SectionStorageSnapshot chunk = chunk(getChunkCoordinate(x), getChunkCoordinate(z));
         return Objects.requireNonNull(chunk).getBlock(x, y, z, condition);
     }
 
     @Override
-    default @NotNull Biome getBiome(int x, int y, int z) {
-        ChunkSnapshot chunk = chunk(getChunkCoordinate(x), getChunkCoordinate(z));
+    default Biome getBiome(int x, int y, int z) {
+        SectionStorageSnapshot chunk = chunk(getChunkCoordinate(x), getChunkCoordinate(z));
         return Objects.requireNonNull(chunk).getBiome(x, y, z);
     }
 
-    @Nullable ChunkSnapshot chunk(int chunkX, int chunkZ);
+    @Nullable SectionStorageSnapshot chunk(int chunkX, int chunkZ);
 
-    default @Nullable ChunkSnapshot chunkAt(@NotNull Point point) {
+    default @Nullable SectionStorageSnapshot chunkAt(Point point) {
         return chunk(point.chunkX(), point.chunkZ());
     }
 
-    @NotNull Collection<@NotNull ChunkSnapshot> chunks();
+    Collection<SectionStorageSnapshot> chunks();
 
-    @NotNull Collection<@NotNull EntitySnapshot> entities();
+    Collection<EntitySnapshot> entities();
 
-    @NotNull ServerSnapshot server();
+    ServerSnapshot server();
 }

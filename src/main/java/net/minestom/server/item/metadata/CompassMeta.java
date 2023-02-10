@@ -13,7 +13,7 @@ public record CompassMeta(TagReadable readable) implements ItemMetaView<CompassM
     private static final Tag<String> LODESTONE_DIMENSION = Tag.String("LodestoneDimension");
     private static final Tag<Point> LODESTONE_POSITION = Tag.Structure("LodestonePos", new TagSerializer<>() {
         @Override
-        public @Nullable Point read(@NotNull TagReadable reader) {
+        public @Nullable Point read(TagReadable reader) {
             final Integer x = reader.getTag(Tag.Integer("X"));
             final Integer y = reader.getTag(Tag.Integer("Y"));
             final Integer z = reader.getTag(Tag.Integer("Z"));
@@ -22,7 +22,7 @@ public record CompassMeta(TagReadable readable) implements ItemMetaView<CompassM
         }
 
         @Override
-        public void write(@NotNull TagWritable writer, @NotNull Point value) {
+        public void write(TagWritable writer, Point value) {
             writer.setTag(Tag.Integer("X"), value.blockX());
             writer.setTag(Tag.Integer("Y"), value.blockY());
             writer.setTag(Tag.Integer("Z"), value.blockZ());
@@ -42,7 +42,7 @@ public record CompassMeta(TagReadable readable) implements ItemMetaView<CompassM
     }
 
     @Override
-    public <T> @UnknownNullability T getTag(@NotNull Tag<T> tag) {
+    public <T> @UnknownNullability T getTag(Tag<T> tag) {
         return readable.getTag(tag);
     }
 

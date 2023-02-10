@@ -7,9 +7,9 @@ import org.jetbrains.annotations.NotNull;
 
 import static net.minestom.server.network.NetworkBuffer.*;
 
-public record UpdateScorePacket(@NotNull String entityName, byte action,
-                                @NotNull String objectiveName, int value) implements ServerPacket {
-    public UpdateScorePacket(@NotNull NetworkBuffer reader) {
+public record UpdateScorePacket(String entityName, byte action,
+                                String objectiveName, int value) implements ServerPacket {
+    public UpdateScorePacket(NetworkBuffer reader) {
         this(read(reader));
     }
 
@@ -17,7 +17,7 @@ public record UpdateScorePacket(@NotNull String entityName, byte action,
         this(packet.entityName, packet.action, packet.objectiveName, packet.value);
     }
 
-    private static UpdateScorePacket read(@NotNull NetworkBuffer reader) {
+    private static UpdateScorePacket read(NetworkBuffer reader) {
         var entityName = reader.read(STRING);
         var action = reader.read(BYTE);
         var objectiveName = reader.read(STRING);
@@ -26,7 +26,7 @@ public record UpdateScorePacket(@NotNull String entityName, byte action,
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(STRING, entityName);
         writer.write(BYTE, action);
         writer.write(STRING, objectiveName);

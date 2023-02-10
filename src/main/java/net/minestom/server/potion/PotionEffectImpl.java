@@ -9,11 +9,11 @@ record PotionEffectImpl(Registry.PotionEffectEntry registry) implements PotionEf
     private static final Registry.Container<PotionEffect> CONTAINER = Registry.createContainer(Registry.Resource.POTION_EFFECTS,
             (namespace, properties) -> new PotionEffectImpl(Registry.potionEffect(namespace, properties)));
 
-    static PotionEffect get(@NotNull String namespace) {
+    static PotionEffect get(String namespace) {
         return CONTAINER.get(namespace);
     }
 
-    static PotionEffect getSafe(@NotNull String namespace) {
+    static PotionEffect getSafe(String namespace) {
         return CONTAINER.getSafe(namespace);
     }
 

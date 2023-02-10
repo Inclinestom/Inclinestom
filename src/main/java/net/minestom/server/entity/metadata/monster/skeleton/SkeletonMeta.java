@@ -8,7 +8,7 @@ public class SkeletonMeta extends AbstractSkeletonMeta {
     public static final byte OFFSET = AbstractSkeletonMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 0;
 
-    public SkeletonMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
+    public SkeletonMeta(Entity entity, Metadata metadata) {
         super(entity, metadata);
     }
 

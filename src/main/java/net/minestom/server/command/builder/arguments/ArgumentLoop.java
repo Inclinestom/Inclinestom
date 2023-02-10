@@ -15,14 +15,14 @@ public class ArgumentLoop<T> extends Argument<List<T>> {
     private final List<Argument<T>> arguments = new ArrayList<>();
 
     @SafeVarargs
-    public ArgumentLoop(@NotNull String id, @NotNull Argument<T>... arguments) {
+    public ArgumentLoop(String id, Argument<T>... arguments) {
         super(id, true, true);
         this.arguments.addAll(Arrays.asList(arguments));
     }
 
     @NotNull
     @Override
-    public List<T> parse(@NotNull String input) throws ArgumentSyntaxException {
+    public List<T> parse(String input) throws ArgumentSyntaxException {
         List<T> result = new ArrayList<>();
         final String[] split = input.split(StringUtils.SPACE);
 

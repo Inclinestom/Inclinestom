@@ -15,7 +15,7 @@ public interface Localizable {
      *
      * @return the empty localizable
      */
-    static @NotNull Localizable empty() {
+    static Localizable empty() {
         return MinestomAdventure.NULL_LOCALIZABLE;
     }
 

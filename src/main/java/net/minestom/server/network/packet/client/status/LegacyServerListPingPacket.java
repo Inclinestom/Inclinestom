@@ -8,17 +8,17 @@ import org.jetbrains.annotations.NotNull;
 import static net.minestom.server.network.NetworkBuffer.BYTE;
 
 public record LegacyServerListPingPacket(byte payload) implements ClientPreplayPacket {
-    public LegacyServerListPingPacket(@NotNull NetworkBuffer reader) {
+    public LegacyServerListPingPacket(NetworkBuffer reader) {
         this(reader.read(BYTE));
     }
 
     @Override
-    public void process(@NotNull PlayerConnection connection) {
+    public void process(PlayerConnection connection) {
 
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(BYTE, payload);
     }
 }

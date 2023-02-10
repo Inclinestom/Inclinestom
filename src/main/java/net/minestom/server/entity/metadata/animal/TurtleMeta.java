@@ -10,15 +10,15 @@ public class TurtleMeta extends AnimalMeta {
     public static final byte OFFSET = AnimalMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 6;
 
-    public TurtleMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
+    public TurtleMeta(Entity entity, Metadata metadata) {
         super(entity, metadata);
     }
 
-    public @NotNull Point getHomePosition() {
+    public Point getHomePosition() {
         return super.metadata.getIndex(OFFSET, Vec.ZERO);
     }
 
-    public void setBlockPosition(@NotNull Point value) {
+    public void setBlockPosition(Point value) {
         super.metadata.setIndex(OFFSET, Metadata.Position(value));
     }
 
@@ -38,11 +38,11 @@ public class TurtleMeta extends AnimalMeta {
         super.metadata.setIndex(OFFSET + 2, Metadata.Boolean(value));
     }
 
-    public @NotNull Point getTravelPosition() {
+    public Point getTravelPosition() {
         return super.metadata.getIndex(OFFSET + 3, Vec.ZERO);
     }
 
-    public void setTravelPosition(@NotNull Point value) {
+    public void setTravelPosition(Point value) {
         super.metadata.setIndex(OFFSET + 3, Metadata.Position(value));
     }
 

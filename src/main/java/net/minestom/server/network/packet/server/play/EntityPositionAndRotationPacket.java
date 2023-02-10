@@ -10,13 +10,13 @@ import static net.minestom.server.network.NetworkBuffer.*;
 
 public record EntityPositionAndRotationPacket(int entityId, short deltaX, short deltaY, short deltaZ,
                                               float yaw, float pitch, boolean onGround) implements ServerPacket {
-    public EntityPositionAndRotationPacket(@NotNull NetworkBuffer reader) {
+    public EntityPositionAndRotationPacket(NetworkBuffer reader) {
         this(reader.read(VAR_INT), reader.read(SHORT), reader.read(SHORT), reader.read(SHORT),
                 reader.read(BYTE) * 360f / 256f, reader.read(BYTE) * 360f / 256f, reader.read(BOOLEAN));
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(VAR_INT, entityId);
         writer.write(SHORT, deltaX);
         writer.write(SHORT, deltaY);
@@ -32,7 +32,7 @@ public record EntityPositionAndRotationPacket(int entityId, short deltaX, short 
     }
 
     public static EntityPositionAndRotationPacket getPacket(int entityId,
-                                                            @NotNull Pos newPosition, @NotNull Pos oldPosition,
+                                                            Pos newPosition, Pos oldPosition,
                                                             boolean onGround) {
         final short deltaX = (short) ((newPosition.x() * 32 - oldPosition.x() * 32) * 128);
         final short deltaY = (short) ((newPosition.y() * 32 - oldPosition.y() * 32) * 128);

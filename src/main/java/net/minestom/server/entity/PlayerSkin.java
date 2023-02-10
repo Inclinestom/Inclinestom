@@ -23,7 +23,7 @@ public record PlayerSkin(String textures, String signature) {
      * @return a player skin based on the UUID, null if not found
      */
     @Blocking
-    public static @Nullable PlayerSkin fromUuid(@NotNull String uuid) {
+    public static @Nullable PlayerSkin fromUuid(String uuid) {
         final JsonObject jsonObject = MojangUtils.fromUuid(uuid);
         if (jsonObject == null) return null;
         try {
@@ -49,7 +49,7 @@ public record PlayerSkin(String textures, String signature) {
      * @return a skin based on a Minecraft username, null if not found
      */
     @Blocking
-    public static @Nullable PlayerSkin fromUsername(@NotNull String username) {
+    public static @Nullable PlayerSkin fromUsername(String username) {
         final JsonObject jsonObject = MojangUtils.fromUsername(username);
         if (jsonObject == null) return null;
         try {

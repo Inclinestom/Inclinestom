@@ -8,7 +8,7 @@ public class WitchMeta extends RaiderMeta {
     public static final byte OFFSET = RaiderMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 1;
 
-    public WitchMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
+    public WitchMeta(Entity entity, Metadata metadata) {
         super(entity, metadata);
     }
 

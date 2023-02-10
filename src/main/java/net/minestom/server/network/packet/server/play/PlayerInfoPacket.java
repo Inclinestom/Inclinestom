@@ -19,8 +19,8 @@ import java.util.function.UnaryOperator;
 
 import static net.minestom.server.network.NetworkBuffer.*;
 
-public record PlayerInfoPacket(@NotNull Action action,
-                               @NotNull List<Entry> entries) implements ComponentHoldingServerPacket {
+public record PlayerInfoPacket(Action action,
+                               List<Entry> entries) implements ComponentHoldingServerPacket {
     public PlayerInfoPacket {
         entries = List.copyOf(entries);
         for (Entry entry : entries) {
@@ -29,11 +29,11 @@ public record PlayerInfoPacket(@NotNull Action action,
         }
     }
 
-    public PlayerInfoPacket(@NotNull Action action, @NotNull Entry entry) {
+    public PlayerInfoPacket(Action action, Entry entry) {
         this(action, List.of(entry));
     }
 
-    public PlayerInfoPacket(@NotNull NetworkBuffer reader) {
+    public PlayerInfoPacket(NetworkBuffer reader) {
         this(read(reader));
     }
 
@@ -41,7 +41,7 @@ public record PlayerInfoPacket(@NotNull Action action,
         this(packet.action, packet.entries);
     }
 
-    private static PlayerInfoPacket read(@NotNull NetworkBuffer reader) {
+    private static PlayerInfoPacket read(NetworkBuffer reader) {
         var action = Action.values()[reader.read(VAR_INT)];
         final int playerInfoCount = reader.read(VAR_INT);
         List<Entry> entries = new ArrayList<>(playerInfoCount);
@@ -59,7 +59,7 @@ public record PlayerInfoPacket(@NotNull Action action,
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(VAR_INT, action.ordinal());
         writer.writeCollection(entries, (w, entry) -> {
             w.write(UUID, entry.uuid());
@@ -73,7 +73,7 @@ public record PlayerInfoPacket(@NotNull Action action,
     }
 
     @Override
-    public @NotNull Collection<Component> components() {
+    public Collection<Component> components() {
         switch (this.action) {
             case ADD_PLAYER, UPDATE_DISPLAY_NAME -> {
                 List<Component> components = new ArrayList<>();
@@ -91,7 +91,7 @@ public record PlayerInfoPacket(@NotNull Action action,
     }
 
     @Override
-    public @NotNull ServerPacket copyWithOperator(@NotNull UnaryOperator<Component> operator) {
+    public ServerPacket copyWithOperator(UnaryOperator<Component> operator) {
         return switch (action) {
             case ADD_PLAYER, UPDATE_DISPLAY_NAME -> {
                 List<Entry> entries = new ArrayList<>(this.entries.size());
@@ -148,7 +148,7 @@ public record PlayerInfoPacket(@NotNull Action action,
         }
 
         @Override
-        public void write(@NotNull NetworkBuffer writer) {
+        public void write(NetworkBuffer writer) {
             writer.write(STRING, name);
             writer.writeCollection(properties);
             writer.write(VAR_INT, (int) gameMode.id());
@@ -158,29 +158,29 @@ public record PlayerInfoPacket(@NotNull Action action,
         }
 
         @Override
-        public @NotNull Collection<Component> components() {
+        public Collection<Component> components() {
             return displayName != null ? List.of(displayName) : List.of();
         }
 
         @Override
-        public @NotNull AddPlayer copyWithOperator(@NotNull UnaryOperator<Component> operator) {
+        public AddPlayer copyWithOperator(UnaryOperator<Component> operator) {
             return displayName != null ?
                     new AddPlayer(uuid, name, properties, gameMode, ping, operator.apply(displayName), playerPublicKey) : this;
         }
 
-        public record Property(@NotNull String name, @NotNull String value,
+        public record Property(String name, String value,
                                @Nullable String signature) implements NetworkBuffer.Writer {
             public Property(String name, String value) {
                 this(name, value, null);
             }
 
-            public Property(@NotNull NetworkBuffer reader) {
+            public Property(NetworkBuffer reader) {
                 this(reader.read(STRING), reader.read(STRING),
                         reader.read(BOOLEAN) ? reader.read(STRING) : null);
             }
 
             @Override
-            public void write(@NotNull NetworkBuffer writer) {
+            public void write(NetworkBuffer writer) {
                 writer.write(STRING, name);
                 writer.write(STRING, value);
                 writer.write(BOOLEAN, signature != null);
@@ -195,7 +195,7 @@ public record PlayerInfoPacket(@NotNull Action action,
         }
 
         @Override
-        public void write(@NotNull NetworkBuffer writer) {
+        public void write(NetworkBuffer writer) {
             writer.write(VAR_INT, (int) gameMode.id());
         }
     }
@@ -206,37 +206,37 @@ public record PlayerInfoPacket(@NotNull Action action,
         }
 
         @Override
-        public void write(@NotNull NetworkBuffer writer) {
+        public void write(NetworkBuffer writer) {
             writer.write(VAR_INT, ping);
         }
     }
 
-    public record UpdateDisplayName(@NotNull UUID uuid,
+    public record UpdateDisplayName(UUID uuid,
                                     @Nullable Component displayName) implements Entry, ComponentHolder<UpdateDisplayName> {
         public UpdateDisplayName(UUID uuid, NetworkBuffer reader) {
             this(uuid, reader.read(BOOLEAN) ? reader.read(COMPONENT) : null);
         }
 
         @Override
-        public void write(@NotNull NetworkBuffer writer) {
+        public void write(NetworkBuffer writer) {
             writer.write(BOOLEAN, displayName != null);
             if (displayName != null) writer.write(COMPONENT, displayName);
         }
 
         @Override
-        public @NotNull Collection<Component> components() {
+        public Collection<Component> components() {
             return displayName != null ? List.of(displayName) : List.of();
         }
 
         @Override
-        public @NotNull UpdateDisplayName copyWithOperator(@NotNull UnaryOperator<Component> operator) {
+        public UpdateDisplayName copyWithOperator(UnaryOperator<Component> operator) {
             return displayName != null ? new UpdateDisplayName(uuid, operator.apply(displayName)) : this;
         }
     }
 
-    public record RemovePlayer(@NotNull UUID uuid) implements Entry {
+    public record RemovePlayer(UUID uuid) implements Entry {
         @Override
-        public void write(@NotNull NetworkBuffer writer) {
+        public void write(NetworkBuffer writer) {
         }
     }
 }

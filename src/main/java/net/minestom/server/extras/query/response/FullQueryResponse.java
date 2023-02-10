@@ -44,7 +44,7 @@ public class FullQueryResponse implements Writeable {
      * @param key   the key
      * @param value the value
      */
-    public void put(@NotNull QueryKey key, @NotNull String value) {
+    public void put(QueryKey key, String value) {
         this.put(key.getKey(), value);
     }
 
@@ -54,7 +54,7 @@ public class FullQueryResponse implements Writeable {
      * @param key   the key
      * @param value the value
      */
-    public void put(@NotNull String key, @NotNull String value) {
+    public void put(String key, String value) {
         this.kv.put(key, value);
     }
 
@@ -63,7 +63,7 @@ public class FullQueryResponse implements Writeable {
      *
      * @return the map
      */
-    public @NotNull Map<String, String> getKeyValuesMap() {
+    public Map<String, String> getKeyValuesMap() {
         return this.kv;
     }
 
@@ -72,7 +72,7 @@ public class FullQueryResponse implements Writeable {
      *
      * @param map the map
      */
-    public void setKeyValuesMap(@NotNull Map<String, String> map) {
+    public void setKeyValuesMap(Map<String, String> map) {
         this.kv = Objects.requireNonNull(map, "map");
     }
 
@@ -81,7 +81,7 @@ public class FullQueryResponse implements Writeable {
      *
      * @param players the players
      */
-    public void addPlayers(@NotNull String @NotNull ... players) {
+    public void addPlayers(String ... players) {
         Collections.addAll(this.players, players);
     }
 
@@ -90,7 +90,7 @@ public class FullQueryResponse implements Writeable {
      *
      * @param players the players
      */
-    public void addPlayers(@NotNull Collection<String> players) {
+    public void addPlayers(Collection<String> players) {
         this.players.addAll(players);
     }
 
@@ -99,7 +99,7 @@ public class FullQueryResponse implements Writeable {
      *
      * @return the list
      */
-    public @NotNull List<String> getPlayers() {
+    public List<String> getPlayers() {
         return this.players;
     }
 
@@ -108,7 +108,7 @@ public class FullQueryResponse implements Writeable {
      *
      * @param players the players
      */
-    public void setPlayers(@NotNull List<String> players) {
+    public void setPlayers(List<String> players) {
         this.players = Objects.requireNonNull(players, "players");
     }
 
@@ -138,7 +138,7 @@ public class FullQueryResponse implements Writeable {
     }
 
     @Override
-    public void write(@NotNull BinaryWriter writer) {
+    public void write(BinaryWriter writer) {
         writer.writeBytes(PADDING_11);
 
         // key-values

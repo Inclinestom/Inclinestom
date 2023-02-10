@@ -17,5 +17,5 @@ public interface ArgumentCallback {
      * @param sender    the sender which executed the command
      * @param exception the exception containing the message, input and error code related to the issue
      */
-    void apply(@NotNull CommandSender sender, @NotNull ArgumentSyntaxException exception);
+    void apply(CommandSender sender, ArgumentSyntaxException exception);
 }

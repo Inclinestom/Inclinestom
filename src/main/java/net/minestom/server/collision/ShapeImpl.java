@@ -70,17 +70,17 @@ final class ShapeImpl implements Shape {
     }
 
     @Override
-    public @NotNull Point relativeStart() {
+    public Point relativeStart() {
         return relativeStart;
     }
 
     @Override
-    public @NotNull Point relativeEnd() {
+    public Point relativeEnd() {
         return relativeEnd;
     }
 
     @Override
-    public boolean intersectBox(@NotNull Point position, @NotNull BoundingBox boundingBox) {
+    public boolean intersectBox(Point position, BoundingBox boundingBox) {
         for (BoundingBox blockSection : blockSections) {
             if (boundingBox.intersectBox(position, blockSection)) return true;
         }
@@ -88,8 +88,8 @@ final class ShapeImpl implements Shape {
     }
 
     @Override
-    public boolean intersectBoxSwept(@NotNull Point rayStart, @NotNull Point rayDirection,
-                                     @NotNull Point shapePos, @NotNull BoundingBox moving, @NotNull SweepResult finalResult) {
+    public boolean intersectBoxSwept(Point rayStart, Point rayDirection,
+                                     Point shapePos, BoundingBox moving, SweepResult finalResult) {
         boolean hitBlock = false;
         for (BoundingBox blockSection : blockSections) {
             // Update final result if the temp result collision is sooner than the current final result

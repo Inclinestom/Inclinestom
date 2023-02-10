@@ -8,7 +8,7 @@ public class HopperMinecartMeta extends AbstractMinecartContainerMeta {
     public static final byte OFFSET = AbstractMinecartContainerMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 0;
 
-    public HopperMinecartMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
+    public HopperMinecartMeta(Entity entity, Metadata metadata) {
         super(entity, metadata);
     }
 

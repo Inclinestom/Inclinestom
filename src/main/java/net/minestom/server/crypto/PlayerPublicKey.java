@@ -16,13 +16,13 @@ import static net.minestom.server.network.NetworkBuffer.LONG;
  */
 public record PlayerPublicKey(Instant expiresAt, PublicKey publicKey,
                               byte[] signature) implements NetworkBuffer.Writer {
-    public PlayerPublicKey(@NotNull NetworkBuffer reader) {
+    public PlayerPublicKey(NetworkBuffer reader) {
         this(Instant.ofEpochMilli(reader.read(LONG)),
                 KeyUtils.publicRSAKeyFrom(reader.read(BYTE_ARRAY)), reader.read(BYTE_ARRAY));
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(LONG, expiresAt().toEpochMilli());
         writer.write(BYTE_ARRAY, publicKey.getEncoded());
         writer.write(BYTE_ARRAY, signature());

@@ -9,11 +9,11 @@ record MaterialImpl(Registry.MaterialEntry registry) implements Material {
     private static final Registry.Container<Material> CONTAINER = Registry.createContainer(Registry.Resource.ITEMS,
             (namespace, properties) -> new MaterialImpl(Registry.material(namespace, properties)));
 
-    static Material get(@NotNull String namespace) {
+    static Material get(String namespace) {
         return CONTAINER.get(namespace);
     }
 
-    static Material getSafe(@NotNull String namespace) {
+    static Material getSafe(String namespace) {
         return CONTAINER.getSafe(namespace);
     }
 

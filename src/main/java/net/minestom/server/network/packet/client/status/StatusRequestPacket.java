@@ -10,12 +10,12 @@ import net.minestom.server.ping.ServerListPingType;
 import org.jetbrains.annotations.NotNull;
 
 public record StatusRequestPacket() implements ClientPreplayPacket {
-    public StatusRequestPacket(@NotNull NetworkBuffer reader) {
+    public StatusRequestPacket(NetworkBuffer reader) {
         this();
     }
 
     @Override
-    public void process(@NotNull PlayerConnection connection) {
+    public void process(PlayerConnection connection) {
         final ServerListPingType pingVersion = ServerListPingType.fromModernProtocolVersion(connection.getProtocolVersion());
         final ServerListPingEvent statusRequestEvent = new ServerListPingEvent(connection, pingVersion);
         EventDispatcher.callCancellable(statusRequestEvent, () ->
@@ -23,7 +23,7 @@ public record StatusRequestPacket() implements ClientPreplayPacket {
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         // Empty
     }
 }

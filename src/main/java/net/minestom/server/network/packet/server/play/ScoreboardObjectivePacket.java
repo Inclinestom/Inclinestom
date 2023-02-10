@@ -14,10 +14,10 @@ import java.util.function.UnaryOperator;
 
 import static net.minestom.server.network.NetworkBuffer.*;
 
-public record ScoreboardObjectivePacket(@NotNull String objectiveName, byte mode,
+public record ScoreboardObjectivePacket(String objectiveName, byte mode,
                                         @Nullable Component objectiveValue,
                                         @Nullable Type type) implements ComponentHoldingServerPacket {
-    public ScoreboardObjectivePacket(@NotNull NetworkBuffer reader) {
+    public ScoreboardObjectivePacket(NetworkBuffer reader) {
         this(read(reader));
     }
 
@@ -25,7 +25,7 @@ public record ScoreboardObjectivePacket(@NotNull String objectiveName, byte mode
         this(packet.objectiveName, packet.mode, packet.objectiveValue, packet.type);
     }
 
-    private static ScoreboardObjectivePacket read(@NotNull NetworkBuffer reader) {
+    private static ScoreboardObjectivePacket read(NetworkBuffer reader) {
         var objectiveName = reader.read(STRING);
         var mode = reader.read(BYTE);
         Component objectiveValue = null;
@@ -38,7 +38,7 @@ public record ScoreboardObjectivePacket(@NotNull String objectiveName, byte mode
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(STRING, objectiveName);
         writer.write(BYTE, mode);
         if (mode == 0 || mode == 2) {
@@ -55,13 +55,13 @@ public record ScoreboardObjectivePacket(@NotNull String objectiveName, byte mode
     }
 
     @Override
-    public @NotNull Collection<Component> components() {
+    public Collection<Component> components() {
         return mode == 0 || mode == 2 ? List.of(objectiveValue) :
                 List.of();
     }
 
     @Override
-    public @NotNull ServerPacket copyWithOperator(@NotNull UnaryOperator<Component> operator) {
+    public ServerPacket copyWithOperator(UnaryOperator<Component> operator) {
         return mode == 0 || mode == 2 ? new ScoreboardObjectivePacket(objectiveName, mode,
                 operator.apply(objectiveValue), type) : this;
     }

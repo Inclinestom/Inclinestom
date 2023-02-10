@@ -18,11 +18,11 @@ public class PlayerPacketEvent implements PlayerInstanceEvent, CancellableEvent 
     }
 
     @Override
-    public @NotNull Player getPlayer() {
+    public Player getPlayer() {
         return player;
     }
 
-    public @NotNull ClientPacket getPacket() {
+    public ClientPacket getPacket() {
         return packet;
     }
 

@@ -9,7 +9,7 @@ public interface FlexibleListener<E extends Event> {
     /**
      * Updates the handler. Fails if the previous followup has not been called.
      */
-    void followup(@NotNull Consumer<E> handler);
+    void followup(Consumer<E> handler);
 
     default void followup() {
         followup(event -> {

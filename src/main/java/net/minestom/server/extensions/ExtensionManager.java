@@ -75,11 +75,11 @@ public class ExtensionManager {
         return extensionFolder;
     }
 
-    public @NotNull Path getExtensionDataRoot() {
+    public Path getExtensionDataRoot() {
         return extensionDataRoot;
     }
 
-    public void setExtensionDataRoot(@NotNull Path dataRoot) {
+    public void setExtensionDataRoot(Path dataRoot) {
         this.extensionDataRoot = dataRoot;
     }
 
@@ -89,11 +89,11 @@ public class ExtensionManager {
     }
 
     @Nullable
-    public Extension getExtension(@NotNull String name) {
+    public Extension getExtension(String name) {
         return extensions.get(name.toLowerCase());
     }
 
-    public boolean hasExtension(@NotNull String name) {
+    public boolean hasExtension(String name) {
         return extensions.containsKey(name);
     }
 
@@ -244,7 +244,7 @@ public class ExtensionManager {
         }
     }
 
-    public boolean loadDynamicExtension(@NotNull File jarFile) throws FileNotFoundException {
+    public boolean loadDynamicExtension(File jarFile) throws FileNotFoundException {
         if (!jarFile.exists()) {
             throw new FileNotFoundException("File '" + jarFile.getAbsolutePath() + "' does not exists. Cannot load extension.");
         }
@@ -262,7 +262,7 @@ public class ExtensionManager {
      * @return An extension object made from this DiscoveredExtension
      */
     @Nullable
-    private Extension loadExtension(@NotNull DiscoveredExtension discoveredExtension) {
+    private Extension loadExtension(DiscoveredExtension discoveredExtension) {
         // Create Extension (authors, version etc.)
         String extensionName = discoveredExtension.getName();
         String mainClass = discoveredExtension.getEntrypoint();
@@ -341,7 +341,7 @@ public class ExtensionManager {
      *
      * @return A list of discovered extensions from this folder.
      */
-    private @NotNull List<DiscoveredExtension> discoverExtensions() {
+    private List<DiscoveredExtension> discoverExtensions() {
         List<DiscoveredExtension> extensions = new LinkedList<>();
 
         File[] fileList = extensionFolder.listFiles();
@@ -400,7 +400,7 @@ public class ExtensionManager {
      * @param file The jar to grab it from (a .jar is a formatted .zip file)
      * @return The created DiscoveredExtension.
      */
-    private @Nullable DiscoveredExtension discoverFromJar(@NotNull File file) {
+    private @Nullable DiscoveredExtension discoverFromJar(File file) {
         try (ZipFile f = new ZipFile(file)) {
 
             ZipEntry entry = f.getEntry("extension.json");
@@ -427,7 +427,7 @@ public class ExtensionManager {
     }
 
     @NotNull
-    private List<DiscoveredExtension> generateLoadOrder(@NotNull List<DiscoveredExtension> discoveredExtensions) {
+    private List<DiscoveredExtension> generateLoadOrder(List<DiscoveredExtension> discoveredExtensions) {
         // Extension --> Extensions it depends on.
         Map<DiscoveredExtension, List<DiscoveredExtension>> dependencyMap = new HashMap<>();
 
@@ -533,14 +533,14 @@ public class ExtensionManager {
      * @param extensions The list of extensions to check against.
      * @return If all of these extensions are loaded.
      */
-    private boolean isLoaded(@NotNull List<DiscoveredExtension> extensions) {
+    private boolean isLoaded(List<DiscoveredExtension> extensions) {
         return
                 extensions.isEmpty() // Don't waste CPU on checking an empty array
                         // Make sure the internal extensions list contains all of these.
                         || extensions.stream().allMatch(ext -> this.extensions.containsKey(ext.getName().toLowerCase()));
     }
 
-    private void loadDependencies(@NotNull List<DiscoveredExtension> extensions) {
+    private void loadDependencies(List<DiscoveredExtension> extensions) {
         List<DiscoveredExtension> allLoadedExtensions = new LinkedList<>(extensions);
 
         for (Extension extension : immutableExtensions.values())
@@ -593,7 +593,7 @@ public class ExtensionManager {
         }
     }
 
-    private void addDependencyFile(@NotNull ResolvedDependency dependency, @NotNull DiscoveredExtension extension) {
+    private void addDependencyFile(ResolvedDependency dependency, DiscoveredExtension extension) {
         URL location = dependency.getContentsLocation();
         extension.files.add(location);
         extension.getClassLoader().addURL(location);
@@ -609,7 +609,7 @@ public class ExtensionManager {
         }
     }
 
-    private boolean loadExtensionList(@NotNull List<DiscoveredExtension> extensionsToLoad) {
+    private boolean loadExtensionList(List<DiscoveredExtension> extensionsToLoad) {
         // ensure correct order of dependencies
         LOGGER.debug("Reorder extensions to ensure proper load order");
         extensionsToLoad = generateLoadOrder(extensionsToLoad);
@@ -660,7 +660,7 @@ public class ExtensionManager {
         }
     }
 
-    private void unloadExtension(@NotNull String extensionName) {
+    private void unloadExtension(String extensionName) {
         Extension ext = extensions.get(extensionName.toLowerCase());
 
         if (ext == null) {
@@ -681,7 +681,7 @@ public class ExtensionManager {
         unload(ext);
     }
 
-    private void unload(@NotNull Extension ext) {
+    private void unload(Extension ext) {
         ext.preTerminate();
         ext.terminate();
 

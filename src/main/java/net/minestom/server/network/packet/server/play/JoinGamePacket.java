@@ -20,7 +20,7 @@ public record JoinGamePacket(int entityId, boolean isHardcore, GameMode gameMode
         worlds = List.copyOf(worlds);
     }
 
-    public JoinGamePacket(@NotNull NetworkBuffer reader) {
+    public JoinGamePacket(NetworkBuffer reader) {
         this(reader.read(VAR_INT), reader.read(BOOLEAN), GameMode.fromId(reader.read(BYTE)), GameMode.fromId(reader.read(BYTE)),
                 reader.readCollection(STRING), (NBTCompound) reader.read(NBT), reader.read(STRING), reader.read(STRING),
                 reader.read(LONG), reader.read(VAR_INT), reader.read(VAR_INT), reader.read(VAR_INT),
@@ -28,7 +28,7 @@ public record JoinGamePacket(int entityId, boolean isHardcore, GameMode gameMode
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(INT, entityId);
         writer.write(BOOLEAN, isHardcore);
         writer.write(BYTE, gameMode.id());

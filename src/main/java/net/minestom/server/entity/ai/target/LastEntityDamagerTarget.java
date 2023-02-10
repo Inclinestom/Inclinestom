@@ -14,7 +14,7 @@ public class LastEntityDamagerTarget extends TargetSelector {
 
     private final float range;
 
-    public LastEntityDamagerTarget(@NotNull EntityCreature entityCreature, float range) {
+    public LastEntityDamagerTarget(EntityCreature entityCreature, float range) {
         super(entityCreature);
         this.range = range;
     }

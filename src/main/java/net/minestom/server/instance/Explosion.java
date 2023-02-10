@@ -55,7 +55,7 @@ public abstract class Explosion {
      *
      * @param instance instance to perform this explosion in
      */
-    public void apply(@NotNull Instance instance) {
+    public void apply(Instance instance) {
         List<Point> blocks = prepare(instance);
         byte[] records = new byte[3 * blocks.size()];
         for (int i = 0; i < blocks.size(); i++) {

@@ -44,7 +44,7 @@ public non-sealed class Inventory extends AbstractInventory implements Viewable 
     // (player -> cursor item) map, used by the click listeners
     private final ConcurrentHashMap<Player, ItemStack> cursorPlayersItem = new ConcurrentHashMap<>();
 
-    public Inventory(@NotNull InventoryType inventoryType, @NotNull Component title) {
+    public Inventory(InventoryType inventoryType, Component title) {
         super(inventoryType.getSize());
         this.id = generateId();
         this.inventoryType = inventoryType;
@@ -53,7 +53,7 @@ public non-sealed class Inventory extends AbstractInventory implements Viewable 
         this.offset = getSize();
     }
 
-    public Inventory(@NotNull InventoryType inventoryType, @NotNull String title) {
+    public Inventory(InventoryType inventoryType, String title) {
         this(inventoryType, Component.text(title));
     }
 
@@ -70,7 +70,7 @@ public non-sealed class Inventory extends AbstractInventory implements Viewable 
      *
      * @return the inventory type
      */
-    public @NotNull InventoryType getInventoryType() {
+    public InventoryType getInventoryType() {
         return inventoryType;
     }
 
@@ -79,7 +79,7 @@ public non-sealed class Inventory extends AbstractInventory implements Viewable 
      *
      * @return the inventory title
      */
-    public @NotNull Component getTitle() {
+    public Component getTitle() {
         return title;
     }
 
@@ -88,7 +88,7 @@ public non-sealed class Inventory extends AbstractInventory implements Viewable 
      *
      * @param title the new inventory title
      */
-    public void setTitle(@NotNull Component title) {
+    public void setTitle(Component title) {
         this.title = title;
         // Re-open the inventory
         sendPacketToViewers(new OpenWindowPacket(getWindowId(), getInventoryType().getWindowType(), title));
@@ -128,13 +128,13 @@ public non-sealed class Inventory extends AbstractInventory implements Viewable 
      *
      * @param player the player to update the inventory
      */
-    public void update(@NotNull Player player) {
+    public void update(Player player) {
         if (!isViewer(player)) return;
         player.sendPacket(createNewWindowItemsPacket(player));
     }
 
     @Override
-    public @NotNull Set<Player> getViewers() {
+    public Set<Player> getViewers() {
         return unmodifiableViewers;
     }
 
@@ -145,7 +145,7 @@ public non-sealed class Inventory extends AbstractInventory implements Viewable 
      * @return true if the player has successfully been added
      */
     @Override
-    public boolean addViewer(@NotNull Player player) {
+    public boolean addViewer(Player player) {
         final boolean result = this.viewers.add(player);
         update(player);
         return result;
@@ -158,7 +158,7 @@ public non-sealed class Inventory extends AbstractInventory implements Viewable 
      * @return true if the player has successfully been removed
      */
     @Override
-    public boolean removeViewer(@NotNull Player player) {
+    public boolean removeViewer(Player player) {
         final boolean result = this.viewers.remove(player);
         setCursorItem(player, ItemStack.AIR);
         this.clickProcessor.clearCache(player);
@@ -171,7 +171,7 @@ public non-sealed class Inventory extends AbstractInventory implements Viewable 
      * @param player the player to get the cursor item from
      * @return the player cursor item, air item if the player is not a viewer
      */
-    public @NotNull ItemStack getCursorItem(@NotNull Player player) {
+    public ItemStack getCursorItem(Player player) {
         return cursorPlayersItem.getOrDefault(player, ItemStack.AIR);
     }
 
@@ -182,7 +182,7 @@ public non-sealed class Inventory extends AbstractInventory implements Viewable 
      * @param player     the player to change the cursor item
      * @param cursorItem the new player cursor item
      */
-    public void setCursorItem(@NotNull Player player, @NotNull ItemStack cursorItem) {
+    public void setCursorItem(Player player, ItemStack cursorItem) {
         final ItemStack currentCursorItem = cursorPlayersItem.getOrDefault(player, ItemStack.AIR);
         if (!currentCursorItem.equals(cursorItem)) {
             player.sendPacket(SetSlotPacket.createCursorPacket(cursorItem));
@@ -195,12 +195,12 @@ public non-sealed class Inventory extends AbstractInventory implements Viewable 
     }
 
     @Override
-    protected void UNSAFE_itemInsert(int slot, @NotNull ItemStack itemStack, boolean sendPacket) {
+    protected void UNSAFE_itemInsert(int slot, ItemStack itemStack, boolean sendPacket) {
         itemStacks[slot] = itemStack;
         if (sendPacket) sendPacketToViewers(new SetSlotPacket(getWindowId(), 0, (short) slot, itemStack));
     }
 
-    private @NotNull WindowItemsPacket createNewWindowItemsPacket(Player player) {
+    private WindowItemsPacket createNewWindowItemsPacket(Player player) {
         return new WindowItemsPacket(getWindowId(), 0, List.of(getItemStacks()), cursorPlayersItem.getOrDefault(player, ItemStack.AIR));
     }
 
@@ -211,12 +211,12 @@ public non-sealed class Inventory extends AbstractInventory implements Viewable 
      * @param value    the value of the property
      * @see <a href="https://wiki.vg/Protocol#Window_Property">https://wiki.vg/Protocol#Window_Property</a>
      */
-    protected void sendProperty(@NotNull InventoryProperty property, short value) {
+    protected void sendProperty(InventoryProperty property, short value) {
         sendPacketToViewers(new WindowPropertyPacket(getWindowId(), property.getProperty(), value));
     }
 
     @Override
-    public boolean leftClick(@NotNull Player player, int slot) {
+    public boolean leftClick(Player player, int slot) {
         final PlayerInventory playerInventory = player.getInventory();
         final ItemStack cursor = getCursorItem(player);
         final boolean isInWindow = isClickInWindow(slot);
@@ -239,7 +239,7 @@ public non-sealed class Inventory extends AbstractInventory implements Viewable 
     }
 
     @Override
-    public boolean rightClick(@NotNull Player player, int slot) {
+    public boolean rightClick(Player player, int slot) {
         final PlayerInventory playerInventory = player.getInventory();
         final ItemStack cursor = getCursorItem(player);
         final boolean isInWindow = isClickInWindow(slot);
@@ -262,7 +262,7 @@ public non-sealed class Inventory extends AbstractInventory implements Viewable 
     }
 
     @Override
-    public boolean shiftClick(@NotNull Player player, int slot) {
+    public boolean shiftClick(Player player, int slot) {
         final PlayerInventory playerInventory = player.getInventory();
         final boolean isInWindow = isClickInWindow(slot);
         final int clickSlot = isInWindow ? slot : PlayerInventoryUtils.convertSlot(slot, offset);
@@ -288,7 +288,7 @@ public non-sealed class Inventory extends AbstractInventory implements Viewable 
     }
 
     @Override
-    public boolean changeHeld(@NotNull Player player, int slot, int key) {
+    public boolean changeHeld(Player player, int slot, int key) {
         final int convertedKey = key == 40 ? PlayerInventoryUtils.OFFHAND_SLOT : key;
         final PlayerInventory playerInventory = player.getInventory();
         final boolean isInWindow = isClickInWindow(slot);
@@ -312,14 +312,14 @@ public non-sealed class Inventory extends AbstractInventory implements Viewable 
     }
 
     @Override
-    public boolean middleClick(@NotNull Player player, int slot) {
+    public boolean middleClick(Player player, int slot) {
         // TODO
         update(player);
         return false;
     }
 
     @Override
-    public boolean drop(@NotNull Player player, boolean all, int slot, int button) {
+    public boolean drop(Player player, boolean all, int slot, int button) {
         final PlayerInventory playerInventory = player.getInventory();
         final boolean isInWindow = isClickInWindow(slot);
         final boolean outsideDrop = slot == -999;
@@ -346,7 +346,7 @@ public non-sealed class Inventory extends AbstractInventory implements Viewable 
     }
 
     @Override
-    public boolean dragging(@NotNull Player player, int slot, int button) {
+    public boolean dragging(Player player, int slot, int button) {
         final PlayerInventory playerInventory = player.getInventory();
         final boolean isInWindow = isClickInWindow(slot);
         final int clickSlot = isInWindow ? slot : PlayerInventoryUtils.convertSlot(slot, offset);
@@ -368,7 +368,7 @@ public non-sealed class Inventory extends AbstractInventory implements Viewable 
     }
 
     @Override
-    public boolean doubleClick(@NotNull Player player, int slot) {
+    public boolean doubleClick(Player player, int slot) {
         final PlayerInventory playerInventory = player.getInventory();
         final boolean isInWindow = isClickInWindow(slot);
         final int clickSlot = isInWindow ? slot : PlayerInventoryUtils.convertSlot(slot, offset);

@@ -8,12 +8,12 @@ import org.jetbrains.annotations.NotNull;
 import static net.minestom.server.network.NetworkBuffer.VAR_INT;
 
 public record UpdateSimulationDistancePacket(int simulationDistance) implements ServerPacket {
-    public UpdateSimulationDistancePacket(@NotNull NetworkBuffer reader) {
+    public UpdateSimulationDistancePacket(NetworkBuffer reader) {
         this(reader.read(VAR_INT));
     }
 
     @Override
-    public void write(@NotNull NetworkBuffer writer) {
+    public void write(NetworkBuffer writer) {
         writer.write(VAR_INT, simulationDistance);
     }
 

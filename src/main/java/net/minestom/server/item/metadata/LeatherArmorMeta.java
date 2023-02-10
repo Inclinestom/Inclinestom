@@ -17,7 +17,7 @@ public record LeatherArmorMeta(TagReadable readable) implements ItemMetaView<Lea
     }
 
     @Override
-    public <T> @UnknownNullability T getTag(@NotNull Tag<T> tag) {
+    public <T> @UnknownNullability T getTag(Tag<T> tag) {
         return readable.getTag(tag);
     }
 

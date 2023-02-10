@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 @ApiStatus.Internal
 public final class PositionUtils {
-    public static Pos lookAlong(@NotNull Pos position, double dx, double dy, double dz) {
+    public static Pos lookAlong(Pos position, double dx, double dy, double dz) {
         final float yaw = getLookYaw(dx, dz);
         final float pitch = getLookPitch(dx, dy, dz);
         return position.withView(yaw, pitch);

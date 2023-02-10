@@ -29,7 +29,7 @@ public class NoiseTestGenerator implements Generator {
     }
 
     @Override
-    public void generate(@NotNull GenerationUnit unit) {
+    public void generate(GenerationUnit unit) {
         Point start = unit.absoluteStart();
         for (int x = 0; x < Chunk.CHUNK_SIZE_X; x++) {
             for (int z = 0; z < Chunk.CHUNK_SIZE_Z; z++) {

@@ -12,7 +12,7 @@ public abstract class GoalSelector {
     private WeakReference<EntityAIGroup> aiGroupWeakReference;
     protected EntityCreature entityCreature;
 
-    public GoalSelector(@NotNull EntityCreature entityCreature) {
+    public GoalSelector(EntityCreature entityCreature) {
         this.entityCreature = entityCreature;
     }
 
@@ -86,11 +86,11 @@ public abstract class GoalSelector {
      *
      * @param entityCreature the new affected entity
      */
-    public void setEntityCreature(@NotNull EntityCreature entityCreature) {
+    public void setEntityCreature(EntityCreature entityCreature) {
         this.entityCreature = entityCreature;
     }
 
-    void setAIGroup(@NotNull EntityAIGroup group) {
+    void setAIGroup(EntityAIGroup group) {
         this.aiGroupWeakReference = new WeakReference<>(group);
     }
 

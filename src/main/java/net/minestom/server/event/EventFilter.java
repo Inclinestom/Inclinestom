@@ -37,17 +37,17 @@ public interface EventFilter<E extends Event, H> {
     EventFilter<InventoryEvent, Inventory> INVENTORY = from(InventoryEvent.class, Inventory.class, InventoryEvent::getInventory);
     EventFilter<BlockEvent, Block> BLOCK = from(BlockEvent.class, Block.class, BlockEvent::getBlock);
 
-    static <E extends Event, H> EventFilter<E, H> from(@NotNull Class<E> eventType,
+    static <E extends Event, H> EventFilter<E, H> from(Class<E> eventType,
                                                        @Nullable Class<H> handlerType,
                                                        @Nullable Function<E, H> handlerGetter) {
         return new EventFilter<>() {
             @Override
-            public @Nullable H getHandler(@NotNull E event) {
+            public @Nullable H getHandler(E event) {
                 return handlerGetter != null ? handlerGetter.apply(event) : null;
             }
 
             @Override
-            public @NotNull Class<E> eventType() {
+            public Class<E> eventType() {
                 return eventType;
             }
 
@@ -65,10 +65,10 @@ public interface EventFilter<E extends Event, H> {
      * @param event The event instance
      * @return The handler, if it exists for the given event
      */
-    @Nullable H getHandler(@NotNull E event);
+    @Nullable H getHandler(E event);
 
     @ApiStatus.Internal
-    default @Nullable H castHandler(@NotNull Object event) {
+    default @Nullable H castHandler(Object event) {
         //noinspection unchecked
         return getHandler((E) event);
     }
@@ -78,7 +78,7 @@ public interface EventFilter<E extends Event, H> {
      *
      * @return The event type.
      */
-    @NotNull Class<E> eventType();
+    Class<E> eventType();
 
     /**
      * The type returned by {@link #getHandler(Event)}.
