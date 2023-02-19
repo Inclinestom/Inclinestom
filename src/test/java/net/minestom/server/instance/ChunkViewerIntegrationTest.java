@@ -1,6 +1,7 @@
 package net.minestom.server.instance;
 
 import net.minestom.server.MinecraftServer;
+import net.minestom.server.coordinate.Area;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.network.packet.server.play.ChunkDataPacket;
 import net.minestom.server.utils.chunk.ChunkUtils;
@@ -14,26 +15,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @EnvTest
 public class ChunkViewerIntegrationTest {
-
-    @ParameterizedTest
-    @ValueSource(booleans = {false, true})
-    public void basicJoin(boolean sharedInstance, Env env) {
-        Instance instance = env.createFlatInstance();
-        if (sharedInstance) {
-            // Chunks get their viewers from the instance
-            // Ensuring that the system works with shared instances is therefore important
-            var manager = env.process().instance();
-            instance = manager.createSharedInstance((InstanceContainer) instance);
-        }
-
-        var chunk = instance.loadChunk(0, 0).join();
-        assertEquals(0, chunk.getViewers().size());
-
-        var player = env.createPlayer(instance, new Pos(0, 40, 0));
-        assertEquals(1, chunk.getViewers().size(), sharedInstance ?
-                "Chunk viewer set must include players from shared instance" : "Instance should have 1 viewer");
-        assertEquals(player, chunk.getViewers().iterator().next());
-    }
 
     @Test
     public void renderDistance(Env env) {
@@ -54,7 +35,9 @@ public class ChunkViewerIntegrationTest {
             var tracker = connection.trackIncoming(ChunkDataPacket.class);
             for (int x = -viewRadius; x <= viewRadius; x++) {
                 for (int z = -viewRadius; z <= viewRadius; z++) {
-                    instance.getChunk(x, z).sendChunk();
+                    Area chunkArea = Area.chunk(instance.dimensionType(), x, z);
+                    ChunkDataPacket packet = instance.chunkPacket(x, z);
+                    instance.viewers(chunkArea).sendPacketToViewers(packet);
                 }
             }
             assertEquals(count, tracker.collect().size());

@@ -1,5 +1,6 @@
 package net.minestom.server.collision;
 
+import net.minestom.server.coordinate.Area;
 import net.minestom.testing.Env;
 import net.minestom.testing.EnvTest;
 import net.minestom.server.coordinate.Point;
@@ -63,7 +64,7 @@ public class EntityBlockPhysicsIntegrationTest {
 
         for (int i = -2; i <= 2; ++i)
             for (int j = -2; j <= 2; ++j)
-                instance.loadChunk(i, j).join();
+                instance.loadArea(Area.chunk(instance.dimensionType(), i, j)).join();
 
         instance.setBlock(0, 42, 0, Block.STONE_SLAB);
 
@@ -109,7 +110,7 @@ public class EntityBlockPhysicsIntegrationTest {
 
         for (int i = -2; i <= 2; ++i)
             for (int j = -2; j <= 2; ++j)
-                instance.loadChunk(i, j).join();
+                instance.loadArea(Area.chunk(instance.dimensionType(), i, j)).join();
 
         instance.setBlock(0, 42, 0, Block.OAK_FENCE);
         instance.setBlock(0, 43, 0, Block.BROWN_CARPET);
@@ -169,7 +170,7 @@ public class EntityBlockPhysicsIntegrationTest {
 
         for (int i = -2; i <= 2; ++i)
             for (int j = -2; j <= 2; ++j)
-                instance.loadChunk(i, j).join();
+                instance.loadArea(Area.chunk(instance.dimensionType(), i, j)).join();
 
         instance.setBlock(1, 42, 0, Block.OAK_FENCE);
         instance.setBlock(1, 43, 0, Block.BROWN_CARPET);
@@ -188,7 +189,7 @@ public class EntityBlockPhysicsIntegrationTest {
 
         for (int i = -2; i <= 2; ++i)
             for (int j = -2; j <= 2; ++j)
-                instance.loadChunk(i, j).join();
+                instance.loadArea(Area.chunk(instance.dimensionType(), i, j)).join();
 
         instance.setBlock(0, 42, 1, Block.OAK_FENCE);
         instance.setBlock(0, 43, 1, Block.BROWN_CARPET);
@@ -207,7 +208,7 @@ public class EntityBlockPhysicsIntegrationTest {
 
         for (int i = -2; i <= 2; ++i)
             for (int j = -2; j <= 2; ++j)
-                instance.loadChunk(i, j).join();
+                instance.loadArea(Area.chunk(instance.dimensionType(), i, j)).join();
 
         instance.setBlock(0, 42, 1, Block.OAK_FENCE.withProperties(Map.of("north", "true", "west", "true")));
         instance.setBlock(0, 42, 0, Block.OAK_FENCE.withProperties(Map.of("south", "true")));
@@ -295,7 +296,7 @@ public class EntityBlockPhysicsIntegrationTest {
         var instance = env.createFlatInstance();
         for (int i = -2; i <= 2; ++i)
             for (int j = -2; j <= 2; ++j)
-                instance.loadChunk(i, j).join();
+                instance.loadArea(Area.chunk(instance.dimensionType(), i, j)).join();
 
         var entity = new Entity(EntityType.ZOMBIE);
 
@@ -314,7 +315,7 @@ public class EntityBlockPhysicsIntegrationTest {
         var instance = env.createFlatInstance();
         for (int i = -2; i <= 2; ++i)
             for (int j = -2; j <= 2; ++j)
-                instance.loadChunk(i, j).join();
+                instance.loadArea(Area.chunk(instance.dimensionType(), i, j)).join();
 
         instance.setBlock(8, 42, 8, Block.STONE);
 
@@ -336,7 +337,7 @@ public class EntityBlockPhysicsIntegrationTest {
         var instance = env.createFlatInstance();
         for (int i = -2; i <= 2; ++i)
             for (int j = -2; j <= 2; ++j)
-                instance.loadChunk(i, j).join();
+                instance.loadArea(Area.chunk(instance.dimensionType(), i, j)).join();
 
         instance.setBlock(8, 42, 8, Block.LANTERN);
 
@@ -550,7 +551,7 @@ public class EntityBlockPhysicsIntegrationTest {
 
         for (int i = -2; i <= 2; ++i)
             for (int j = -2; j <= 2; ++j)
-                instance.loadChunk(i, j).join();
+                instance.loadArea(Area.chunk(instance.dimensionType(), i, j)).join();
 
         var entity = new Entity(EntityType.ZOMBIE);
         entity.setInstance(instance, new Pos(0, 50, 0)).join();
@@ -775,7 +776,7 @@ public class EntityBlockPhysicsIntegrationTest {
 
         for (int i = -2; i <= 2; ++i)
             for (int j = -2; j <= 2; ++j)
-                instance.loadChunk(i, j).join();
+                instance.loadArea(Area.chunk(instance.dimensionType(), i, j)).join();
 
         var entity = new Entity(EntityType.ZOMBIE);
         entity.setInstance(instance, new Pos(0, 42, 0)).join();
@@ -839,7 +840,7 @@ public class EntityBlockPhysicsIntegrationTest {
         var entity = new Entity(EntityType.ZOMBIE);
 
         final int distance = 20;
-        for (int x = 0; x < distance; ++x) instance.loadChunk(x, 0).join();
+        for (int x = 0; x < distance; ++x) instance.loadArea(Area.chunk(instance.dimensionType(), x, 0)).join();
 
         entity.setInstance(instance, new Pos(5, 42, 5)).join();
         assertEquals(instance, entity.getInstance());
@@ -854,7 +855,7 @@ public class EntityBlockPhysicsIntegrationTest {
         var entity = new Entity(EntityType.ZOMBIE);
 
         final int distance = 20;
-        for (int x = 0; x < distance; ++x) instance.loadChunk(x, 0).join();
+        for (int x = 0; x < distance; ++x) instance.loadArea(Area.chunk(instance.dimensionType(), x, 0)).join();
 
         instance.setBlock(distance * 8, 43, 5, Block.STONE);
 
@@ -929,7 +930,7 @@ public class EntityBlockPhysicsIntegrationTest {
         var entity = new Entity(EntityType.ZOMBIE);
 
         final int distance = 20;
-        for (int x = 0; x < distance; ++x) instance.loadChunk(x, 0).join();
+        for (int x = 0; x < distance; ++x) instance.loadArea(Area.chunk(instance.dimensionType(), x, 0)).join();
 
         instance.setBlock(distance * 8, 43, 5, Block.STONE);
 
@@ -948,7 +949,7 @@ public class EntityBlockPhysicsIntegrationTest {
         var entity = new Entity(EntityType.ZOMBIE);
 
         final int distance = 20;
-        for (int x = 0; x < distance; ++x) instance.loadChunk(x, 0).join();
+        for (int x = 0; x < distance; ++x) instance.loadArea(Area.chunk(instance.dimensionType(), x, 0)).join();
 
         instance.setBlock(distance * 8, 43, 5, Block.STONE);
 
@@ -986,7 +987,7 @@ public class EntityBlockPhysicsIntegrationTest {
 
         for (int i = -2; i <= 2; ++i)
             for (int j = -2; j <= 2; ++j)
-                instance.loadChunk(i, j).join();
+                instance.loadArea(Area.chunk(instance.dimensionType(), i, j)).join();
 
         var entity = new Entity(EntityType.ZOMBIE);
         entity.setInstance(instance, new Pos(0, 42, 0)).join();
@@ -1006,7 +1007,7 @@ public class EntityBlockPhysicsIntegrationTest {
 
         for (int i = -2; i <= 2; ++i)
             for (int j = -2; j <= 2; ++j)
-                instance.loadChunk(i, j).join();
+                instance.loadArea(Area.chunk(instance.dimensionType(), i, j)).join();
 
         var entity = new Entity(EntityType.ZOMBIE);
         entity.setInstance(instance, new Pos(0, 42, 0)).join();

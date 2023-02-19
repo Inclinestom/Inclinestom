@@ -2,7 +2,7 @@ package net.minestom.server.coordinate;
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
-import net.minestom.server.instance.Chunk;
+import net.minestom.server.instance.Instance;
 import net.minestom.server.utils.chunk.ChunkUtils;
 import org.junit.jupiter.api.Test;
 
@@ -30,16 +30,16 @@ public class CoordinateTest {
 
     @Test
     public void chunkCoordinate() {
-        assertEquals(0, getChunkCoordinate(15));
-        assertEquals(1, getChunkCoordinate(16));
-        assertEquals(-1, getChunkCoordinate(-16));
-        assertEquals(3, getChunkCoordinate(48));
+        assertEquals(0, getSectionCoordinate(15));
+        assertEquals(1, getSectionCoordinate(16));
+        assertEquals(-1, getSectionCoordinate(-16));
+        assertEquals(3, getSectionCoordinate(48));
 
-        assertEquals(4, getChunkCoordinate(65));
-        assertEquals(4, getChunkCoordinate(64));
-        assertEquals(3, getChunkCoordinate(63));
-        assertEquals(-2, getChunkCoordinate(-25));
-        assertEquals(23, getChunkCoordinate(380));
+        assertEquals(4, getSectionCoordinate(65));
+        assertEquals(4, getSectionCoordinate(64));
+        assertEquals(3, getSectionCoordinate(63));
+        assertEquals(-2, getSectionCoordinate(-25));
+        assertEquals(23, getSectionCoordinate(380));
     }
 
     @Test
@@ -119,8 +119,8 @@ public class CoordinateTest {
                 Vec.ONE,
                 Vec.ONE.withY(-1),
                 // Vector with X/Z outside of chunk size
-                new Vec(Chunk.CHUNK_SIZE_X + 1, 20, Chunk.CHUNK_SIZE_Z + 1),
-                new Vec(Chunk.CHUNK_SIZE_X + 1, -20, Chunk.CHUNK_SIZE_Z + 1),
+                new Vec(Instance.SECTION_SIZE + 1, 20, Instance.SECTION_SIZE + 1),
+                new Vec(Instance.SECTION_SIZE + 1, -20, Instance.SECTION_SIZE + 1),
                 // Vector with negative X/Z block pos
                 new Vec(-1, 20, -1),
                 new Vec(-1, -20, -1),
@@ -131,7 +131,7 @@ public class CoordinateTest {
 
         for (Vec vec : tempEquals) {
             assertEquals(getBlockPosition(getBlockIndex(vec.blockX(), vec.blockY(), vec.blockZ()),
-                    vec.chunkX(), vec.chunkZ()), vec);
+                    vec.sectionX(), vec.sectionZ()), vec);
         }
 
         // Test if the block index does convert to wrong values due to overflow
@@ -146,7 +146,7 @@ public class CoordinateTest {
 
         for (Vec vec : tempNotEquals) {
             assertNotEquals(getBlockPosition(getBlockIndex(vec.blockX(), vec.blockY(), vec.blockZ()),
-                    vec.chunkX(), vec.chunkZ()), vec);
+                    vec.sectionX(), vec.sectionZ()), vec);
         }
     }
 
@@ -154,13 +154,13 @@ public class CoordinateTest {
     public void blockIndexDuplicate() {
         LongSet temp = new LongOpenHashSet();
 
-        for (int x = 0; x < Chunk.CHUNK_SIZE_X; x++) {
-            for (int z = 0; z < Chunk.CHUNK_SIZE_Z; z++) {
+        for (int x = 0; x < Instance.SECTION_SIZE; x++) {
+            for (int z = 0; z < Instance.SECTION_SIZE; z++) {
                 for (int y = -64; y < 364; y++) {
                     var vec = new Vec(x, y, z);
                     var index = getBlockIndex(vec.blockX(), vec.blockY(), vec.blockZ());
                     assertTrue(temp.add(index), "Duplicate block index found: " + index + " " + vec);
-                    assertEquals(getBlockPosition(index, vec.chunkX(), vec.chunkZ()), vec);
+                    assertEquals(getBlockPosition(index, vec.sectionX(), vec.sectionZ()), vec);
 
                     assertEquals(blockIndexToChunkPositionX(index), x);
                     assertEquals(blockIndexToChunkPositionY(index), y);

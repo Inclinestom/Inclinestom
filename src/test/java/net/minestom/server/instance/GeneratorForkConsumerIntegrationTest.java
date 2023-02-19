@@ -1,5 +1,6 @@
 package net.minestom.server.instance;
 
+import net.minestom.server.coordinate.Area;
 import net.minestom.testing.Env;
 import net.minestom.testing.EnvTest;
 import net.minestom.server.coordinate.Point;
@@ -29,7 +30,7 @@ public class GeneratorForkConsumerIntegrationTest {
                 failed.set(e);
             }
         });
-        instance.loadChunk(0, 0).join();
+        instance.loadArea(Area.chunk(instance.dimensionType(), 0, 0)).join();
         assertNull(failed.get(), "Failed: " + failed.get());
     }
 
@@ -51,7 +52,7 @@ public class GeneratorForkConsumerIntegrationTest {
                 assertEquals(1, dynamic.depth);
             });
         });
-        instance.loadChunk(0, 0).join();
+        instance.loadArea(Area.chunk(instance.dimensionType(), 0, 0)).join();
         assertEquals(Block.STONE, instance.getBlock(0, -64, 0));
     }
 
@@ -65,7 +66,7 @@ public class GeneratorForkConsumerIntegrationTest {
                 setter.setBlock(unit.absoluteStart().add(1, 0, 0), Block.STONE);
             });
         });
-        instance.loadChunk(0, 0).join();
+        instance.loadArea(Area.chunk(instance.dimensionType(), 0, 0)).join();
         assertEquals(Block.STONE, instance.getBlock(0, -64, 0));
         assertEquals(Block.STONE, instance.getBlock(1, -64, 0));
     }
@@ -89,9 +90,9 @@ public class GeneratorForkConsumerIntegrationTest {
                 assertEquals(2, dynamic.depth);
             });
         });
-        instance.loadChunk(0, 0).join();
+        instance.loadArea(Area.chunk(instance.dimensionType(), 0, 0)).join();
         instance.setGenerator(null);
-        instance.loadChunk(0, 1).join();
+        instance.loadArea(Area.chunk(instance.dimensionType(), 0, 1)).join();
         assertEquals(Block.STONE, instance.getBlock(0, -64, 0));
         assertEquals(Block.GRASS, instance.getBlock(0, -64, 16));
     }
@@ -115,9 +116,9 @@ public class GeneratorForkConsumerIntegrationTest {
                 assertEquals(1, dynamic.depth);
             });
         });
-        instance.loadChunk(0, 0).join();
+        instance.loadArea(Area.chunk(instance.dimensionType(), 0, 0)).join();
         instance.setGenerator(null);
-        instance.loadChunk(1, 0).join();
+        instance.loadArea(Area.chunk(instance.dimensionType(), 1, 0)).join();
         assertEquals(Block.STONE, instance.getBlock(0, -64, 0));
         assertEquals(Block.GRASS, instance.getBlock(16, -64, 0));
     }
@@ -141,7 +142,7 @@ public class GeneratorForkConsumerIntegrationTest {
                 assertEquals(1, dynamic.depth);
             });
         });
-        instance.loadChunk(0, 0).join();
+        instance.loadArea(Area.chunk(instance.dimensionType(), 0, 0)).join();
         assertEquals(Block.STONE, instance.getBlock(0, -64, 0));
         assertEquals(Block.GRASS, instance.getBlock(0, -48, 0));
     }
@@ -171,9 +172,9 @@ public class GeneratorForkConsumerIntegrationTest {
                 assertEquals(1, dynamic.depth);
             });
         });
-        instance.loadChunk(0, 0).join();
+        instance.loadArea(Area.chunk(instance.dimensionType(), 0, 0)).join();
         for (Point point : points) {
-            if (!instance.isChunkLoaded(point)) continue;
+            if (!instance.isAreaLoaded(Area.block(point))) continue;
             assertEquals(Block.STONE, instance.getBlock(point), point.toString());
         }
     }

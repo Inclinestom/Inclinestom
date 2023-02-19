@@ -25,7 +25,7 @@ public class PlayerChunkUnloadEvent implements PlayerInstanceEvent {
      *
      * @return the chunk X
      */
-    public int getChunkX() {
+    public int getWorldViewX() {
         return chunkX;
     }
 
@@ -34,7 +34,7 @@ public class PlayerChunkUnloadEvent implements PlayerInstanceEvent {
      *
      * @return the chunk Z
      */
-    public int getChunkZ() {
+    public int getWorldViewZ() {
         return chunkZ;
     }
 

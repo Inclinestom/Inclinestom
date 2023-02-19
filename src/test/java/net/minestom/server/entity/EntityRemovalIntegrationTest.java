@@ -41,7 +41,7 @@ public class EntityRemovalIntegrationTest {
 
         entity.remove();
         assertTrue(entity.isRemoved());
-        assertFalse(instance.getEntities().contains(entity), "Entity must not be in the instance anymore");
+        assertFalse(instance.entities().contains(entity), "Entity must not be in the instance anymore");
     }
 
     @Test

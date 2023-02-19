@@ -1,7 +1,6 @@
 package net.minestom.server.utils.callback;
 
-import net.minestom.server.instance.Chunk;
-import net.minestom.server.utils.chunk.ChunkCallback;
+import net.minestom.server.instance.storage.WorldView;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -19,17 +18,4 @@ public class OptionalCallback {
             callback.run();
         }
     }
-
-    /**
-     * Executes an optional {@link ChunkCallback}.
-     *
-     * @param callback the optional chunk callback, can be null
-     * @param chunk    the chunk to forward to the callback
-     */
-    public static void execute(@Nullable ChunkCallback callback, @Nullable Chunk chunk) {
-        if (callback != null) {
-            callback.accept(chunk);
-        }
-    }
-
 }

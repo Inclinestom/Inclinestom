@@ -4,6 +4,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minestom.server.advancements.AdvancementManager;
 import net.minestom.server.adventure.bossbar.BossBarManager;
 import net.minestom.server.command.CommandManager;
+import net.minestom.server.coordinate.Area;
 import net.minestom.server.entity.Entity;
 import net.minestom.server.event.EventDispatcher;
 import net.minestom.server.event.GlobalEventHandler;
@@ -11,7 +12,7 @@ import net.minestom.server.event.server.ServerTickMonitorEvent;
 import net.minestom.server.exception.ExceptionManager;
 import net.minestom.server.extensions.ExtensionManager;
 import net.minestom.server.gamedata.tags.TagManager;
-import net.minestom.server.instance.Chunk;
+import net.minestom.server.instance.storage.WorldView;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.InstanceManager;
 import net.minestom.server.instance.block.BlockManager;
@@ -66,7 +67,7 @@ final class ServerProcessImpl implements ServerProcess {
     private final TagManager tag;
     private final Server server;
 
-    private final ThreadDispatcher<Chunk> dispatcher;
+    private final ThreadDispatcher<Area> dispatcher;
     private final Ticker ticker;
 
     private final AtomicBoolean started = new AtomicBoolean();
@@ -193,7 +194,7 @@ final class ServerProcessImpl implements ServerProcess {
     }
 
     @Override
-    public ThreadDispatcher<Chunk> dispatcher() {
+    public ThreadDispatcher<Area> dispatcher() {
         return dispatcher;
     }
 
@@ -265,7 +266,7 @@ final class ServerProcessImpl implements ServerProcess {
         Int2ObjectOpenHashMap<AtomicReference<EntitySnapshot>> entityRefs = new Int2ObjectOpenHashMap<>();
         for (Instance instance : instance.getInstances()) {
             instanceRefs.add(updater.reference(instance));
-            for (Entity entity : instance.getEntities()) {
+            for (Entity entity : instance.entities()) {
                 entityRefs.put(entity.getEntityId(), updater.reference(entity));
             }
         }

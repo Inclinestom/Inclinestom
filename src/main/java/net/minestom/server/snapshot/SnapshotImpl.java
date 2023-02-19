@@ -8,6 +8,7 @@ import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.GameMode;
 import net.minestom.server.instance.Section;
 import net.minestom.server.instance.block.Block;
+import net.minestom.server.instance.storage.WorldView;
 import net.minestom.server.tag.Tag;
 import net.minestom.server.tag.TagReadable;
 import net.minestom.server.utils.collection.IntMappedArray;
@@ -50,7 +51,7 @@ public final class SnapshotImpl {
         @Override
         public @Nullable SectionStorageSnapshot chunk(int chunkX, int chunkZ) {
             var ref = chunksMap.get(getChunkIndex(chunkX, chunkZ));
-            return Objects.requireNonNull(ref, "Chunk not found").getPlain();
+            return Objects.requireNonNull(ref, "WorldView not found").getPlain();
         }
 
         @Override
@@ -74,34 +75,18 @@ public final class SnapshotImpl {
         }
     }
 
-    public record SectionStorage(int minSection, int chunkX, int chunkZ,
-                                 Section[] sections,
-                                 Int2ObjectOpenHashMap<Block> blockEntries,
+    public record SectionStorage(Vec position,
+                                 WorldView view,
                                  int[] entitiesIds,
                                  AtomicReference<InstanceSnapshot> instanceRef) implements SectionStorageSnapshot {
         @Override
         public @UnknownNullability Block getBlock(int x, int y, int z, Condition condition) {
-            // Verify if the block object is present
-            if (condition != Condition.TYPE) {
-                final Block entry = !blockEntries.isEmpty() ?
-                        blockEntries.get(getBlockIndex(x, y, z)) : null;
-                if (entry != null || condition == Condition.CACHED) {
-                    return entry;
-                }
-            }
-            // Retrieve the block from state id
-            final Section section = sections[getChunkCoordinate(y) - minSection];
-            final int blockStateId = section.blockPalette()
-                    .get(toSectionRelativeCoordinate(x), toSectionRelativeCoordinate(y), toSectionRelativeCoordinate(z));
-            return Objects.requireNonNullElse(Block.fromStateId((short) blockStateId), Block.AIR);
+            return view.getBlock(x, y, z, condition);
         }
 
         @Override
         public Biome getBiome(int x, int y, int z) {
-            final Section section = sections[getChunkCoordinate(y) - minSection];
-            final int id = section.biomePalette()
-                    .get(toSectionRelativeCoordinate(x) / 4, toSectionRelativeCoordinate(y) / 4, toSectionRelativeCoordinate(z) / 4);
-            return MinecraftServer.getBiomeManager().getById(id);
+            return view.getBiome(x, y, z);
         }
 
         @Override

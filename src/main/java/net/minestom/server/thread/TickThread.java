@@ -2,10 +2,7 @@ package net.minestom.server.thread;
 
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.Tickable;
-import net.minestom.server.entity.Entity;
-import net.minestom.server.instance.Chunk;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,7 +12,7 @@ import java.util.concurrent.locks.LockSupport;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * Thread responsible for ticking {@link Chunk chunks} and {@link Entity entities}.
+ * Thread responsible for ticking.
  * <p>
  * Created in {@link ThreadDispatcher}, and awaken every tick with a task to execute.
  */

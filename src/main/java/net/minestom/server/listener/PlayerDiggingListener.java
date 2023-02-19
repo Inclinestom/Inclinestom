@@ -1,5 +1,6 @@
 package net.minestom.server.listener;
 
+import net.minestom.server.coordinate.Area;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.GameMode;
@@ -24,18 +25,19 @@ public final class PlayerDiggingListener {
     public static void playerDiggingListener(ClientPlayerDiggingPacket packet, Player player) {
         final ClientPlayerDiggingPacket.Status status = packet.status();
         final Point blockPosition = packet.blockPosition();
+        final Area area = Area.block(blockPosition);
         final Instance instance = player.getInstance();
         if (instance == null) return;
 
         DiggingResult diggingResult = null;
         if (status == ClientPlayerDiggingPacket.Status.STARTED_DIGGING) {
-            if (!instance.isChunkLoaded(blockPosition)) return;
+            if (!instance.isAreaLoaded(area)) return;
             diggingResult = startDigging(player, instance, blockPosition, packet.blockFace());
         } else if (status == ClientPlayerDiggingPacket.Status.CANCELLED_DIGGING) {
-            if (!instance.isChunkLoaded(blockPosition)) return;
+            if (!instance.isAreaLoaded(area)) return;
             diggingResult = cancelDigging(instance, blockPosition);
         } else if (status == ClientPlayerDiggingPacket.Status.FINISHED_DIGGING) {
-            if (!instance.isChunkLoaded(blockPosition)) return;
+            if (!instance.isAreaLoaded(area)) return;
             diggingResult = finishDigging(player, instance, blockPosition, packet.blockFace());
         } else if (status == ClientPlayerDiggingPacket.Status.DROP_ITEM_STACK) {
             dropStack(player);

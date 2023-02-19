@@ -133,15 +133,15 @@
 {
   "name":"org.jctools.queues.MpUnboundedXaddArrayQueueConsumerFields",
   "fields":[
-    {"name":"consumerChunk"}, 
+    {"name":"consumerWorldView"},
     {"name":"consumerIndex"}
   ]
 },
 {
-  "name":"org.jctools.queues.MpUnboundedXaddArrayQueueProducerChunk",
+  "name":"org.jctools.queues.MpUnboundedXaddArrayQueueProducerWorldView",
   "fields":[
-    {"name":"producerChunk"}, 
-    {"name":"producerChunkIndex"}
+    {"name":"producerWorldView"},
+    {"name":"producerWorldViewIndex"}
   ]
 },
 {
@@ -149,7 +149,7 @@
   "fields":[{"name":"producerIndex"}]
 },
 {
-  "name":"org.jctools.queues.MpUnboundedXaddChunk",
+  "name":"org.jctools.queues.MpUnboundedXaddWorldView",
   "fields":[
     {"name":"index"}, 
     {"name":"next"}, 

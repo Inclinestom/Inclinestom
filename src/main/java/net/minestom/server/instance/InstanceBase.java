@@ -1,12 +1,12 @@
 package net.minestom.server.instance;
 
-import it.unimi.dsi.fastutil.objects.ObjectArraySet;
+import com.extollit.gaming.ai.path.model.IInstanceSpace;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.pointer.Pointers;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.ServerProcess;
-import net.minestom.server.coordinate.Area;
 import net.minestom.server.coordinate.Point;
+import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.EntityCreature;
 import net.minestom.server.entity.ExperienceOrb;
@@ -18,13 +18,10 @@ import net.minestom.server.event.EventNode;
 import net.minestom.server.event.instance.InstanceTickEvent;
 import net.minestom.server.event.trait.InstanceEvent;
 import net.minestom.server.instance.block.Block;
-import net.minestom.server.instance.generator.Generator;
-import net.minestom.server.network.packet.server.play.BlockActionPacket;
 import net.minestom.server.network.packet.server.play.TimeUpdatePacket;
 import net.minestom.server.tag.TagHandler;
 import net.minestom.server.timer.Scheduler;
 import net.minestom.server.utils.PacketUtils;
-import net.minestom.server.utils.chunk.ChunkCache;
 import net.minestom.server.utils.time.Cooldown;
 import net.minestom.server.utils.time.TimeUnit;
 import net.minestom.server.utils.validate.Check;
@@ -101,17 +98,6 @@ public abstract class InstanceBase implements Instance {
             // Local nodes require a server process
             this.eventNode = null;
         }
-    }
-
-    /**
-     * Changes the instance {@link ChunkGenerator}.
-     *
-     * @param chunkGenerator the new {@link ChunkGenerator} of the instance
-     * @deprecated Use {@link #setGenerator(Generator)}
-     */
-    @Deprecated
-    public void setChunkGenerator(@Nullable ChunkGenerator chunkGenerator) {
-        setGenerator(chunkGenerator != null ? new ChunkGeneratorCompatibilityLayer(chunkGenerator) : null);
     }
 
     /**
@@ -276,18 +262,6 @@ public abstract class InstanceBase implements Instance {
     }
 
     /**
-     * Gets the entities located in the chunk.
-     *
-     * @param chunk the chunk to get the entities from
-     * @return an unmodifiable {@link Set} containing all the entities in a chunk,
-     * if {@code chunk} is unloaded, return an empty {@link HashSet}
-     */
-    public Set<Entity> getChunkEntities(Chunk chunk) {
-        var chunkEntities = entityTracker.chunkEntities(chunk.toPosition(), EntityTracker.Target.ENTITIES);
-        return ObjectArraySet.ofUnchecked(chunkEntities.toArray(Entity[]::new));
-    }
-
-    /**
      * Gets nearby entities to the given position.
      *
      * @param point position to look at
@@ -303,22 +277,8 @@ public abstract class InstanceBase implements Instance {
     @Override
     public abstract @Nullable Block getBlock(int x, int y, int z, Condition condition);
 
-    /**
-     * Sends a {@link BlockActionPacket} for all the viewers of the specific position.
-     *
-     * @param blockPosition the block position
-     * @param actionId      the action id, depends on the block
-     * @param actionParam   the action parameter, depends on the block
-     * @see <a href="https://wiki.vg/Protocol#Block_Action">BlockActionPacket</a> for the action id &amp; param
-     */
-    public void sendBlockAction(Point blockPosition, byte actionId, byte actionParam) {
-        final Block block = getBlock(blockPosition);
-        final Set<Player> viewers = viewers(Area.collection(blockPosition));
-        PacketUtils.sendGroupedPacket(viewers, new BlockActionPacket(blockPosition, actionId, actionParam, block));
-    }
-
     @ApiStatus.Experimental
-    public EntityTracker getEntityTracker() {
+    public EntityTracker entityTracker() {
         return entityTracker;
     }
 
@@ -394,5 +354,30 @@ public abstract class InstanceBase implements Instance {
     @Override
     public Pointers pointers() {
         return this.pointers;
+    }
+
+    @Override
+    public DimensionType dimensionType() {
+        return this.dimensionType;
+    }
+
+    @Override
+    public WorldBorder worldBorder() {
+        return this.worldBorder;
+    }
+
+    @Override
+    public UUID uniqueId() {
+        return this.uniqueId;
+    }
+
+    @Override
+    public TimeUpdatePacket timePacket() {
+        return new TimeUpdatePacket(this.worldAge, this.time);
+    }
+
+    @Override
+    public boolean isInVoid(Pos position) {
+        return position.y() < this.dimensionType().getMinY();
     }
 }

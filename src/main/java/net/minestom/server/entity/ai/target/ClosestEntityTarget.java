@@ -1,5 +1,7 @@
 package net.minestom.server.entity.ai.target;
 
+import net.minestom.server.coordinate.Area;
+import net.minestom.server.coordinate.Point;
 import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.EntityCreature;
 import net.minestom.server.entity.LivingEntity;
@@ -60,7 +62,9 @@ public class ClosestEntityTarget extends TargetSelector {
             return null;
         }
 
-        return instance.getNearbyEntities(entityCreature.getPosition(), range).stream()
+        Point pos = entityCreature.getPosition();
+        Area searchArea = Area.fill(pos.sub(range), pos.add(range));
+        return instance.areaEntities(searchArea).stream()
                 // Don't target our self and make sure entity is valid
                 .filter(ent -> !entityCreature.equals(ent) && !ent.isRemoved())
                 .filter(targetPredicate)

@@ -1,13 +1,11 @@
 package net.minestom.server.instance;
 
-import net.minestom.server.Viewable;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.ExperienceOrb;
 import net.minestom.server.entity.ItemEntity;
 import net.minestom.server.entity.Player;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
@@ -49,13 +47,13 @@ public sealed interface EntityTracker permits EntityTrackerImpl {
 
     @UnmodifiableView
     default <T extends Entity> Collection<T> chunkEntities(Point point, Target<T> target) {
-        return chunkEntities(point.chunkX(), point.chunkZ(), target);
+        return chunkEntities(point.sectionX(), point.sectionZ(), target);
     }
 
     /**
      * Gets the entities within a chunk range.
      */
-    <T extends Entity> void nearbyEntitiesByChunkRange(Point point, int chunkRange,
+    <T extends Entity> void nearbyEntitiesByWorldViewRange(Point point, int chunkRange,
                                                        Target<T> target, Consumer<T> query);
 
     /**
@@ -73,12 +71,6 @@ public sealed interface EntityTracker permits EntityTrackerImpl {
     @UnmodifiableView
     default Set<Entity> entities() {
         return entities(Target.ENTITIES);
-    }
-
-    Viewable viewable(List<SharedInstance> sharedInstances, int chunkX, int chunkZ);
-
-    default Viewable viewable(int chunkX, int chunkZ) {
-        return viewable(List.of(), chunkX, chunkZ);
     }
 
     /**

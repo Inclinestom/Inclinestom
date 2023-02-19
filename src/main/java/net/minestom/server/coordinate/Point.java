@@ -1,11 +1,10 @@
 package net.minestom.server.coordinate;
 
+import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.block.BlockFace;
 import net.minestom.server.utils.MathUtils;
-import net.minestom.server.utils.chunk.ChunkUtils;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.function.DoubleUnaryOperator;
 
@@ -69,19 +68,19 @@ public sealed interface Point permits Vec, Pos {
     }
 
     @Contract(pure = true)
-    default int chunkX() {
-        return ChunkUtils.getChunkCoordinate(x());
+    default int sectionX() {
+        return blockX() / Instance.SECTION_SIZE;
     }
 
     @Contract(pure = true)
     @ApiStatus.Experimental
-    default int section() {
-        return ChunkUtils.getChunkCoordinate(y());
+    default int sectionY() {
+        return blockY() / Instance.SECTION_SIZE;
     }
 
     @Contract(pure = true)
-    default int chunkZ() {
-        return ChunkUtils.getChunkCoordinate(z());
+    default int sectionZ() {
+        return blockZ() / Instance.SECTION_SIZE;
     }
 
     /**
@@ -252,8 +251,8 @@ public sealed interface Point permits Vec, Pos {
      * @param point the point to compare two
      * @return true if 'this' is in the same chunk as {@code point}
      */
-    default boolean sameChunk(Point point) {
-        return chunkX() == point.chunkX() && chunkZ() == point.chunkZ();
+    default boolean sameWorldView(Point point) {
+        return sectionX() == point.sectionX() && sectionZ() == point.sectionZ();
     }
 
     default boolean sameBlock(int blockX, int blockY, int blockZ) {

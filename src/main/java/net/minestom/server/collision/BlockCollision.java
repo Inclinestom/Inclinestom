@@ -1,5 +1,6 @@
 package net.minestom.server.collision;
 
+import net.minestom.server.coordinate.Area;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.coordinate.Vec;
@@ -39,7 +40,9 @@ final class BlockCollision {
     }
 
     static Entity canPlaceBlockAt(Instance instance, Point blockPos, Block b) {
-        for (Entity entity : instance.getNearbyEntities(blockPos, 3)) {
+        int radius = 3;
+        Area areaToCheck = Area.fill(blockPos.sub(radius), blockPos.add(radius));
+        for (Entity entity : instance.areaEntities(areaToCheck)) {
             final EntityType type = entity.getEntityType();
             if (type == EntityType.ITEM || type == EntityType.ARROW)
                 continue;

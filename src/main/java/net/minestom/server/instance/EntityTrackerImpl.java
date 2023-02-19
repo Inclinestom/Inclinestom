@@ -8,7 +8,6 @@ import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.Player;
 import net.minestom.server.utils.chunk.ChunkUtils;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 import org.jetbrains.annotations.UnmodifiableView;
@@ -22,8 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import static net.minestom.server.instance.Chunk.CHUNK_SIZE_X;
-import static net.minestom.server.instance.Chunk.CHUNK_SIZE_Z;
+import static net.minestom.server.instance.Instance.SECTION_SIZE;
 import static net.minestom.server.utils.chunk.ChunkUtils.*;
 
 final class EntityTrackerImpl implements EntityTracker {
@@ -43,12 +41,12 @@ final class EntityTrackerImpl implements EntityTracker {
         for (TargetEntry<Entity> entry : entries) {
             if (entry.target.type().isInstance(entity)) {
                 entry.entities.add(entity);
-                entry.addToChunk(index, entity);
+                entry.addToWorldView(index, entity);
             }
         }
         if (update != null) {
             update.referenceUpdate(point, this);
-            nearbyEntitiesByChunkRange(point, MinecraftServer.getEntityViewDistance(), target, newEntity -> {
+            nearbyEntitiesByWorldViewRange(point, MinecraftServer.getEntityViewDistance(), target, newEntity -> {
                 if (newEntity == entity) return;
                 update.add(newEntity);
             });
@@ -64,12 +62,12 @@ final class EntityTrackerImpl implements EntityTracker {
         for (TargetEntry<Entity> entry : entries) {
             if (entry.target.type().isInstance(entity)) {
                 entry.entities.remove(entity);
-                entry.removeFromChunk(index, entity);
+                entry.removeFromWorldView(index, entity);
             }
         }
         if (update != null) {
             update.referenceUpdate(point, null);
-            nearbyEntitiesByChunkRange(point, MinecraftServer.getEntityViewDistance(), target, newEntity -> {
+            nearbyEntitiesByWorldViewRange(point, MinecraftServer.getEntityViewDistance(), target, newEntity -> {
                 if (newEntity == entity) return;
                 update.remove(newEntity);
             });
@@ -80,13 +78,13 @@ final class EntityTrackerImpl implements EntityTracker {
     public <T extends Entity> void move(Entity entity, Point newPoint,
                                         Target<T> target, @Nullable Update<T> update) {
         Point oldPoint = entityPositions.put(entity.getEntityId(), newPoint);
-        if (oldPoint == null || oldPoint.sameChunk(newPoint)) return;
+        if (oldPoint == null || oldPoint.sameWorldView(newPoint)) return;
         final long oldIndex = getChunkIndex(oldPoint);
         final long newIndex = getChunkIndex(newPoint);
         for (TargetEntry<Entity> entry : entries) {
             if (entry.target.type().isInstance(entity)) {
-                entry.addToChunk(newIndex, entity);
-                entry.removeFromChunk(oldIndex, entity);
+                entry.addToWorldView(newIndex, entity);
+                entry.removeFromWorldView(oldIndex, entity);
             }
         }
         if (update != null) {
@@ -114,7 +112,7 @@ final class EntityTrackerImpl implements EntityTracker {
     }
 
     @Override
-    public <T extends Entity> void nearbyEntitiesByChunkRange(Point point, int chunkRange, Target<T> target, Consumer<T> query) {
+    public <T extends Entity> void nearbyEntitiesByWorldViewRange(Point point, int chunkRange, Target<T> target, Consumer<T> query) {
         final Long2ObjectSyncMap<List<Entity>> entities = entries[target.ordinal()].chunkEntities;
         if (chunkRange == 0) {
             // Single chunk
@@ -135,12 +133,12 @@ final class EntityTrackerImpl implements EntityTracker {
     @Override
     public <T extends Entity> void nearbyEntities(Point point, double range, Target<T> target, Consumer<T> query) {
         final Long2ObjectSyncMap<List<Entity>> entities = entries[target.ordinal()].chunkEntities;
-        final int minChunkX = ChunkUtils.getChunkCoordinate(point.x() - range);
-        final int minChunkZ = ChunkUtils.getChunkCoordinate(point.z() - range);
-        final int maxChunkX = ChunkUtils.getChunkCoordinate(point.x() + range);
-        final int maxChunkZ = ChunkUtils.getChunkCoordinate(point.z() + range);
+        final int minWorldViewX = ChunkUtils.getSectionCoordinate(point.x() - range);
+        final int minWorldViewZ = ChunkUtils.getSectionCoordinate(point.z() - range);
+        final int maxWorldViewX = ChunkUtils.getSectionCoordinate(point.x() + range);
+        final int maxWorldViewZ = ChunkUtils.getSectionCoordinate(point.z() + range);
         final double squaredRange = range * range;
-        if (minChunkX == maxChunkX && minChunkZ == maxChunkZ) {
+        if (minWorldViewX == maxWorldViewX && minWorldViewZ == maxWorldViewZ) {
             // Single chunk
             final var chunkEntities = (List<T>) entities.get(getChunkIndex(point));
             if (chunkEntities != null && !chunkEntities.isEmpty()) {
@@ -151,7 +149,7 @@ final class EntityTrackerImpl implements EntityTracker {
             }
         } else {
             // Multiple chunks
-            final int chunkRange = (int) (range / Chunk.CHUNK_SECTION_SIZE) + 1;
+            final int chunkRange = (int) (range / Instance.SECTION_SIZE) + 1;
             forChunksInRange(point, chunkRange, (chunkX, chunkZ) -> {
                 final var chunkEntities = (List<T>) entities.get(getChunkIndex(chunkX, chunkZ));
                 if (chunkEntities == null || chunkEntities.isEmpty()) return;
@@ -171,16 +169,10 @@ final class EntityTrackerImpl implements EntityTracker {
         return (Set<T>) entries[target.ordinal()].entitiesView;
     }
 
-    @Override
-    public Viewable viewable(List<SharedInstance> sharedInstances, int chunkX, int chunkZ) {
-        var entry = entries[Target.PLAYERS.ordinal()];
-        return entry.viewers.computeIfAbsent(new ChunkViewKey(sharedInstances, chunkX, chunkZ), ChunkView::new);
-    }
-
     private <T extends Entity> void difference(Point oldPoint, Point newPoint,
                                                Target<T> target, Update<T> update) {
         final TargetEntry<Entity> entry = entries[target.ordinal()];
-        forDifferingChunksInRange(newPoint.chunkX(), newPoint.chunkZ(), oldPoint.chunkX(), oldPoint.chunkZ(),
+        forDifferingChunksInRange(newPoint.sectionX(), newPoint.sectionZ(), oldPoint.sectionX(), oldPoint.sectionZ(),
                 MinecraftServer.getEntityViewDistance(), (chunkX, chunkZ) -> {
                     // Add
                     final List<Entity> entities = entry.chunkEntities.get(getChunkIndex(chunkX, chunkZ));
@@ -194,13 +186,12 @@ final class EntityTrackerImpl implements EntityTracker {
                 });
     }
 
-    record ChunkViewKey(List<SharedInstance> sharedInstances, int chunkX, int chunkZ) {
+    record WorldViewViewKey(int chunkX, int chunkZ) {
         @Override
         public boolean equals(Object obj) {
             if (this == obj) return true;
-            if (!(obj instanceof ChunkViewKey key)) return false;
-            return sharedInstances == key.sharedInstances &&
-                    chunkX == key.chunkX &&
+            if (!(obj instanceof WorldViewViewKey key)) return false;
+            return chunkX == key.chunkX &&
                     chunkZ == key.chunkZ;
         }
     }
@@ -209,9 +200,9 @@ final class EntityTrackerImpl implements EntityTracker {
         private final EntityTracker.Target<T> target;
         private final Set<T> entities = ConcurrentHashMap.newKeySet(); // Thread-safe since exposed
         private final Set<T> entitiesView = Collections.unmodifiableSet(entities);
-        // Chunk index -> entities inside it
+        // WorldView index -> entities inside it
         final Long2ObjectSyncMap<List<T>> chunkEntities = Long2ObjectSyncMap.hashmap();
-        final Map<ChunkViewKey, ChunkView> viewers = new ConcurrentHashMap<>();
+        final Map<WorldViewViewKey, WorldViewView> viewers = new ConcurrentHashMap<>();
 
         TargetEntry(Target<T> target) {
             this.target = target;
@@ -221,40 +212,40 @@ final class EntityTrackerImpl implements EntityTracker {
             return chunkEntities.computeIfAbsent(index, i -> (List<T>) new CopyOnWriteArrayList());
         }
 
-        void addToChunk(long index, T entity) {
+        void addToWorldView(long index, T entity) {
             chunkEntities(index).add(entity);
         }
 
-        void removeFromChunk(long index, T entity) {
+        void removeFromWorldView(long index, T entity) {
             List<T> entities = chunkEntities.get(index);
             if (entities != null) entities.remove(entity);
         }
     }
 
-    private final class ChunkView implements Viewable {
-        private final ChunkViewKey key;
+    private final class WorldViewView implements Viewable {
+        private final WorldViewViewKey key;
         private final int chunkX, chunkZ;
         private final Point point;
         final Set<Player> set = new SetImpl();
         private int lastReferenceCount;
 
-        private ChunkView(ChunkViewKey key) {
+        private WorldViewView(WorldViewViewKey key) {
             this.key = key;
 
             this.chunkX = key.chunkX;
             this.chunkZ = key.chunkZ;
 
-            this.point = new Vec(CHUNK_SIZE_X * chunkX, 0, CHUNK_SIZE_Z * chunkZ);
+            this.point = new Vec(SECTION_SIZE * chunkX, 0, Instance.SECTION_SIZE * chunkZ);
         }
 
         @Override
         public boolean addViewer(Player player) {
-            throw new UnsupportedOperationException("Chunk does not support manual viewers");
+            throw new UnsupportedOperationException("WorldView does not support manual viewers");
         }
 
         @Override
         public boolean removeViewer(Player player) {
-            throw new UnsupportedOperationException("Chunk does not support manual viewers");
+            throw new UnsupportedOperationException("WorldView does not support manual viewers");
         }
 
         @Override
@@ -265,17 +256,12 @@ final class EntityTrackerImpl implements EntityTracker {
         private Collection<Player> references() {
             Int2ObjectOpenHashMap<Player> entityMap = new Int2ObjectOpenHashMap<>(lastReferenceCount);
             collectPlayers(EntityTrackerImpl.this, entityMap);
-            if (!key.sharedInstances.isEmpty()) {
-                for (SharedInstance instance : key.sharedInstances) {
-                    collectPlayers(instance.getEntityTracker(), entityMap);
-                }
-            }
             this.lastReferenceCount = entityMap.size();
             return entityMap.values();
         }
 
         private void collectPlayers(EntityTracker tracker, Int2ObjectOpenHashMap<Player> map) {
-            tracker.nearbyEntitiesByChunkRange(point, MinecraftServer.getChunkViewDistance(),
+            tracker.nearbyEntitiesByWorldViewRange(point, MinecraftServer.getChunkViewDistance(),
                     EntityTracker.Target.PLAYERS, (player) -> map.putIfAbsent(player.getEntityId(), player));
         }
 

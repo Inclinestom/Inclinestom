@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * Represents the world border of an {@link Instance},
- * can be retrieved with {@link Instance#getWorldBorder()}.
+ * can be retrieved with {@link Instance#worldBorder()}.
  */
 public class WorldBorder {
 

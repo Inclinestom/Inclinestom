@@ -1,5 +1,6 @@
 package net.minestom.server.instance;
 
+import net.minestom.server.coordinate.Area;
 import net.minestom.testing.Env;
 import net.minestom.testing.EnvTest;
 import net.minestom.server.coordinate.Point;
@@ -24,7 +25,7 @@ public class GeneratorForkIntegrationTest {
             assertEquals(unit.absoluteEnd(), u.absoluteEnd());
             u.modifier().setRelative(0, 0, 0, Block.STONE);
         });
-        instance.loadChunk(0, 0).join();
+        instance.loadArea(Area.chunk(instance.dimensionType(), 0, 0)).join();
         assertEquals(block, instance.getBlock(0, -64, 0));
     }
 
@@ -39,9 +40,9 @@ public class GeneratorForkIntegrationTest {
             assertDoesNotThrow(() -> fork.modifier().setBlock(start.add(17, 17, 17), Block.STONE));
         });
         // Load the chunks
-        instance.loadChunk(0, 0).join();
+        instance.loadArea(Area.chunk(instance.dimensionType(), 0, 0)).join();
         instance.setGenerator(null);
-        instance.loadChunk(1, 1).join();
+        instance.loadArea(Area.chunk(instance.dimensionType(), 1, 1)).join();
         assertEquals(Block.STONE, instance.getBlock(17, -64 + 17, 17));
     }
 
@@ -57,9 +58,9 @@ public class GeneratorForkIntegrationTest {
             u.modifier().setRelative(16, 0, 0, Block.STONE);
             u.modifier().setRelative(16, 33, 0, Block.STONE);
         });
-        instance.loadChunk(0, 0).join();
+        instance.loadArea(Area.chunk(instance.dimensionType(), 0, 0)).join();
         instance.setGenerator(null);
-        instance.loadChunk(1, 0).join();
+        instance.loadArea(Area.chunk(instance.dimensionType(), 1, 0)).join();
         assertEquals(block, instance.getBlock(16, -64, 0));
         assertEquals(block, instance.getBlock(16, -31, 0));
     }
@@ -72,9 +73,9 @@ public class GeneratorForkIntegrationTest {
             var u = unit.fork(unit.absoluteStart(), unit.absoluteEnd().add(16, 0, 16));
             u.modifier().setRelative(16, 39 + 64, 0, Block.AIR);
         });
-        instance.loadChunk(0, 0).join();
+        instance.loadArea(Area.chunk(instance.dimensionType(), 0, 0)).join();
         instance.setGenerator(unit -> unit.modifier().fillHeight(0, 40, Block.STONE));
-        instance.loadChunk(1, 0).join();
+        instance.loadArea(Area.chunk(instance.dimensionType(), 1, 0)).join();
         assertEquals(Block.AIR, instance.getBlock(16, 39, 0));
     }
 
@@ -86,9 +87,9 @@ public class GeneratorForkIntegrationTest {
             var u = unit.fork(unit.absoluteStart(), unit.absoluteEnd().add(16, 0, 16));
             u.modifier().fillHeight(0, 40, Block.STONE);
         });
-        instance.loadChunk(0, 0).join();
+        instance.loadArea(Area.chunk(instance.dimensionType(), 0, 0)).join();
         instance.setGenerator(null);
-        instance.loadChunk(1, 0).join();
+        instance.loadArea(Area.chunk(instance.dimensionType(), 1, 0)).join();
         for (int y = 0; y < 40; y++) {
             assertEquals(Block.STONE, instance.getBlock(16, y, 0), "y=" + y);
         }
@@ -103,6 +104,6 @@ public class GeneratorForkIntegrationTest {
             assertThrows(IllegalStateException.class, () -> u.modifier().setBiome(16, 0, 0, Biome.PLAINS));
             assertThrows(IllegalStateException.class, () -> u.modifier().fillBiome(Biome.PLAINS));
         });
-        instance.loadChunk(0, 0).join();
+        instance.loadArea(Area.chunk(instance.dimensionType(), 0, 0)).join();
     }
 }

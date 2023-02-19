@@ -214,7 +214,7 @@ public final class MinecraftServer {
      * @deprecated should instead be defined with a java property
      */
     @Deprecated
-    public static void setChunkViewDistance(int chunkViewDistance) {
+    public static void setWorldViewViewDistance(int chunkViewDistance) {
         Check.stateCondition(serverProcess.isAlive(), "You cannot change the chunk view distance after the server has been started.");
         Check.argCondition(!MathUtils.isBetween(chunkViewDistance, 2, 32),
                 "The chunk view distance must be between 2 and 32");

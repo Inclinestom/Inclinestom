@@ -9,7 +9,6 @@ import net.minestom.server.network.packet.server.SendablePacket;
 import net.minestom.server.network.player.PlayerConnection;
 import net.minestom.testing.Env;
 import net.minestom.testing.EnvTest;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
 import java.net.SocketAddress;
@@ -90,42 +89,17 @@ public class EntityTrackerIntegrationTest {
     public void viewable(Env env) {
         final Instance instance = env.createFlatInstance();
         final Pos spawnPos = new Pos(0, 41, 0);
-        var viewable = instance.getEntityTracker().viewable(spawnPos.chunkX(), spawnPos.chunkZ());
+        var viewable = instance.viewers(spawnPos.sectionX(), spawnPos.sectionZ());
         assertEquals(0, viewable.getViewers().size());
 
         final Player player = env.createPlayer(instance, spawnPos);
         assertEquals(1, viewable.getViewers().size());
-        assertSame(viewable, instance.getEntityTracker().viewable(spawnPos.chunkX(), spawnPos.chunkZ()));
+        assertSame(viewable, instance.viewers(spawnPos.sectionX(), spawnPos.sectionZ()));
 
         player.teleport(new Pos(10_000, 41, 0)).join();
         assertEquals(0, viewable.getViewers().size());
 
         player.teleport(spawnPos).join();
-        assertEquals(1, viewable.getViewers().size());
-    }
-
-    @Test
-    public void viewableShared(Env env) {
-        final InstanceContainer instance = (InstanceContainer) env.createFlatInstance();
-        var shared = env.process().instance().createSharedInstance(instance);
-        var sharedList = instance.getSharedInstances();
-
-        final Pos spawnPos = new Pos(0, 41, 0);
-        var viewable = instance.getEntityTracker().viewable(sharedList, spawnPos.chunkX(), spawnPos.chunkZ());
-        assertEquals(0, viewable.getViewers().size());
-
-        final Player player = env.createPlayer(instance, spawnPos);
-        assertEquals(1, viewable.getViewers().size());
-        assertSame(viewable, instance.getEntityTracker().viewable(sharedList, spawnPos.chunkX(), spawnPos.chunkZ()));
-
-        player.setInstance(shared).join();
-        assertEquals(1, viewable.getViewers().size());
-
-        player.teleport(new Pos(10_000, 41, 0)).join();
-        assertEquals(0, viewable.getViewers().size());
-
-        var shared2 = env.process().instance().createSharedInstance(instance);
-        player.setInstance(shared2, spawnPos).join();
         assertEquals(1, viewable.getViewers().size());
     }
 

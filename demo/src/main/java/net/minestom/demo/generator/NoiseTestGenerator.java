@@ -6,11 +6,10 @@ import de.articdive.jnoise.generators.noisegen.perlin.PerlinNoiseGenerator;
 import de.articdive.jnoise.pipeline.JNoise;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Vec;
-import net.minestom.server.instance.Chunk;
+import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.instance.generator.GenerationUnit;
 import net.minestom.server.instance.generator.Generator;
-import org.jetbrains.annotations.NotNull;
 
 public class NoiseTestGenerator implements Generator {
 
@@ -31,8 +30,8 @@ public class NoiseTestGenerator implements Generator {
     @Override
     public void generate(GenerationUnit unit) {
         Point start = unit.absoluteStart();
-        for (int x = 0; x < Chunk.CHUNK_SIZE_X; x++) {
-            for (int z = 0; z < Chunk.CHUNK_SIZE_Z; z++) {
+        for (int x = 0; x < Instance.SECTION_SIZE; x++) {
+            for (int z = 0; z < Instance.SECTION_SIZE; z++) {
                 Point pos;
                 {
                     int absX = start.blockX() + x;

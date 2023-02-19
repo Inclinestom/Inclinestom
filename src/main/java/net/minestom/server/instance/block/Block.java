@@ -2,7 +2,6 @@ package net.minestom.server.instance.block;
 
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.instance.Instance;
-import net.minestom.server.instance.batch.Batch;
 import net.minestom.server.registry.ProtocolObject;
 import net.minestom.server.registry.Registry;
 import net.minestom.server.tag.Tag;
@@ -201,7 +200,7 @@ public sealed interface Block extends ProtocolObject, TagReadable, Blocks permit
     /**
      * Represents an element which can place blocks at position.
      * <p>
-     * Notably used by {@link Instance}, {@link Batch}.
+     * Notably used by {@link Instance}.
      */
     interface Setter {
         void setBlock(int x, int y, int z, Block block);

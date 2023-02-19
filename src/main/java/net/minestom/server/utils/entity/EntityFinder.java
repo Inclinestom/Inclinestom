@@ -321,13 +321,13 @@ public class EntityFinder {
             return List.copyOf(players);
         } else if (targetSelector == TargetSelector.ALL_ENTITIES) {
             if (instance != null) {
-                return List.copyOf(instance.getEntities());
+                return List.copyOf(instance.entities());
             }
             // Get entities from every instance
             var instances = MinecraftServer.getInstanceManager().getInstances();
             List<Entity> entities = new ArrayList<>();
             for (Instance inst : instances) {
-                entities.addAll(inst.getEntities());
+                entities.addAll(inst.entities());
             }
             return entities;
         } else if (targetSelector == TargetSelector.SELF) {

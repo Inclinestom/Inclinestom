@@ -5,18 +5,17 @@ import com.extollit.gaming.ai.path.PathOptions;
 import com.extollit.gaming.ai.path.model.IPath;
 import net.minestom.server.collision.CollisionUtils;
 import net.minestom.server.collision.PhysicsResult;
+import net.minestom.server.coordinate.Area;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.LivingEntity;
-import net.minestom.server.instance.Chunk;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.WorldBorder;
 import net.minestom.server.utils.chunk.ChunkUtils;
 import net.minestom.server.utils.position.PositionUtils;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 // TODO all pathfinding requests could be processed in another thread
@@ -103,13 +102,12 @@ public final class Navigator {
             return false;
         }
         // Can't path outside the world border
-        final WorldBorder worldBorder = instance.getWorldBorder();
+        final WorldBorder worldBorder = instance.worldBorder();
         if (!worldBorder.isInside(point)) {
             return false;
         }
         // Can't path in an unloaded chunk
-        final Chunk chunk = instance.getChunkAt(point);
-        if (!ChunkUtils.isLoaded(chunk)) {
+        if (!instance.isAreaLoaded(Area.collection(point))) {
             return false;
         }
 

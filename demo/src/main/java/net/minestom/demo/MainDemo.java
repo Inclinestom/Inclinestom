@@ -27,7 +27,7 @@ public class MainDemo {
         InstanceManager instanceManager = MinecraftServer.getInstanceManager();
         // Create the instance
         InstanceContainer instanceContainer = instanceManager.createInstanceContainer();
-        // Set the ChunkGenerator
+        // Set the WorldViewGenerator
         instanceContainer.setGenerator(unit -> unit.modifier().fillHeight(0, 40, Block.STONE));
 
         // Add an event callback to specify the spawning instance (and the spawn position)

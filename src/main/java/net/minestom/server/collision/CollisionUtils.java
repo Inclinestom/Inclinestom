@@ -1,17 +1,16 @@
 package net.minestom.server.collision;
 
+import net.minestom.server.coordinate.Area;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.Entity;
-import net.minestom.server.instance.Chunk;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.WorldBorder;
 import net.minestom.server.instance.block.Block;
+import net.minestom.server.instance.storage.WorldView;
 import net.minestom.server.registry.Registry;
-import net.minestom.server.utils.chunk.ChunkCache;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @ApiStatus.Internal
@@ -31,7 +30,7 @@ public final class CollisionUtils {
                                               @Nullable PhysicsResult lastPhysicsResult) {
         final Instance instance = entity.getInstance();
         assert instance != null;
-        return handlePhysics(instance, entity.getChunk(),
+        return handlePhysics(instance, entity.getWorldView(),
                 entity.getBoundingBox(),
                 entity.getPosition(), entityVelocity,
                 lastPhysicsResult);
@@ -46,14 +45,13 @@ public final class CollisionUtils {
      * @param boundingBox the bounding box to move
      * @return the result of physics simulation
      */
-    public static PhysicsResult handlePhysics(Instance instance, @Nullable Chunk chunk,
+    public static PhysicsResult handlePhysics(Instance instance, @Nullable WorldView chunk,
                                               BoundingBox boundingBox,
                                               Pos position, Vec velocity,
                                               @Nullable PhysicsResult lastPhysicsResult) {
-        final Block.Getter getter = new ChunkCache(instance, chunk != null ? chunk : instance.getChunkAt(position), Block.STONE);
         return BlockCollision.handlePhysics(boundingBox,
                 velocity, position,
-                getter, lastPhysicsResult);
+                instance.worldView(), lastPhysicsResult);
     }
 
     /**
@@ -67,7 +65,7 @@ public final class CollisionUtils {
      * @param shape    shape to check.
      * @return true is shape is reachable by the given line of sight; false otherwise.
      */
-    public static boolean isLineOfSightReachingShape(Instance instance, @Nullable Chunk chunk,
+    public static boolean isLineOfSightReachingShape(Instance instance, @Nullable WorldView chunk,
                                                      Point start, Point end,
                                                      Shape shape) {
         final PhysicsResult result = handlePhysics(instance, chunk,
@@ -95,7 +93,7 @@ public final class CollisionUtils {
      */
     public static Pos applyWorldBorder(Instance instance,
                                                 Pos currentPosition, Pos newPosition) {
-        final WorldBorder worldBorder = instance.getWorldBorder();
+        final WorldBorder worldBorder = instance.worldBorder();
         final WorldBorder.CollisionAxis collisionAxis = worldBorder.getCollisionAxis(newPosition);
         return switch (collisionAxis) {
             case NONE ->

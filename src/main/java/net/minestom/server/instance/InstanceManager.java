@@ -1,10 +1,12 @@
 package net.minestom.server.instance;
 
 import net.minestom.server.MinecraftServer;
+import net.minestom.server.coordinate.Area;
+import net.minestom.server.instance.storage.WorldSource;
+import net.minestom.server.utils.AreaUtils;
 import net.minestom.server.utils.validate.Check;
 import net.minestom.server.world.DimensionType;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
@@ -23,14 +25,12 @@ public final class InstanceManager {
     /**
      * Registers an {@link Instance} internally.
      * <p>
-     * Note: not necessary if you created your instance using {@link #createInstanceContainer()} or {@link #createSharedInstance(InstanceContainer)}
+     * Note: not necessary if you created your instance using {@link #createInstanceContainer()}
      * but only if you instantiated your instance object manually
      *
      * @param instance the {@link Instance} to register
      */
     public void registerInstance(Instance instance) {
-        Check.stateCondition(instance instanceof SharedInstance,
-                "Please use InstanceManager#registerSharedInstance to register a shared instance");
         UNSAFE_registerInstance(instance);
     }
 
@@ -42,7 +42,7 @@ public final class InstanceManager {
      * @return the created {@link InstanceContainer}
      */
     @ApiStatus.Experimental
-    public InstanceContainer createInstanceContainer(DimensionType dimensionType, @Nullable IChunkLoader loader) {
+    public InstanceContainer createInstanceContainer(DimensionType dimensionType, @Nullable WorldSource loader) {
         final InstanceContainer instanceContainer = new InstanceContainer(UUID.randomUUID(), dimensionType, loader);
         registerInstance(instanceContainer);
         return instanceContainer;
@@ -53,7 +53,7 @@ public final class InstanceManager {
     }
 
     @ApiStatus.Experimental
-    public InstanceContainer createInstanceContainer(@Nullable IChunkLoader loader) {
+    public InstanceContainer createInstanceContainer(@Nullable WorldSource loader) {
         return createInstanceContainer(DimensionType.OVERWORLD, loader);
     }
 
@@ -64,39 +64,6 @@ public final class InstanceManager {
      */
     public InstanceContainer createInstanceContainer() {
         return createInstanceContainer(DimensionType.OVERWORLD, null);
-    }
-
-    /**
-     * Registers a {@link SharedInstance}.
-     * <p>
-     * WARNING: the {@link SharedInstance} needs to have an {@link InstanceContainer} assigned to it.
-     *
-     * @param sharedInstance the {@link SharedInstance} to register
-     * @return the registered {@link SharedInstance}
-     * @throws NullPointerException if {@code sharedInstance} doesn't have an {@link InstanceContainer} assigned to it
-     */
-    public SharedInstance registerSharedInstance(SharedInstance sharedInstance) {
-        final InstanceContainer instanceContainer = sharedInstance.getInstanceContainer();
-        Check.notNull(instanceContainer, "SharedInstance needs to have an InstanceContainer to be created!");
-
-        instanceContainer.addSharedInstance(sharedInstance);
-        UNSAFE_registerInstance(sharedInstance);
-        return sharedInstance;
-    }
-
-    /**
-     * Creates and register a {@link SharedInstance}.
-     *
-     * @param instanceContainer the container assigned to the shared instance
-     * @return the created {@link SharedInstance}
-     * @throws IllegalStateException if {@code instanceContainer} is not registered
-     */
-    public SharedInstance createSharedInstance(InstanceContainer instanceContainer) {
-        Check.notNull(instanceContainer, "Instance container cannot be null when creating a SharedInstance!");
-        Check.stateCondition(!instanceContainer.isRegistered(), "The container needs to be register in the InstanceManager");
-
-        final SharedInstance sharedInstance = new SharedInstance(UUID.randomUUID(), instanceContainer);
-        return registerSharedInstance(sharedInstance);
     }
 
     /**
@@ -111,12 +78,12 @@ public final class InstanceManager {
         synchronized (instance) {
             // Unload all chunks
             if (instance instanceof InstanceContainer) {
-                instance.loadedSections().forEach(instance::unloadChunk);
+                instance.unloadArea(Area.full()).join();
                 var dispatcher = MinecraftServer.process().dispatcher();
-                instance.loadedSections().forEach(dispatcher::deletePartition);
+                AreaUtils.forEachSection(instance.loadedArea(), pos ->
+                        dispatcher.deletePartition(Area.section(pos)));
             }
             // Unregister
-            instance.setRegistered(false);
             this.instances.remove(instance);
         }
     }
@@ -139,22 +106,20 @@ public final class InstanceManager {
     public @Nullable Instance getInstance(UUID uuid) {
         Optional<Instance> instance = getInstances()
                 .stream()
-                .filter(someInstance -> someInstance.getUniqueId().equals(uuid))
+                .filter(someInstance -> someInstance.uniqueId().equals(uuid))
                 .findFirst();
         return instance.orElse(null);
     }
 
     /**
      * Registers an {@link Instance} internally.
-     * <p>
-     * Unsafe because it does not check if {@code instance} is a {@link SharedInstance} to verify its container.
      *
      * @param instance the {@link Instance} to register
      */
     private void UNSAFE_registerInstance(Instance instance) {
-        instance.setRegistered(true);
         this.instances.add(instance);
         var dispatcher = MinecraftServer.process().dispatcher();
-        instance.loadedSections().forEach(dispatcher::createPartition);
+        AreaUtils.forEachSection(instance.loadedArea(), pos ->
+                dispatcher.deletePartition(Area.section(pos)));
     }
 }

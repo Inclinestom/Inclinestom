@@ -48,7 +48,7 @@ public class PlayerPositionListener {
             return;
         }
         // Try to move in an unloaded chunk, prevent it
-        if (!currentPosition.sameChunk(packetPosition) && !ChunkUtils.isLoaded(instance, packetPosition)) {
+        if (!currentPosition.sameWorldView(packetPosition) && !ChunkUtils.isLoaded(instance, packetPosition)) {
             player.teleport(currentPosition);
             return;
         }

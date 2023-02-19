@@ -5,13 +5,13 @@ import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.Event;
 import net.minestom.server.event.EventFilter;
-import net.minestom.server.instance.IChunkLoader;
+import net.minestom.server.instance.storage.WorldSource;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.block.Block;
-import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
 import java.util.function.BooleanSupplier;
+import java.util.function.Function;
 
 public interface Env {
     ServerProcess process();
@@ -47,7 +47,7 @@ public interface Env {
         return createFlatInstance(null);
     }
 
-    default Instance createFlatInstance(IChunkLoader chunkLoader) {
+    default Instance createFlatInstance(WorldSource chunkLoader) {
         var instance = process().instance().createInstanceContainer(chunkLoader);
         instance.setGenerator(unit -> unit.modifier().fillHeight(0, 40, Block.STONE));
         return instance;

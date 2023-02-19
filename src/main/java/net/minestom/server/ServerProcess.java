@@ -3,11 +3,12 @@ package net.minestom.server;
 import net.minestom.server.advancements.AdvancementManager;
 import net.minestom.server.adventure.bossbar.BossBarManager;
 import net.minestom.server.command.CommandManager;
+import net.minestom.server.coordinate.Area;
 import net.minestom.server.event.GlobalEventHandler;
 import net.minestom.server.exception.ExceptionManager;
 import net.minestom.server.extensions.ExtensionManager;
 import net.minestom.server.gamedata.tags.TagManager;
-import net.minestom.server.instance.Chunk;
+import net.minestom.server.instance.storage.WorldView;
 import net.minestom.server.instance.InstanceManager;
 import net.minestom.server.instance.block.BlockManager;
 import net.minestom.server.instance.block.rule.BlockPlacementRule;
@@ -131,7 +132,7 @@ public interface ServerProcess extends Snapshotable {
     /**
      * Dispatcher for tickable game objects.
      */
-    ThreadDispatcher<Chunk> dispatcher();
+    ThreadDispatcher<Area> dispatcher();
 
     /**
      * Handles the server ticks.

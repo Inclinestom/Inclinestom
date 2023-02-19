@@ -126,7 +126,7 @@ public class PlayerInit {
 
         if (false) {
             System.out.println("start");
-            ChunkUtils.forChunksInRange(0, 0, 10, (x, z) -> instanceContainer.loadChunk(x, z).join());
+            ChunkUtils.forChunksInRange(0, 0, 10, (x, z) -> instanceContainer.loadWorldView(x, z).join());
             System.out.println("load end");
         }
 

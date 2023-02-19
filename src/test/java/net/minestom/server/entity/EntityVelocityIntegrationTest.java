@@ -198,7 +198,7 @@ public class EntityVelocityIntegrationTest {
     }
 
     private void loadChunks(Instance instance) {
-        ChunkUtils.optionalLoadAll(instance, new long[]{
+        ChunkUtils.loadAll(instance, new long[]{
                 ChunkUtils.getChunkIndex(-1, -1),
                 ChunkUtils.getChunkIndex(-1, 0),
                 ChunkUtils.getChunkIndex(-1, 1),

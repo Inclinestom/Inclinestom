@@ -1,7 +1,7 @@
 package net.minestom.server.instance;
 
-import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
 import net.minestom.server.MinecraftServer;
+import net.minestom.server.Viewable;
 import net.minestom.server.coordinate.Area;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Vec;
@@ -10,57 +10,50 @@ import net.minestom.server.entity.EntityCreature;
 import net.minestom.server.entity.ExperienceOrb;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.EventDispatcher;
-import net.minestom.server.event.instance.InstanceChunkLoadEvent;
-import net.minestom.server.event.instance.InstanceChunkUnloadEvent;
 import net.minestom.server.event.player.PlayerBlockBreakEvent;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.instance.block.BlockFace;
 import net.minestom.server.instance.block.BlockHandler;
 import net.minestom.server.instance.block.rule.BlockPlacementRule;
 import net.minestom.server.instance.generator.Generator;
-import net.minestom.server.instance.palette.Palette;
-import net.minestom.server.network.packet.server.play.BlockChangePacket;
-import net.minestom.server.network.packet.server.play.BlockEntityDataPacket;
-import net.minestom.server.network.packet.server.play.EffectPacket;
-import net.minestom.server.network.packet.server.play.UnloadChunkPacket;
-import net.minestom.server.snapshot.InstanceSnapshot;
-import net.minestom.server.snapshot.SnapshotUpdater;
+import net.minestom.server.instance.storage.WorldSource;
+import net.minestom.server.instance.storage.WorldView;
+import net.minestom.server.network.packet.server.play.*;
+import net.minestom.server.utils.AreaUtils;
 import net.minestom.server.utils.PacketUtils;
-import net.minestom.server.utils.async.AsyncUtils;
 import net.minestom.server.utils.block.BlockUtils;
-import net.minestom.server.utils.chunk.ChunkCache;
-import net.minestom.server.utils.chunk.ChunkSupplier;
 import net.minestom.server.utils.chunk.ChunkUtils;
-import net.minestom.server.utils.validate.Check;
 import net.minestom.server.world.DimensionType;
+import net.minestom.server.world.biomes.Biome;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jglrxavpok.hephaistos.nbt.NBTCompound;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.locks.Lock;
-import java.util.function.Supplier;
-
-import static net.minestom.server.utils.chunk.ChunkUtils.*;
+import java.util.stream.Collectors;
 
 /**
  * InstanceContainer is an instance that contains chunks in contrary to SharedInstance.
  */
 public class InstanceContainer extends InstanceBase {
-    private static final AnvilLoader DEFAULT_LOADER = new AnvilLoader("world");
 
     // the generator used, can be null
     private volatile Generator generator;
-    private final BlockStorage.Union blockStorage = BlockStorage.union();
+    private final WorldView.Union blockStorage = WorldView.union();
+    private LoadingRule loadingRule = new PlayerRadiusLoadingRule(this);
 
-    private SectionLoader sectionLoader = SectionLoader.filled(Block.AIR);
+    private WorldLoader worldLoader = WorldLoader.filled(Block.AIR, Biome.PLAINS);
+    private final Map<Vec, List<WorldView>> forks = new ConcurrentHashMap<>();
+
+    private final Map<Area, AreaViewable> viewable = new WeakHashMap<>();
+    private WorldSource worldSource = new AnvilLoader(this, "world");
 
     @ApiStatus.Experimental
-    public InstanceContainer(UUID uniqueId, DimensionType dimensionType, @Nullable IChunkLoader loader) {
+    public InstanceContainer(UUID uniqueId, DimensionType dimensionType, @Nullable WorldSource loader) {
         super(uniqueId, dimensionType);
     }
 
@@ -97,7 +90,7 @@ public class InstanceContainer extends InstanceBase {
 
         // Set the block
         // TODO: reduce allocations
-        BlockStorage.Mutable newStorage = BlockStorage.inMemory();
+        WorldView.Mutable newStorage = WorldView.inMemory();
         newStorage.setBlock(x, y, z, block);
         blockStorage.add(newStorage);
 
@@ -106,7 +99,7 @@ public class InstanceContainer extends InstanceBase {
 
         // Refresh player chunk block
         {
-            Set<Player> viewers = viewers(Area.collection(new Vec(x, y, z)));
+            Set<Player> viewers = viewers(Area.collection(new Vec(x, y, z))).getViewers();
 
             PacketUtils.sendGroupedPacket(viewers, new BlockChangePacket(blockPosition, block.stateId()));
             var registry = block.registry();
@@ -140,7 +133,7 @@ public class InstanceContainer extends InstanceBase {
     public boolean breakBlock(Player player, Point blockPosition, BlockFace blockFace) {
         Area area = Area.collection(blockPosition);
         if (!isAreaLoaded(area)) {
-            throw new IllegalStateException("Cannot break block at " + blockPosition + " because the area is not loaded");
+            throw new IllegalStateException("Cannot break block at " + blockPosition + " because the worldView is not loaded");
         }
 
         final Block block = getBlock(blockPosition);
@@ -149,7 +142,7 @@ public class InstanceContainer extends InstanceBase {
         final int z = blockPosition.blockZ();
         if (block.isAir()) {
             // The player probably has a wrong version of this chunk section, send it
-//            chunk.sendChunk(player);
+//            chunk.sendWorldView(player);
             return false;
         }
         PlayerBlockBreakEvent blockBreakEvent = new PlayerBlockBreakEvent(player, block, Block.AIR, blockPosition, blockFace);
@@ -160,7 +153,7 @@ public class InstanceContainer extends InstanceBase {
             final Block resultBlock = blockBreakEvent.getResultBlock();
             UNSAFE_setBlock(x, y, z, resultBlock);
             // Send the block break effect packet
-            PacketUtils.sendGroupedPacket(viewers(area),
+            PacketUtils.sendGroupedPacket(viewers(area).getViewers(),
                     new EffectPacket(2001 /*Block break + block break sound*/, blockPosition, block.stateId(), false),
                     // Prevent the block breaker to play the particles and sound two times
                     (viewer) -> !viewer.equals(player));
@@ -168,35 +161,71 @@ public class InstanceContainer extends InstanceBase {
         return allowed;
     }
 
+    private void addFork(Vec pos, WorldView view) {
+        List<WorldView> views = forks.computeIfAbsent(pos, (p) -> new ArrayList<>());
+        views.add(view);
+    }
+
+    private @Nullable List<WorldView> removeForks(Vec pos) {
+        return forks.remove(pos);
+    }
+
+    private void applyFork(WorldView fork) {
+        blockStorage.add(fork);
+    }
+
     @Override
-    public CompletableFuture<BlockStorage> loadArea(Area area) {
+    public CompletableFuture<WorldView> loadArea(Area area) {
         Point min = area.min();
         Point max = area.max();
 
-        int minSectionX = (min.blockX() / Chunk.CHUNK_SECTION_SIZE) * min.blockX() / Chunk.CHUNK_SECTION_SIZE;
-        int minSectionY = (min.blockY() / Chunk.CHUNK_SECTION_SIZE) * min.blockY() / Chunk.CHUNK_SECTION_SIZE;
-        int minSectionZ = (min.blockZ() / Chunk.CHUNK_SECTION_SIZE) * min.blockZ() / Chunk.CHUNK_SECTION_SIZE;
+        return worldLoader.load(area).thenApplyAsync(storage -> {
+            if (storage != null) {
+                return storage;
+            }
 
-        List<CompletableFuture<@Nullable BlockStorage>> futures = new ArrayList<>();
+            // Generate the worldView
+            if (generator == null) {
+                throw new IllegalStateException("Cannot generate worldView " + area + " because no generator is set");
+            }
+            GeneratorImpl.UnitImpl unit = GeneratorImpl.mutable(area);
+            generator.generate(unit);
 
-        for (int x = minSectionX; x < max.blockX(); x += Chunk.CHUNK_SECTION_SIZE) {
-            for (int y = minSectionY; y < max.blockY(); y += Chunk.CHUNK_SECTION_SIZE) {
-                for (int z = minSectionZ; z < max.blockZ(); z += Chunk.CHUNK_SECTION_SIZE) {
-                    Vec sectionPos = new Vec(x, y, z);
-                    if (!loadedSections().contains(sectionPos)) {
-                        futures.add(sectionLoader.load(sectionPos));
-                    }
+            // Override old empty storage with filled one
+            storage = ((GeneratorImpl.WorldViewModifierImpl) unit.modifier()).worldView();
+
+            // Register forks or apply locally
+            Area newTotalArea = Area.union(area, blockStorage.area());
+            for (GeneratorImpl.UnitImpl forkUnit : unit.forks()) {
+                GeneratorImpl.WorldViewModifierImpl forkAreaModifier = (GeneratorImpl.WorldViewModifierImpl) forkUnit.modifier();
+
+                WorldView.Mutable fork = forkAreaModifier.worldView();
+
+                if (newTotalArea.contains(fork.area())) {
+                    // Apply now
+                    applyFork(fork);
+                } else {
+                    // Register fork
+                    AreaUtils.forEachSection(fork.area(), sectionPos -> {
+                        Area section = Area.section(sectionPos);
+                        addFork(sectionPos, WorldView.view(fork, section));
+                    });
                 }
             }
-        }
 
-        CompletableFuture<Void> allOf = CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new));
-        return allOf.thenApply(ignored -> {
-            for (CompletableFuture<@Nullable BlockStorage> future : futures) {
-                BlockStorage storage = future.join();
-                if (storage != null) blockStorage.add(storage);
-            }
-            return BlockStorage.view(blockStorage, area);
+            // Apply external forks
+            AreaUtils.forEachSection(area, sectionPos -> {
+                List<WorldView> forks = removeForks(sectionPos);
+                if (forks == null) return;
+                for (WorldView fork : forks) {
+                    applyFork(fork);
+                }
+            });
+
+            return storage;
+        }, ForkJoinPool.commonPool()).thenApply(storage -> {
+            blockStorage.add(storage);
+            return storage;
         });
     }
 
@@ -207,13 +236,13 @@ public class InstanceContainer extends InstanceBase {
     }
 
     @Override
-    public @Nullable BlockStorage storage(Area area) {
-        return BlockStorage.view(blockStorage, area);
+    public @Nullable WorldView worldView(Area area) {
+        return WorldView.view(blockStorage, area);
     }
 
     @Override
-    public @Nullable BlockStorage storage() {
-        return blockStorage;
+    public Area loadedArea() {
+        return blockStorage.area();
     }
 
     @Override
@@ -223,7 +252,40 @@ public class InstanceContainer extends InstanceBase {
 
     @Override
     public CompletableFuture<Void> save() {
-        return null;
+        return worldLoader.save(this.blockStorage);
+    }
+
+    @Override
+    public @NotNull LoadingRule loadingRule() {
+        return loadingRule;
+    }
+
+    @Override
+    public void setLoadingRule(@NotNull LoadingRule loadingRule) {
+        this.loadingRule = loadingRule;
+    }
+
+    @Override
+    public @NotNull WorldSource worldSource() {
+        return worldSource;
+    }
+
+    @Override
+    public void setWorldSource(@NotNull WorldSource worldSource) {
+        this.worldSource = worldSource;
+    }
+
+    @Override
+    public void tick(long time) {
+        // unloading/loading worldView
+        Area newLoadedArea = loadingRule.update(blockStorage.area());
+        Area toUnload = Area.exclude(blockStorage.area(), newLoadedArea);
+        Area toLoad = Area.exclude(newLoadedArea, blockStorage.area());
+
+        unloadArea(toUnload);
+        loadArea(toLoad);
+
+        super.tick(time);
     }
 
     @Override
@@ -237,72 +299,91 @@ public class InstanceContainer extends InstanceBase {
     }
 
     @Override
-    public Set<Vec> loadedSections() {
-        return null;
+    public void setTickingRule(LoadingRule loadingRule) {
+        this.loadingRule = loadingRule;
     }
 
     @Override
-    public void setAreaLoadRule(AreaLoadRule areaLoadRule) {
-
-    }
-
-    @Override
-    public DimensionType dimensionType() {
-        return null;
-    }
-
-    @Override
-    public WorldBorder worldBorder() {
-        return null;
-    }
-
-    @Override
-    public Set<Player> viewers(Area area) {
-        return null;
+    public Viewable viewers(Area area) {
+        return viewable.computeIfAbsent(area, AreaViewable::new);
     }
 
     @Override
     public Set<Entity> entities() {
-        return null;
+        return entityTracker().entities();
     }
 
     @Override
     public Set<Player> players() {
-        return null;
+        return entityTracker().entities(EntityTracker.Target.PLAYERS);
     }
 
     @Override
     public Set<EntityCreature> creatures() {
-        return null;
+        return entityTracker().entities()
+                .stream()
+                .filter(entity -> entity instanceof EntityCreature)
+                .map(entity -> (EntityCreature) entity)
+                .collect(Collectors.toSet());
     }
 
     @Override
     public Set<ExperienceOrb> experienceOrbs() {
-        return null;
+        return entityTracker().entities()
+                .stream()
+                .filter(entity -> entity instanceof ExperienceOrb)
+                .map(entity -> (ExperienceOrb) entity)
+                .collect(Collectors.toSet());
     }
 
     @Override
-    public Set<Entity> areaEntities(Area area) {
-        return null;
+    public Collection<Entity> areaEntities(Area area) {
+        return entityTracker()
+                .entities()
+                .stream()
+                .filter(entity -> area.contains(entity.getPosition()))
+                .collect(Collectors.toSet());
     }
 
     @Override
     public Collection<Entity> nearbyEntities(Point point, double range) {
-        return null;
+        return entityTracker()
+                .entities()
+                .stream()
+                .filter(entity -> entity.getPosition().distanceSquared(point) <= range * range)
+                .collect(Collectors.toSet());
     }
 
     @Override
-    public EntityTracker entityTracker() {
-        return null;
+    public ChunkDataPacket chunkPacket(int chunkX, int chunkZ) {
+        return ChunkUtils.chunkPacket(blockStorage, dimensionType(), chunkX, chunkZ);
     }
 
-    @Override
-    public UUID uniqueId() {
-        return null;
-    }
+    private class AreaViewable implements Viewable {
+        private final Area area;
+        public AreaViewable(Area area) {
+            this.area = area;
+        }
 
-    @Override
-    public InstanceSnapshot updateSnapshot(SnapshotUpdater updater) {
-        return null;
+        @Override
+        public boolean addViewer(Player player) {
+            if (player.getInstance() == InstanceContainer.this) return false;
+            player.setInstance(InstanceContainer.this).join();
+            return true;
+        }
+
+        @Override
+        public boolean removeViewer(Player player) {
+            if (player.getInstance() != InstanceContainer.this) return false;
+            player.setInstance(null).join();
+            return true;
+        }
+
+        @Override
+        public Set<Player> getViewers() {
+            return players().stream()
+                    .filter(player -> area.contains(player.getPosition()))
+                    .collect(Collectors.toSet());
+        }
     }
 }

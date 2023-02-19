@@ -1,5 +1,6 @@
 package net.minestom.server.collision;
 
+import net.minestom.server.coordinate.Area;
 import net.minestom.testing.Env;
 import net.minestom.testing.EnvTest;
 import net.minestom.server.coordinate.Point;
@@ -10,7 +11,6 @@ import net.minestom.server.entity.EntityType;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.instance.block.BlockHandler;
 import net.minestom.server.utils.NamespaceID;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
@@ -62,7 +62,8 @@ public class EntityBlockTouchTickIntegrationTest {
     @Test
     public void entityPhysicsCheckTouchTickFarZ(Env env) {
         var instance = env.createFlatInstance();
-        instance.loadChunk(new Pos(1000, 1000, 1000));
+        Point pos = new Pos(1000, 1000, 1000);
+        instance.loadArea(Area.chunk(instance.dimensionType(), pos.sectionX(), pos.sectionZ()));
 
         Set<Point> positions = new HashSet<>();
         var handler = new BlockHandler() {
@@ -102,7 +103,8 @@ public class EntityBlockTouchTickIntegrationTest {
     @Test
     public void entityPhysicsCheckTouchTickFarX(Env env) {
         var instance = env.createFlatInstance();
-        instance.loadChunk(new Pos(1000, 1000, 1000));
+        Point pos = new Pos(1000, 1000, 1000);
+        instance.loadArea(Area.chunk(instance.dimensionType(), pos.sectionX(), pos.sectionZ()));
 
         Set<Point> positions = new HashSet<>();
         var handler = new BlockHandler() {
@@ -150,7 +152,8 @@ public class EntityBlockTouchTickIntegrationTest {
     @Test
     public void entityPhysicsCheckTouchTickFarNegative(Env env) {
         var instance = env.createFlatInstance();
-        instance.loadChunk(new Pos(-1000, 44, -1000));
+        Point pos = new Pos(-1000, 44, -1000);
+        instance.loadArea(Area.chunk(instance.dimensionType(), pos.sectionX(), pos.sectionZ()));
 
         Set<Point> positions = new HashSet<>();
         var handler = new BlockHandler() {

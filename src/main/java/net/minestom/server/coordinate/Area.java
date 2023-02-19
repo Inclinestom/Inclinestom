@@ -1,28 +1,50 @@
 package net.minestom.server.coordinate;
 
-import net.minestom.server.instance.Chunk;
-import org.jetbrains.annotations.NotNull;
+import net.minestom.server.instance.Instance;
+import net.minestom.server.world.DimensionType;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 /**
  * An area is a spatially connected set of block positions.
  * These areas can be used for optimizations such as instance block queries, and pathfinding domains.
  */
-public sealed interface Area extends Iterable<Point> permits AreaImpl.ExcludeArea, AreaImpl.Fill, AreaImpl.SetArea, AreaImpl.Union {
+public sealed interface Area extends Iterable<Point> permits AreaImpl.Fill, AreaImpl.FillUnion {
+
+    // Primitives
 
     /**
-     * Creates a new area from a collection of block positions. Note that these points will be block-aligned.
-     * @param collection the collection of block positions
+     * Creates a new rectangular prism area from two points.
+     * @param point1 the first (min) point
+     * @param point2 the second (max) point
      * @return a new area
-     * @throws IllegalStateException if the resulting area is not fully connected
      */
-    static Area collection(Collection<? extends Point> collection) {
-        return AreaImpl.fromCollection(collection);
+    static Area fill(Point point1, Point point2) {
+        return AreaImpl.fill(point1, point2);
+    }
+
+    /**
+     * Creates a union of two given areas.
+     * @param areaA the first area
+     * @param areaB the second area
+     * @return a new area
+     */
+    static Area union(Area areaA, Area areaB) {
+        return AreaImpl.union(areaA, areaB);
+    }
+
+    // Structures
+
+    /**
+     * Creates a new area from an inverted source area.
+     * @param source the source area
+     * @return a new area
+     */
+    static Area invert(Area source) {
+        return AreaImpl.invert(source);
     }
 
     /**
@@ -31,8 +53,8 @@ public sealed interface Area extends Iterable<Point> permits AreaImpl.ExcludeAre
      * @return a new area
      * @throws IllegalStateException if the resulting area is not fully connected
      */
-    static Area collection(Iterable<? extends Point> collection) {
-        return AreaImpl.fromCollection(StreamSupport.stream(collection.spliterator(), false).toList());
+    static Area collection(Collection<? extends Point> collection) {
+        return Area.union(collection.stream().map(Area::block).toList());
     }
 
     /**
@@ -42,17 +64,16 @@ public sealed interface Area extends Iterable<Point> permits AreaImpl.ExcludeAre
      * @throws IllegalStateException if the resulting area is not fully connected
      */
     static Area collection(Point... collection) {
-        return AreaImpl.fromCollection(List.of(collection));
+        return collection(List.of(collection));
     }
 
     /**
-     * Creates a new rectangular prism area from two points.
-     * @param point1 the first (min) point
-     * @param point2 the second (max) point
+     * Creates a new 1x1 area from the given point.
+     * @param point the point
      * @return a new area
      */
-    static Area fill(Point point1, Point point2) {
-        return new AreaImpl.Fill(point1, point2);
+    static Area block(Point point) {
+        return fill(point, point.add(1));
     }
 
     /**
@@ -61,16 +82,18 @@ public sealed interface Area extends Iterable<Point> permits AreaImpl.ExcludeAre
      * @return a new area
      */
     static Area union(Area... areas) {
-        return new AreaImpl.Union(List.of(areas));
+        return union(List.of(areas));
     }
 
     /**
-     * Creates an intersection of multiple areas.
-     * @param areas the areas to intersect
+     * Creates a union of multiple areas.
+     * @param areas the areas to union
      * @return a new area
      */
-    static Area intersection(Area... areas) {
-        return AreaImpl.intersection(areas);
+    static Area union(List<Area> areas) {
+        return areas.stream()
+                .reduce(Area::union)
+                .orElse(Area.empty());
     }
 
     /**
@@ -80,19 +103,24 @@ public sealed interface Area extends Iterable<Point> permits AreaImpl.ExcludeAre
      * @return a new area
      */
     static Area exclude(Area source, Area exclude) {
-        return AreaImpl.exclude(source, exclude);
+        Area outside = invert(union(source, exclude));
+        return invert(union(outside, exclude));
     }
 
-    /**
-     * Starts a path pointer used to construct an area. This is useful for pathfinding purposes.
-     * @return a new path pointer
-     */
-    static Area.Path path() {
-        return new AreaImpl.Path();
+    static Area intersection(Area... areas) {
+        return Stream.of(areas)
+                .reduce(Area::intersection)
+                .orElse(Area.empty());
     }
 
-    static Area section(Vec sectionIndex) {
-        return fill(sectionIndex, sectionIndex.add(Chunk.CHUNK_SECTION_SIZE));
+    static Area intersection(Area areaA, Area areaB) {
+        return AreaImpl.intersection(areaA, areaB);
+    }
+
+    // Arbitrary sizes
+
+    static Area section(Vec sectionPos) {
+        return fill(sectionPos, sectionPos.add(Instance.SECTION_SIZE));
     }
 
     static Area empty() {
@@ -100,8 +128,13 @@ public sealed interface Area extends Iterable<Point> permits AreaImpl.ExcludeAre
     }
 
     static Area full() {
-        return fill(new Vec(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY),
-                new Vec(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY));
+        return AreaImpl.FULL;
+    }
+
+    static Area chunk(DimensionType dimensionType, int chunkX, int chunkZ) {
+        Point chunkMin = new Vec(chunkX * Instance.SECTION_SIZE, dimensionType.getMinY(), chunkZ * Instance.SECTION_SIZE);
+        Point chunkMax = chunkMin.add(Instance.SECTION_SIZE, 0, Instance.SECTION_SIZE).withY(dimensionType.getMaxY());
+        return fill(chunkMin, chunkMax);
     }
 
     /**
@@ -131,58 +164,41 @@ public sealed interface Area extends Iterable<Point> permits AreaImpl.ExcludeAre
     boolean contains(Point point);
 
     /**
+     * Checks if the given coordinates are within this area.
+     * @param x the x coordinate
+     * @param y the y coordinate
+     * @param z the z coordinate
+     * @return true if the point is within this area
+     */
+    boolean contains(double x, double y, double z);
+
+    /**
      * @return the number of points in this area
      */
     long size();
 
     /**
-     * Calculates the number of overlapping points between this area and another.
+     * Calculates the overlapping area between this area and another.
      * @param other the other area
-     * @return the number of overlapping points
+     * @return the overlapping area
      */
-    long overlap(Area other);
+    Area overlap(Area other);
 
-    interface Path {
-        Area.Path north(double factor);
+    /**
+     * Calculates the count of points in the overlapping area between this area and another.
+     * @param other the other area
+     * @return the overlapping area
+     */
+    long overlapCount(Area other);
 
-        Area.Path south(double factor);
+    /**
+     * Checks if the given area overlaps with this area.
+     * @param other the other area
+     * @return true if the areas overlap
+     */
+    boolean overlaps(Area other);
 
-        Area.Path east(double factor);
-
-        Area.Path west(double factor);
-
-        Area.Path up(double factor);
-
-        Area.Path down(double factor);
-
-        Area end();
-
-        default Area.Path north() {
-            return north(1);
-        }
-
-        default Area.Path south() {
-            return south(1);
-        }
-
-        default Area.Path east() {
-            return east(1);
-        }
-
-        default Area.Path west() {
-            return west(1);
-        }
-
-        default Area.Path up() {
-            return up(1);
-        }
-
-        default Area.Path down() {
-            return down(1);
-        }
-    }
-
-    sealed interface HasChildren permits AreaImpl.Union {
-        Collection<Area> children();
+    default Stream<Point> stream() {
+        return StreamSupport.stream(spliterator(), false);
     }
 }

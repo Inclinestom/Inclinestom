@@ -10,9 +10,9 @@ import net.minestom.server.event.entity.EntityShootEvent;
 import net.minestom.server.event.entity.projectile.ProjectileCollideWithBlockEvent;
 import net.minestom.server.event.entity.projectile.ProjectileCollideWithEntityEvent;
 import net.minestom.server.event.entity.projectile.ProjectileUncollideEvent;
-import net.minestom.server.instance.Chunk;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.block.Block;
+import net.minestom.server.instance.storage.WorldView;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -123,7 +123,7 @@ public class EntityProjectile extends Entity {
             return instance.getBlock(pos).isSolid();
         }
 
-        Chunk chunk = null;
+        WorldView chunk = null;
         Collection<LivingEntity> entities = null;
         final BoundingBox bb = getBoundingBox();
 
@@ -153,11 +153,13 @@ public class EntityProjectile extends Entity {
                     return true;
                 }
             }
-            if (currentChunk != chunk) {
-                chunk = currentChunk;
-                entities = instance.getChunkEntities(chunk)
+            if (currentWorldView != chunk) {
+                chunk = currentWorldView;
+                WorldView finalChunk = chunk;
+                entities = instance.entities()
                         .stream()
                         .filter(entity -> entity instanceof LivingEntity)
+                        .filter(entity -> finalChunk.area().contains(entity.getPosition()))
                         .map(entity -> (LivingEntity) entity)
                         .collect(Collectors.toSet());
             }

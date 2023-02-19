@@ -1,13 +1,14 @@
 package net.minestom.server.instance;
 
+import net.minestom.server.coordinate.Area;
+import net.minestom.server.coordinate.Point;
 import net.minestom.server.instance.block.Block;
-import net.minestom.server.network.NetworkBuffer;
+import net.minestom.server.instance.storage.WorldView;
 import net.minestom.server.utils.NamespaceID;
 import net.minestom.server.world.biomes.Biome;
 import net.minestom.testing.Env;
 import net.minestom.testing.EnvTest;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -51,24 +52,13 @@ public class AnvilLoaderIntegrationTest {
     public void loadHouse(Env env) {
         // load a world that contains only a basic house and make sure it is loaded properly
 
-        AnvilLoader chunkLoader = new AnvilLoader(worldFolder) {
-            // Force loads inside current thread
-            @Override
-            public boolean supportsParallelLoading() {
-                return false;
-            }
+        Instance instance = env.createFlatInstance();
+        AnvilLoader chunkLoader = new AnvilLoader(instance, worldFolder);
 
-            @Override
-            public boolean supportsParallelSaving() {
-                return false;
-            }
-        };
-        Instance instance = env.createFlatInstance(chunkLoader);
-
-        Consumer<Chunk> checkChunk = chunk -> {
+        Consumer<WorldView> checkChunk = chunk -> {
             synchronized (chunk) {
-                assertEquals(-4, chunk.getMinSection());
-                assertEquals(20, chunk.getMaxSection());
+                assertEquals(-4, chunk.area().min().sectionY());
+                assertEquals(20, chunk.area().max().sectionY());
 
                 // TODO: skylight
                 // TODO: block light
@@ -85,7 +75,7 @@ public class AnvilLoaderIntegrationTest {
 
         for (int x = -2; x < 2; x++) {
             for (int z = -2; z < 2; z++) {
-                checkChunk.accept(instance.loadChunk(x, z).join()); // this is a test so we don't care too much about waiting for each chunk
+                checkChunk.accept(instance.loadArea(Area.chunk(instance.dimensionType(), x, z)).join()); // this is a test so we don't care too much about waiting for each chunk
             }
         }
 
@@ -146,37 +136,18 @@ public class AnvilLoaderIntegrationTest {
 
     @Test
     public void loadAndSaveChunk(Env env) throws InterruptedException {
-        Instance instance = env.createFlatInstance(new AnvilLoader(worldFolder) {
-            // Force loads inside current thread
-            @Override
-            public boolean supportsParallelLoading() {
-                return false;
-            }
-
-            @Override
-            public boolean supportsParallelSaving() {
-                return false;
-            }
-        });
-        Chunk originalChunk = instance.loadChunk(0, 0).join();
+        Instance instance = env.createFlatInstance();
+        instance.setWorldSource(new AnvilLoader(instance, worldFolder));
+        WorldView originalChunk = instance.loadArea(Area.chunk(instance.dimensionType(), 0, 0)).join();
 
         synchronized (originalChunk) {
-            instance.saveChunkToStorage(originalChunk);
-            instance.unloadChunk(originalChunk);
-            while (originalChunk.isLoaded()) {
-                Thread.sleep(1);
-            }
+            instance.save();
+            instance.unloadArea(Area.chunk(instance.dimensionType(), 0, 0)).join();
         }
 
-        Chunk reloadedChunk = instance.loadChunk(0, 0).join();
-        for (int section = reloadedChunk.getMinSection(); section < reloadedChunk.getMaxSection(); section++) {
-            Section originalSection = originalChunk.getSection(section);
-            Section reloadedSection = reloadedChunk.getSection(section);
-
-            // easiest equality check to write is a memory compare on written output
-            var original = NetworkBuffer.makeArray(networkBuffer -> networkBuffer.write(originalSection));
-            var reloaded = NetworkBuffer.makeArray(networkBuffer -> networkBuffer.write(reloadedSection));
-            Assertions.assertArrayEquals(original, reloaded);
+        WorldView reloadedChunk = instance.loadArea(Area.chunk(instance.dimensionType(), 0, 0)).join();
+        for (Point point : reloadedChunk.area()) {
+            assertEquals(originalChunk.getBlock(point), reloadedChunk.getBlock(point));
         }
 
         env.destroyInstance(instance);

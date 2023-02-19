@@ -11,7 +11,7 @@ import org.jetbrains.annotations.UnknownNullability;
 import java.util.Collection;
 import java.util.Objects;
 
-import static net.minestom.server.utils.chunk.ChunkUtils.getChunkCoordinate;
+import static net.minestom.server.utils.chunk.ChunkUtils.getSectionCoordinate;
 
 public sealed interface InstanceSnapshot extends Snapshot, Block.Getter, Biome.Getter, TagReadable
         permits SnapshotImpl.Instance {
@@ -23,20 +23,20 @@ public sealed interface InstanceSnapshot extends Snapshot, Block.Getter, Biome.G
 
     @Override
     default @UnknownNullability Block getBlock(int x, int y, int z, Condition condition) {
-        SectionStorageSnapshot chunk = chunk(getChunkCoordinate(x), getChunkCoordinate(z));
+        SectionStorageSnapshot chunk = chunk(getSectionCoordinate(x), getSectionCoordinate(z));
         return Objects.requireNonNull(chunk).getBlock(x, y, z, condition);
     }
 
     @Override
     default Biome getBiome(int x, int y, int z) {
-        SectionStorageSnapshot chunk = chunk(getChunkCoordinate(x), getChunkCoordinate(z));
+        SectionStorageSnapshot chunk = chunk(getSectionCoordinate(x), getSectionCoordinate(z));
         return Objects.requireNonNull(chunk).getBiome(x, y, z);
     }
 
     @Nullable SectionStorageSnapshot chunk(int chunkX, int chunkZ);
 
     default @Nullable SectionStorageSnapshot chunkAt(Point point) {
-        return chunk(point.chunkX(), point.chunkZ());
+        return chunk(point.sectionX(), point.sectionZ());
     }
 
     Collection<SectionStorageSnapshot> chunks();

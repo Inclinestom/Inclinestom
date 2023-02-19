@@ -2,9 +2,8 @@ package net.minestom.server.utils.entity;
 
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Entity;
-import net.minestom.server.instance.Chunk;
+import net.minestom.server.instance.storage.WorldView;
 import net.minestom.server.instance.block.Block;
-import org.jetbrains.annotations.NotNull;
 
 public final class EntityUtils {
 
@@ -12,7 +11,7 @@ public final class EntityUtils {
     }
 
     public static boolean isOnGround(Entity entity) {
-        final Chunk chunk = entity.getChunk();
+        final WorldView chunk = entity.getWorldView();
         if (chunk == null)
             return false;
         final Pos entityPosition = entity.getPosition();

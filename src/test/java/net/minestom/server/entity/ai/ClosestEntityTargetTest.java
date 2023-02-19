@@ -33,7 +33,7 @@ public class ClosestEntityTargetTest {
         var zombie = new EntityCreature(EntityType.ZOMBIE);
         zombie.setInstance(instance, new Pos(10, 42, -10)).join();
 
-        assertEquals(5, instance.getEntities().size(), "Not all entities are in the instance");
+        assertEquals(5, instance.entities().size(), "Not all entities are in the instance");
 
         assertNull(
                 new ClosestEntityTarget(self, 1, e -> true).findTarget(),

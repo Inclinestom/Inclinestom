@@ -4,7 +4,7 @@ import com.extollit.gaming.ai.path.model.ColumnarOcclusionFieldList;
 import com.extollit.gaming.ai.path.model.IBlockDescription;
 import com.extollit.gaming.ai.path.model.IColumnarSpace;
 import com.extollit.gaming.ai.path.model.IInstanceSpace;
-import net.minestom.server.instance.Chunk;
+import net.minestom.server.instance.storage.WorldView;
 import net.minestom.server.instance.block.Block;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -12,9 +12,9 @@ import org.jetbrains.annotations.ApiStatus;
 public final class PFColumnarSpace implements IColumnarSpace {
     private final ColumnarOcclusionFieldList occlusionFieldList = new ColumnarOcclusionFieldList(this);
     private final PFInstanceSpace instanceSpace;
-    private final Chunk chunk;
+    private final WorldView chunk;
 
-    PFColumnarSpace(PFInstanceSpace instanceSpace, Chunk chunk) {
+    PFColumnarSpace(PFInstanceSpace instanceSpace, WorldView chunk) {
         this.instanceSpace = instanceSpace;
         this.chunk = chunk;
     }

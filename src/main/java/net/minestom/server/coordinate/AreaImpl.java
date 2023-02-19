@@ -3,178 +3,122 @@ package net.minestom.server.coordinate;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
-import java.util.function.UnaryOperator;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-// TODO: Area specific optimizations
-class AreaImpl {
+interface AreaImpl {
 
-    public static final Area EMPTY = Area.collection();
 
-    static Area fromCollection(Collection<? extends Point> collection) {
-        // Detect any nested nxnxn areas, and create them
-        Set<Point> points = collection.stream()
-                .map(point -> new Vec(point.blockX(), point.blockY(), point.blockZ()))
-                .collect(Collectors.toSet());
-        return new SetArea(points);
-    }
 
-    static Point findMin(Collection<Point> children) {
-        int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE, minZ = Integer.MAX_VALUE;
+    Fill EMPTY = new Fill(Vec.ZERO, Vec.ZERO);
+    Fill FULL = new Fill(new Vec(Integer.MIN_VALUE), new Vec(Integer.MAX_VALUE));
 
-        for (Point point : children) {
-            minX = Math.min(minX, point.blockX());
-            minY = Math.min(minY, point.blockY());
-            minZ = Math.min(minZ, point.blockZ());
+    static Fill fill(Point point1, Point point2) {
+        Point min = findMin(point1, point2);
+        Point max = findMax(point1, point2);
+        if (min.blockX() == max.blockX() || min.blockY() == max.blockY() || min.blockZ() == max.blockZ()) {
+            return EMPTY;
         }
-
-        return new Vec(minX, minY, minZ);
+        return new Fill(min, max);
     }
 
-    static Point findMax(Collection<Point> children) {
-        int maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE, maxZ = Integer.MIN_VALUE;
-
-        for (Point point : children) {
-            maxX = Math.max(maxX, point.blockX());
-            maxY = Math.max(maxY, point.blockY());
-            maxZ = Math.max(maxZ, point.blockZ());
-        }
-
-        return new Vec(maxX, maxY, maxZ);
-    }
-
-    static long findSize(Collection<Area> children) {
-        long total = children.stream().mapToLong(Area::size).sum();
-        long overlap = 0;
-        for (Area child : children) {
-            for (Area other : children) {
-                if (child == other) continue;
-                overlap += child.overlap(other);
+    static Area union(Area areaA, Area areaB) {
+        if (areaA instanceof Fill fillA) {
+            if (areaB instanceof Fill fillB) {
+                return safeUnion(fillA, fillB);
+            } else if (areaB instanceof FillUnion unionB) {
+                return union(unionB, fillA);
             }
         }
-        return total - overlap;
-    }
-
-    static Area intersection(Area[] children) {
-        if (children.length == 0) {
-            throw new IllegalArgumentException("Must have at least one child");
+        if (areaA instanceof FillUnion unionA) {
+            if (areaB instanceof Fill fillB) {
+                return safeUnion(Stream.concat(Stream.of(unionA.areas), Stream.of(fillB)).toArray(Fill[]::new));
+            } else if (areaB instanceof FillUnion unionB) {
+                return safeUnion(Stream.concat(Stream.of(unionA.areas), Stream.of(unionB.areas)).toArray(Fill[]::new));
+            }
         }
-        Set<Point> points = Stream.of(children)
-                .flatMap(child -> StreamSupport.stream(child.spliterator(), false))
-                .collect(Collectors.toSet());
-        return new SetArea(points);
+        throw new IllegalArgumentException("Unknown area type for union: " + areaA.getClass().getName() + " and " + areaB.getClass().getName());
     }
 
-    static Area exclude(Area source, Area exclude) {
-        return new ExcludeArea(source, exclude);
-    }
+    private static FillUnion safeUnion(Fill... fills) {
+        // Remove equal areas
+        fills = Arrays.stream(fills).distinct().toArray(Fill[]::new);
 
-    record SetArea(Set<Point> points, Point min, Point max) implements Area {
+        if (!overlaps(fills)) { // safely doesn't overlap
+            return new FillUnion(fills);
+        }
 
-        public SetArea(Set<Point> points) {
-            this(points, findMin(points), findMax(points));
+        // We need to remove an overlap
 
-            if (!isFullyConnected()) {
-                throw new IllegalArgumentException("Points must be fully connected");
+        // Find the overlap
+        Fill overlapAreaA = null;
+        Fill overlapAreaB = null;
+        for (Fill areaA : fills) {
+            if (overlapAreaA != null) break;
+            for (Fill fill : fills) {
+                if (areaA.equals(fill)) continue;
+                if (areaA.overlaps(fill)) {
+                    overlapAreaA = areaA;
+                    overlapAreaB = fill;
+                    break;
+                }
             }
         }
 
-        public boolean isFullyConnected() {
-            if (points.size() == 1) return true;
-            Set<Point> connected = points.stream()
-                .flatMap(point -> Stream.of(
-                        point.add(1, 0, 0),
-                        point.add(-1, 0, 0),
-                        point.add(0, 1, 0),
-                        point.add(0, -1, 0),
-                        point.add(0, 0, 1),
-                        point.add(0, 0, -1)
-                ))
-                .collect(Collectors.toSet());
-            return connected.containsAll(points);
+        if (overlapAreaA == null || overlapAreaB == null) {
+            throw new IllegalStateException("Failed to find an overlap in " + Arrays.toString(fills));
         }
 
-        @NotNull
-        @Override
-        public Iterator<Point> iterator() {
-            return points.iterator();
-        }
+        // Remove the overlap
+        List<Fill> buffer = new ArrayList<>(List.of(fills));
+        buffer.remove(overlapAreaA);
 
-        @Override
-        public boolean contains(Area area) {
-            return StreamSupport.stream(area.spliterator(), false)
-                    .allMatch(points::contains);
-        }
+        // Add the replacements
+        overlapAreaA.fillsRemove(overlapAreaB, buffer::add);
 
-        @Override
-        public boolean contains(Point point) {
-            return points.contains(point);
-        }
-
-        @Override
-        public long size() {
-            return points.size();
-        }
-
-        @Override
-        public long overlap(Area other) {
-            return StreamSupport.stream(other.spliterator(), false)
-                    .filter(points::contains)
-                    .count();
-        }
+        // Reattempt to create the union
+        return safeUnion(buffer.toArray(Fill[]::new));
     }
 
-    static final class Fill implements Area {
-        private final Point min, max;
+    private static boolean overlaps(Fill... fills) {
+        for (Fill fillA : fills) {
+            for (Fill fillB : fills) {
+                if (fillA == fillB) continue;
+                if (fillA.overlaps(fillB)) return true;
+            }
+        }
+        return false;
+    }
 
-        Fill(Point pos1, Point pos2) {
-            this.min = Vec.fromPoint(pos1);
-            this.max = Vec.fromPoint(pos2);
+    public static Area invert(Area source) {
+        if (source instanceof Fill fill) {
+            return new FillUnion(out -> FULL.fillsRemove(fill, out));
+        } else if (source instanceof FillUnion union) {
+            List<Fill> out = new ArrayList<>();
+            out.add(FULL);
+            for (Fill fill : union.areas) {
+                List<Fill> copy = List.copyOf(out);
+                out.clear();
+                for (Fill existing : copy) {
+                    existing.fillsRemove(fill, out::add);
+                }
+            }
+            return AreaImpl.safeUnion(out.toArray(Fill[]::new));
+        }
+        throw new IllegalArgumentException("Unknown area type for invert: " + source.getClass().getName());
+    }
+
+    public static Area intersection(Area areaA, Area areaB) {
+        return areaA.overlap(areaB);
+    }
+
+    record Fill(Vec min, Vec max) implements Area {
+        public Fill(Point min, Point max) {
+            this(Vec.fromPoint(min), Vec.fromPoint(max));
         }
 
-        @Override
-        public Point min() {
-            return min;
-        }
-
-        @Override
-        public Point max() {
-            return max;
-        }
-
-        @Override
-        public boolean contains(Area area) {
-            if (area.min().blockX() < min.blockX()) return false;
-            if (area.min().blockY() < min.blockY()) return false;
-            if (area.min().blockZ() < min.blockZ()) return false;
-
-            if (area.max().blockX() > max.blockX()) return false;
-            if (area.max().blockY() > max.blockY()) return false;
-            if (area.max().blockZ() > max.blockZ()) return false;
-
-            return true;
-        }
-
-        @Override
-        public boolean contains(Point point) {
-            return point.blockX() >= min.blockX() && point.blockX() <= max.blockX()
-                    && point.blockY() >= min.blockY() && point.blockY() <= max.blockY()
-                    && point.blockZ() >= min.blockZ() && point.blockZ() <= max.blockZ();
-        }
-
-        @Override
-        public long size() {
-            return (long) (max.blockX() - min.blockX()) * (max.blockY() - min.blockY()) * (max.blockZ() - min.blockZ());
-        }
-
-        @Override
-        public long overlap(Area other) {
-            return StreamSupport.stream(other.spliterator(), false)
-                    .filter(this::contains)
-                    .count();
-        }
 
         @NotNull
         @Override
@@ -205,178 +149,350 @@ class AreaImpl {
                 }
             };
         }
-    }
-
-    static class Path implements Area.Path {
-        private final List<Point> positions = new ArrayList<>();
-        private Point currentPosition;
-
-        @Override
-        public Area.Path north(double factor) {
-            return with(blockPosition -> blockPosition.add(0, 0, -factor));
-        }
-
-        @Override
-        public Area.Path south(double factor) {
-            return with(blockPosition -> blockPosition.add(0, 0, factor));
-        }
-
-        @Override
-        public Area.Path east(double factor) {
-            return with(blockPosition -> blockPosition.add(factor, 0, 0));
-        }
-
-        @Override
-        public Area.Path west(double factor) {
-            return with(blockPosition -> blockPosition.add(-factor, 0, 0));
-        }
-
-        @Override
-        public Area.Path up(double factor) {
-            return with(blockPosition -> blockPosition.add(0, factor, 0));
-        }
-
-        @Override
-        public Area.Path down(double factor) {
-            return with(blockPosition -> blockPosition.add(0, -factor, 0));
-        }
-
-        @Override
-        public Area end() {
-            return fromCollection(positions);
-        }
-
-        private Area.Path with(UnaryOperator<Point> operator) {
-            this.currentPosition = operator.apply(currentPosition);
-            this.positions.add(currentPosition);
-            return this;
-        }
-    }
-
-    record Union(Collection<Area> children, Point min, Point max, long size) implements Area, Area.HasChildren {
-
-        public Union(Collection<Area> children) {
-            this(children,
-                    findMin(children.stream().map(Area::min).toList()),
-                    findMax(children.stream().map(Area::max).toList()),
-                    findSize(children));
-        }
-
-        @Override
-        public @NotNull Iterator<Point> iterator() {
-            return new Iterator<>() {
-                private final Iterator<Area> areaIterator = children.iterator();
-                private Iterator<Point> currentIterator = areaIterator.next().iterator();
-
-                @Override
-                public boolean hasNext() {
-                    if (currentIterator.hasNext()) {
-                        return true;
-                    }
-
-                    while (areaIterator.hasNext()) {
-                        currentIterator = areaIterator.next().iterator();
-                        if (currentIterator.hasNext()) {
-                            return true;
-                        }
-                    }
-
-                    return false;
-                }
-
-                @Override
-                public Point next() {
-                    return currentIterator.next();
-                }
-            };
-        }
 
         @Override
         public boolean contains(Area area) {
-            Area[] areas = Stream.concat(Stream.of(area), children.stream())
-                            .toArray(Area[]::new);
-            return Area.union(areas).size() == size();
+            return boundsContains(this, area);
         }
 
         @Override
         public boolean contains(Point point) {
-            return children.stream().anyMatch(area -> area.contains(point));
+            return contains(point.x(), point.y(), point.z());
+        }
+
+        @Override
+        public boolean contains(double x, double y, double z) {
+            return x >= min.x() && x < max.x() &&
+                    y >= min.y() && y < max.y() &&
+                    z >= min.z() && z < max.z();
         }
 
         @Override
         public long size() {
-            return children.stream().mapToLong(Area::size).sum();
+            return (long) (max.blockX() - min.blockX()) * (max.blockY() - min.blockY()) * (max.blockZ() - min.blockZ());
         }
 
         @Override
-        public long overlap(Area other) {
-            Area[] areas = Stream.concat(Stream.of(other), children.stream())
-                    .toArray(Area[]::new);
-            long missing = Area.union(areas).size() - size();
-            return other.size() - missing;
+        public Area overlap(Area other) {
+            if (other instanceof Fill fill) {
+                int minX = Math.max(min.blockX(), fill.min.blockX());
+                int minY = Math.max(min.blockY(), fill.min.blockY());
+                int minZ = Math.max(min.blockZ(), fill.min.blockZ());
+
+                int maxX = Math.min(max.blockX(), fill.max.blockX());
+                int maxY = Math.min(max.blockY(), fill.max.blockY());
+                int maxZ = Math.min(max.blockZ(), fill.max.blockZ());
+
+                return Area.fill(new Vec(minX, minY, minZ), new Vec(maxX, maxY, maxZ));
+            }
+            return other.overlap(this); // custom impl
+        }
+
+        @Override
+        public long overlapCount(Area other) {
+            if (other instanceof Fill fill) {
+                int minX = Math.max(min.blockX(), fill.min.blockX());
+                int minY = Math.max(min.blockY(), fill.min.blockY());
+                int minZ = Math.max(min.blockZ(), fill.min.blockZ());
+
+                int maxX = Math.min(max.blockX(), fill.max.blockX());
+                int maxY = Math.min(max.blockY(), fill.max.blockY());
+                int maxZ = Math.min(max.blockZ(), fill.max.blockZ());
+
+                return (long) (maxX - minX) * (maxY - minY) * (maxZ - minZ);
+            }
+            return other.overlapCount(this); // custom impl
+        }
+
+        @Override
+        public boolean overlaps(Area other) {
+            if (other instanceof Fill fill) {
+                int minX = Math.max(min.blockX(), fill.min.blockX());
+                int minY = Math.max(min.blockY(), fill.min.blockY());
+                int minZ = Math.max(min.blockZ(), fill.min.blockZ());
+
+                int maxX = Math.min(max.blockX(), fill.max.blockX());
+                int maxY = Math.min(max.blockY(), fill.max.blockY());
+                int maxZ = Math.min(max.blockZ(), fill.max.blockZ());
+
+                return minX < maxX && minY < maxY && minZ < maxZ;
+            }
+            return other.overlaps(this); // custom impl
+        }
+
+        @Override
+        public String toString() {
+            return AreaImpl.toString(this);
+        }
+
+        private void fillsRemove(Area other, Consumer<Fill> out) {
+            // We output the necessary fills to recreate this area without the other area
+            // Intersection
+            if (other instanceof Fill fill) {
+                Vec thisMin = min;
+                Vec thisMax = max;
+                Vec fillMin = fill.min;
+                Vec fillMax = fill.max;
+
+                // No intersection
+                if (thisMin.blockX() >= fillMax.blockX() || thisMin.blockY() >= fillMax.blockY() || thisMin.blockZ() >= fillMax.blockZ() ||
+                        thisMax.blockX() <= fillMin.blockX() || thisMax.blockY() <= fillMin.blockY() || thisMax.blockZ() <= fillMin.blockZ()) {
+                    out.accept(this);
+                    return;
+                }
+
+                // Remove
+                // X > Y > Z
+
+                // shave left
+                if (thisMin.blockX() < fillMin.blockX()) {
+                    out.accept(fill(thisMin, thisMax.withX(fillMin.blockX())));
+                    thisMin = thisMin.withX(fillMin.blockX());
+                }
+
+                // shave right
+                if (thisMax.blockX() > fillMax.blockX()) {
+                    out.accept(fill(thisMin.withX(fillMax.blockX()), thisMax));
+                    thisMax = thisMax.withX(fillMax.blockX());
+                }
+
+                // shave bottom
+                if (thisMin.blockY() < fillMin.blockY()) {
+                    out.accept(fill(thisMin, thisMax.withY(fillMin.blockY())));
+                    thisMin = thisMin.withY(fillMin.blockY());
+                }
+
+                // shave top
+                if (thisMax.blockY() > fillMax.blockY()) {
+                    out.accept(fill(thisMin.withY(fillMax.blockY()), thisMax));
+                    thisMax = thisMax.withY(fillMax.blockY());
+                }
+
+                // shave front
+                if (thisMin.blockZ() < fillMin.blockZ()) {
+                    out.accept(fill(thisMin, thisMax.withZ(fillMin.blockZ())));
+                    thisMin = thisMin.withZ(fillMin.blockZ());
+                }
+
+                // shave back
+                if (thisMax.blockZ() > fillMax.blockZ()) {
+                    out.accept(fill(thisMin.withZ(fillMax.blockZ()), thisMax));
+                    thisMax = thisMax.withZ(fillMax.blockZ());
+                }
+                return;
+            } else if (other instanceof FillUnion union) {
+                for (Fill fill : union.areas) {
+                    fillsRemove(fill, out);
+                }
+                return;
+            }
+            throw new IllegalArgumentException("Unsupported area type: " + other.getClass().getName());
+        }
+
+        private void fillsOverlap(Area other, Consumer<Fill> out) {
+            // Intersection
+            if (other instanceof Fill fill) {
+                int minX = Math.max(min.blockX(), fill.min.blockX());
+                int minY = Math.max(min.blockY(), fill.min.blockY());
+                int minZ = Math.max(min.blockZ(), fill.min.blockZ());
+
+                int maxX = Math.min(max.blockX(), fill.max.blockX());
+                int maxY = Math.min(max.blockY(), fill.max.blockY());
+                int maxZ = Math.min(max.blockZ(), fill.max.blockZ());
+
+                if (minX >= maxX || minY >= maxY || minZ >= maxZ) {
+                    return;
+                }
+
+                // No intersection
+                if (minX == min.blockX() && minY == min.blockY() && minZ == min.blockZ() &&
+                        maxX == max.blockX() && maxY == max.blockY() && maxZ == max.blockZ()) {
+                    out.accept(this);
+                    return;
+                }
+
+                // Partial intersection
+                out.accept(new Fill(min, new Vec(maxX, maxY, maxZ)));
+                out.accept(new Fill(new Vec(minX, minY, minZ), max));
+                return;
+            } else if (other instanceof FillUnion union) {
+                for (Fill area : union.areas) {
+                    fillsOverlap(area, out);
+                }
+                return;
+            }
+            throw new UnsupportedOperationException("Unsupported area type: " + other.getClass().getName());
         }
     }
 
-    record ExcludeArea(Area source, Area exclude, Point min, Point max, long size) implements Area {
+    record FillUnion(Fill[] areas, Point min, Point max, long size) implements Area {
 
-        public ExcludeArea(Area source, Area exclude) {
-            this(source, exclude,
-                    findMin(StreamSupport.stream(source.spliterator(), false)
-                            .filter(point -> !exclude.contains(point))
-                            .toList()),
-                    findMax(StreamSupport.stream(source.spliterator(), false)
-                            .filter(point -> !exclude.contains(point))
-                            .toList()),
-                    findSize(List.of(source, exclude)) - exclude.size()
-            );
+        public FillUnion(Fill... areas) {
+            this(areas, findMin(areas),
+                    findMax(areas),
+                    findSize(areas));
+            for (Fill areaA : areas) {
+                for (Fill areaB : areas) {
+                    if (areaA == areaB) continue;
+                    if (areaA.overlaps(areaB))
+                        throw new IllegalArgumentException("Areas overlap: " + areaA + " and " + areaB);
+                }
+            }
+        }
+
+        public FillUnion(Consumer<Consumer<Fill>> fillAccumulator) {
+            this(accumulate(fillAccumulator));
+        }
+
+        private static Fill[] accumulate(Consumer<Consumer<Fill>> fillAccumulator) {
+            Stream.Builder<Fill> builder = Stream.builder();
+            fillAccumulator.accept(builder::add);
+            return builder.build().toArray(Fill[]::new);
         }
 
         @Override
         public boolean contains(Area area) {
-            if (Area.intersection(area, exclude()).size() > 0) return false;
-            return source().contains(area);
+            return overlapCount(area) == area.size();
         }
 
         @Override
         public boolean contains(Point point) {
-            if (exclude().contains(point)) return false;
-            return source().contains(point);
+            for (Fill area : areas) {
+                if (area.contains(point)) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         @Override
-        public long overlap(Area other) {
-            return Area.intersection(source(), other).size()
-                    - Area.intersection(exclude(), other).size();
+        public boolean contains(double x, double y, double z) {
+            for (Fill area : areas) {
+                if (area.contains(x, y, z)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        @Override
+        public Area overlap(Area other) {
+            List<Fill> out = new ArrayList<>();
+            for (Fill area : areas) {
+                area.fillsOverlap(other, out::add);
+            }
+            return AreaImpl.safeUnion(out.toArray(Fill[]::new));
+        }
+
+        @Override
+        public long overlapCount(Area other) {
+            long count = 0;
+            for (Fill area : areas) {
+                count += area.overlapCount(other);
+            }
+            return count;
+        }
+
+        @Override
+        public boolean overlaps(Area other) {
+            for (Fill area : areas) {
+                if (area.overlaps(other)) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         @NotNull
         @Override
         public Iterator<Point> iterator() {
-            return new Iterator<>() {
-                private final Iterator<Point> sourceIterator = source.iterator();
-                private Point next;
-
-                @Override
-                public boolean hasNext() {
-                    if (next != null) return true;
-
-                    while (sourceIterator.hasNext()) {
-                        Point point = sourceIterator.next();
-                        if (exclude.contains(point)) continue;
-                        next = point;
-                        return true;
-                    }
-
-                    return false;
-                }
-
-                @Override
-                public Point next() {
-                    Point point = next;
-                    next = null;
-                    return point;
-                }
-            };
+            return Stream.of(areas).flatMap(a -> StreamSupport.stream(a.spliterator(), false)).iterator();
         }
+
+        @Override
+        public String toString() {
+            return AreaImpl.toString(this);
+        }
+    }
+
+    // Analysis methods
+
+    static Point findMin(Point... points) {
+        double minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE, minZ = Integer.MAX_VALUE;
+        for (Point point : points) {
+            minX = Math.min(minX, point.x());
+            minY = Math.min(minY, point.y());
+            minZ = Math.min(minZ, point.z());
+        }
+        return new Vec(minX, minY, minZ);
+    }
+
+    static Point findMin(Area... areas) {
+        double minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE, minZ = Integer.MAX_VALUE;
+        for (Area area : areas) {
+            minX = Math.min(minX, area.min().x());
+            minY = Math.min(minY, area.min().y());
+            minZ = Math.min(minZ, area.min().z());
+        }
+        return new Vec(minX, minY, minZ);
+    }
+
+    static Point findMax(Point... points) {
+        double maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE, maxZ = Integer.MIN_VALUE;
+        for (Point point : points) {
+            maxX = Math.max(maxX, point.x());
+            maxY = Math.max(maxY, point.y());
+            maxZ = Math.max(maxZ, point.z());
+        }
+        return new Vec(maxX, maxY, maxZ);
+    }
+
+    static Point findMax(Area... areas) {
+        double maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE, maxZ = Integer.MIN_VALUE;
+        for (Area area : areas) {
+            maxX = Math.max(maxX, area.max().x());
+            maxY = Math.max(maxY, area.max().y());
+            maxZ = Math.max(maxZ, area.max().z());
+        }
+        return new Vec(maxX, maxY, maxZ);
+    }
+
+    // Note that these areas are non-intersecting
+    static long findSize(Area[] areas) {
+        return Stream.of(areas).mapToLong(Area::size).sum();
+    }
+
+    static boolean boundsContains(Area area, Area other) {
+        Point min = area.min();
+        Point max = area.max();
+
+        Point otherMin = other.min();
+        Point otherMax = other.max();
+
+        return min.blockX() <= otherMin.blockX() &&
+                min.blockY() <= otherMin.blockY() &&
+                min.blockZ() <= otherMin.blockZ() &&
+                max.blockX() >= otherMax.blockX() &&
+                max.blockY() >= otherMax.blockY() &&
+                max.blockZ() >= otherMax.blockZ();
+    }
+
+    static String toString(Area area) {
+        return toString(area, 0);
+    }
+
+    static String toString(Area area, int depth) {
+        String prefix = String.join("", Collections.nCopies(depth, "  "));
+        if (area instanceof Fill fill) {
+            return prefix + "Fill(" + fill.min + ", " + fill.max + ")";
+        }
+        if (area instanceof FillUnion union) {
+            String contents = Stream.of(union.areas)
+                    .map(a -> toString(a, depth + 1))
+                    .collect(Collectors.joining(",\n"));
+
+            return prefix + "Union(\n" + contents + "\n" + prefix + ")";
+        }
+        return prefix + area.toString();
     }
 }
