@@ -1,5 +1,6 @@
 package net.minestom.server.instance;
 
+import net.minestom.server.coordinate.Area;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.instance.block.Block;
@@ -14,9 +15,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
@@ -27,16 +26,6 @@ import static net.minestom.server.utils.chunk.ChunkUtils.floorSection;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class GeneratorTest {
-
-    @Test
-    public void unitSize() {
-        assertDoesNotThrow(() -> dummyUnit(Vec.ZERO, new Vec(16)));
-        assertDoesNotThrow(() -> dummyUnit(new Vec(16), new Vec(32)));
-        assertThrows(IllegalArgumentException.class, () -> dummyUnit(new Vec(15), Vec.ZERO));
-        assertThrows(IllegalArgumentException.class, () -> dummyUnit(new Vec(15), new Vec(32)));
-        assertThrows(IllegalArgumentException.class, () -> dummyUnit(new Vec(15), new Vec(31)));
-        assertThrows(IllegalArgumentException.class, () -> dummyUnit(Vec.ZERO, new Vec(15)));
-    }
 
     @ParameterizedTest
     @MethodSource("sectionFloorParam")
@@ -83,10 +72,12 @@ public class GeneratorTest {
         final int chunkX = 3;
         final int chunkZ = -2;
         final int sectionCount = maxSection - minSection;
-        GenerationUnit chunk = GeneratorImpl.mutable(WorldView.chunk(chunkX, chunkZ));
+        Point min = new Vec(chunkX * 16, minSection * 16, chunkZ * 16);
+        Point max = new Vec(chunkX * 16 + 16, maxSection * 16, chunkZ * 16 + 16);
+        GenerationUnit chunk = GeneratorImpl.mutable(Area.fill(min, max));
         assertEquals(new Vec(16, sectionCount * 16, 16), chunk.size());
-        assertEquals(new Vec(chunkX * 16, minSection * 16, chunkZ * 16), chunk.absoluteStart());
-        assertEquals(new Vec(chunkX * 16 + 16, maxSection * 16, chunkZ * 16 + 16), chunk.absoluteEnd());
+        assertEquals(min, chunk.absoluteStart());
+        assertEquals(max, chunk.absoluteEnd());
     }
 
     @Test
@@ -96,10 +87,12 @@ public class GeneratorTest {
         final int chunkX = 3;
         final int chunkZ = -2;
         final int sectionCount = maxSection - minSection;
-        GenerationUnit chunk = GeneratorImpl.mutable(WorldView.chunk(chunkX, chunkZ));
+        Point min = new Vec(chunkX * 16, minSection * 16, chunkZ * 16);
+        Point max = new Vec(chunkX * 16 + 16, maxSection * 16, chunkZ * 16 + 16);
+        GenerationUnit chunk = GeneratorImpl.mutable(Area.fill(min, max));
         assertEquals(new Vec(16, sectionCount * 16, 16), chunk.size());
-        assertEquals(new Vec(chunkX * 16, minSection * 16, chunkZ * 16), chunk.absoluteStart());
-        assertEquals(new Vec(chunkX * 16 + 16, maxSection * 16, chunkZ * 16 + 16), chunk.absoluteEnd());
+        assertEquals(min, chunk.absoluteStart());
+        assertEquals(max, chunk.absoluteEnd());
     }
 
     @Test
@@ -114,31 +107,15 @@ public class GeneratorTest {
     }
 
     @Test
-    public void chunkSubdivide() {
-        final int minSection = -1;
-        final int maxSection = 5;
-        final int chunkX = 3;
-        final int chunkZ = -2;
-        final int sectionCount = maxSection - minSection;
-        GenerationUnit chunk = GeneratorImpl.mutable(WorldView.chunk(chunkX, chunkZ));
-        var subUnits = chunk.subdivide();
-        assertEquals(sectionCount, subUnits.size());
-        for (int i = 0; i < sectionCount; i++) {
-            var subUnit = subUnits.get(i);
-            assertEquals(new Vec(16, 16, 16), subUnit.size());
-            assertEquals(new Vec(chunkX * 16, (i + minSection) * 16, chunkZ * 16), subUnit.absoluteStart());
-            assertEquals(subUnit.absoluteStart().add(16), subUnit.absoluteEnd());
-        }
-    }
-
-    @Test
     public void chunkAbsolute() {
         final int minSection = 0;
         final int maxSection = 5;
         final int chunkX = 3;
         final int chunkZ = -2;
         final int sectionCount = maxSection - minSection;
-        WorldView.Mutable worldView = WorldView.chunk(chunkX, chunkZ);
+        Point min = new Vec(chunkX * 16, minSection * 16, chunkZ * 16);
+        Area chunkArea = Area.fill(min, min.add(16).withY(maxSection * 16));
+        WorldView.Mutable worldView = WorldView.mutable(chunkArea, WorldView.empty());
         var chunkUnits = GeneratorImpl.mutable(worldView);
         Generator generator = chunk -> {
             var modifier = chunk.modifier();
@@ -147,8 +124,8 @@ public class GeneratorTest {
             modifier.setBlock(56, 17, -25, Block.STONE);
         };
         generator.generate(chunkUnits);
-        assertEquals(Block.STONE, worldView.getBlock(8, 0, 7));
-        assertEquals(Block.STONE, worldView.getBlock(8, 1, 7));
+        assertEquals(Block.STONE, worldView.getBlock(56, 0, -25));
+        assertEquals(Block.STONE, worldView.getBlock(56, 17, -25));
     }
 
     @Test
@@ -158,7 +135,9 @@ public class GeneratorTest {
         final int chunkX = 3;
         final int chunkZ = -2;
         final int sectionCount = maxSection - minSection;
-        WorldView.Mutable worldView = WorldView.chunk(chunkX, chunkZ);
+        Point min = new Vec(chunkX * 16, minSection * 16, chunkZ * 16);
+        Area chunkArea = Area.fill(min, min.add(16).withY(maxSection * 16));
+        WorldView.Mutable worldView = WorldView.mutable(chunkArea, WorldView.empty());
         var chunkUnits = GeneratorImpl.mutable(worldView);
         Generator generator = chunk -> {
             var modifier = chunk.modifier();
@@ -184,7 +163,9 @@ public class GeneratorTest {
         final int chunkX = 3;
         final int chunkZ = -2;
         final int sectionCount = maxSection - minSection;
-        WorldView.Mutable worldView = WorldView.chunk(chunkX, chunkZ);
+        Point min = new Vec(chunkX * 16, minSection * 16, chunkZ * 16);
+        Area chunkArea = Area.fill(min, min.add(16).withY(maxSection * 16));
+        WorldView.Mutable worldView = WorldView.mutable(chunkArea, WorldView.empty());
         var chunkUnits = GeneratorImpl.mutable(worldView);
         Generator generator = chunk -> {
             var modifier = chunk.modifier();
@@ -198,9 +179,9 @@ public class GeneratorTest {
             modifier.setRelative(5, 33, 5, Block.STONE);
         };
         generator.generate(chunkUnits);
-        assertEquals(Block.STONE, worldView.getBlock(0, 0, 0));
-        assertEquals(Block.STONE, worldView.getBlock(0, 16, 2));
-        assertEquals(Block.STONE, worldView.getBlock(5, 33, 5));
+        assertEquals(Block.STONE, worldView.getBlock(48, -16, -32));
+        assertEquals(Block.STONE, worldView.getBlock(48, 0, -30));
+        assertEquals(Block.STONE, worldView.getBlock(53, 17, -27));
     }
 
     @Test
@@ -210,7 +191,9 @@ public class GeneratorTest {
         final int chunkX = 3;
         final int chunkZ = -2;
         final int sectionCount = maxSection - minSection;
-        WorldView.Mutable worldView = WorldView.chunk(chunkX, chunkZ);
+        Point min = new Vec(chunkX * 16, minSection * 16, chunkZ * 16);
+        Area chunkArea = Area.fill(min, min.add(16).withY(maxSection * 16));
+        WorldView.Mutable worldView = WorldView.mutable(chunkArea, WorldView.empty());
         var chunkUnits = GeneratorImpl.mutable(worldView);
         Generator generator = chunk -> {
             var modifier = chunk.modifier();
@@ -236,8 +219,9 @@ public class GeneratorTest {
         final int maxSection = 5;
         final int chunkX = 3;
         final int chunkZ = -2;
-        final int sectionCount = maxSection - minSection;
-        WorldView.Mutable worldView = WorldView.chunk(chunkX, chunkZ);
+        Point min = new Vec(chunkX * 16, minSection * 16, chunkZ * 16);
+        Area chunkArea = Area.fill(min, min.add(16).withY(maxSection * 16));
+        WorldView.Mutable worldView = WorldView.mutable(chunkArea, WorldView.empty());
         var chunkUnits = GeneratorImpl.mutable(worldView);
         Generator generator = chunk -> {
             var modifier = chunk.modifier();
@@ -245,8 +229,8 @@ public class GeneratorTest {
             modifier.setBiome(48 + 8, 0, -32, Biome.PLAINS);
         };
         generator.generate(chunkUnits);
-        assertEquals(Biome.PLAINS, worldView.getBiome(8, 0, 7));
-        assertEquals(Biome.PLAINS, worldView.getBiome(8, 1, 7));
+        assertEquals(Biome.PLAINS, worldView.getBiome(48, 0, -32));
+        assertEquals(Biome.PLAINS, worldView.getBiome(48 + 8, 0, -32));
     }
 
     @Test
@@ -256,7 +240,7 @@ public class GeneratorTest {
         final int chunkX = 3;
         final int chunkZ = -2;
         final int sectionCount = maxSection - minSection;
-        WorldView.Mutable worldView = WorldView.chunk(chunkX, chunkZ);
+        WorldView.Mutable worldView = WorldView.chunk();
         var chunkUnits = GeneratorImpl.mutable(worldView);
         Generator generator = chunk -> {
             var modifier = chunk.modifier();
@@ -273,17 +257,17 @@ public class GeneratorTest {
         final int minSection = -1;
         final int maxSection = 5;
         final int sectionCount = maxSection - minSection;
-        WorldView.Mutable worldView = WorldView.chunk(3, -2);
+        WorldView.Mutable worldView = WorldView.chunk();
         var chunkUnits = GeneratorImpl.mutable(worldView);
         Generator generator = chunk -> chunk.modifier().fillHeight(0, 32, Block.STONE);
         generator.generate(chunkUnits);
 
-        AtomicInteger index = new AtomicInteger(minSection);
         for (Point point : worldView.area()) {
-            if (index.get() == 0 || index.get() == 1) {
-                assertEquals(Block.STONE, worldView.getBlock(point), "filling failed for section " + index.get());
+            Block block = worldView.getBlock(point);
+            if (point.y() >= 0 && point.y() < 32) {
+                assertEquals(Block.STONE, block);
             } else {
-                assertEquals(Block.AIR, worldView.getBlock(point));
+                assertEquals(Block.AIR, block);
             }
         }
     }
@@ -293,40 +277,27 @@ public class GeneratorTest {
         final int minSection = -1;
         final int maxSection = 5;
         final int sectionCount = maxSection - minSection;
-        WorldView.Mutable worldView = WorldView.chunk(3, -2);
+        Point min = new Vec(0, minSection * 16, 0);
+        Area chunkArea = Area.fill(min, min.add(16).withY(maxSection * 16));
+        WorldView.Mutable worldView = WorldView.mutable(chunkArea, WorldView.empty());
         var chunkUnits = GeneratorImpl.mutable(worldView);
         Generator generator = chunk -> chunk.modifier().fillHeight(1, 33, Block.STONE);
         generator.generate(chunkUnits);
 
-        AtomicInteger index = new AtomicInteger(minSection);
         for (Point point : worldView.area()) {
-            Block expected;
-            if (index.get() == 0) {
-                if (point.blockY() > 0) {
-                    expected = Block.STONE;
-                } else {
-                    expected = Block.AIR;
-                }
-            } else if (index.get() == 1) {
-                expected = Block.STONE;
-            } else if (index.get() == 2) {
-                if (point.blockY() == 0) {
-                    expected = Block.STONE;
-                } else {
-                    expected = Block.AIR;
-                }
+            Block block = worldView.getBlock(point);
+            if (point.y() > 0 && point.y() < 33) {
+                assertEquals(Block.STONE, block);
             } else {
-                expected = Block.AIR;
+                assertEquals(Block.AIR, block);
             }
-            assertEquals(expected, worldView.getBlock(point), "fail for coordinate: " + point + " for index " + index.get());
-            index.incrementAndGet();
         }
     }
 
     @Test
     public void sectionFill() {
         Point pos = new Vec(-1, -1, 0).mul(Instance.SECTION_SIZE);
-        WorldView.Mutable section = WorldView.section(null, null, pos);
+        WorldView.Mutable section = WorldView.section();
         var chunkUnit = GeneratorImpl.section(section, -1, -1, 0, false);
         Generator generator = chunk -> chunk.modifier().fill(Block.STONE);
         generator.generate(chunkUnit);

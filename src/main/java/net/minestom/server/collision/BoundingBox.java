@@ -1,5 +1,6 @@
 package net.minestom.server.collision;
 
+import net.minestom.server.coordinate.Area;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.coordinate.Vec;
@@ -78,6 +79,11 @@ public final class BoundingBox implements Shape {
         Point relativeEnd = this.relativeEnd;
         if (relativeEnd == null) this.relativeEnd = relativeEnd = offset.add(width, height, depth);
         return relativeEnd;
+    }
+
+    @Override
+    public Area toArea() {
+        return Area.fill(relativeStart(), relativeEnd());
     }
 
     @Override

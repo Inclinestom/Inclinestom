@@ -3,12 +3,10 @@ package net.minestom.server;
 import net.minestom.server.advancements.AdvancementManager;
 import net.minestom.server.adventure.bossbar.BossBarManager;
 import net.minestom.server.command.CommandManager;
-import net.minestom.server.coordinate.Area;
 import net.minestom.server.event.GlobalEventHandler;
 import net.minestom.server.exception.ExceptionManager;
 import net.minestom.server.extensions.ExtensionManager;
 import net.minestom.server.gamedata.tags.TagManager;
-import net.minestom.server.instance.storage.WorldView;
 import net.minestom.server.instance.InstanceManager;
 import net.minestom.server.instance.block.BlockManager;
 import net.minestom.server.instance.block.rule.BlockPlacementRule;
@@ -20,14 +18,13 @@ import net.minestom.server.network.socket.Server;
 import net.minestom.server.recipe.RecipeManager;
 import net.minestom.server.scoreboard.TeamManager;
 import net.minestom.server.snapshot.Snapshotable;
-import net.minestom.server.thread.ThreadDispatcher;
 import net.minestom.server.timer.SchedulerManager;
 import net.minestom.server.world.DimensionTypeManager;
 import net.minestom.server.world.biomes.BiomeManager;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 
 import java.net.SocketAddress;
+import java.util.concurrent.CompletableFuture;
 
 @ApiStatus.Experimental
 @ApiStatus.NonExtendable
@@ -130,11 +127,6 @@ public interface ServerProcess extends Snapshotable {
     Server server();
 
     /**
-     * Dispatcher for tickable game objects.
-     */
-    ThreadDispatcher<Area> dispatcher();
-
-    /**
      * Handles the server ticks.
      */
     Ticker ticker();
@@ -147,6 +139,6 @@ public interface ServerProcess extends Snapshotable {
 
     @ApiStatus.NonExtendable
     interface Ticker {
-        void tick(long nanoTime);
+        CompletableFuture<Void> tick(long nanoTime);
     }
 }

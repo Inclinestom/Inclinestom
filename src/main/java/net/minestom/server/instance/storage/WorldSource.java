@@ -17,7 +17,7 @@ public interface WorldSource {
     /**
      * Attempts to load a {@link WorldView} that fully contains the given {@link Area}.
      *
-     * @param area the area to load
+     * @param area the view to load
      * @return a {@link CompletableFuture} completed once the {@link Area} has been loaded, and failed if the load
      * failed for any reason.
      */
@@ -33,11 +33,11 @@ public interface WorldSource {
     CompletableFuture<Void> save(WorldView storage);
 
     /**
-     * Called when an area is unloaded, so that this chunk loader can unload any resource it is holding.
+     * Called when an view is unloaded, so that this chunk loader can unload any resource it is holding.
      * Note: Minestom currently has no way to determine whether the chunk comes from this loader, so you may get
      * unload requests for chunks not created by the loader.
      *
-     * @param area the area to unload
+     * @param area the view to unload
      * @return a {@link CompletableFuture} executed when the {@link Area}'s cache is done unloading.
      */
     default CompletableFuture<Void> unloadArea(Area area) {

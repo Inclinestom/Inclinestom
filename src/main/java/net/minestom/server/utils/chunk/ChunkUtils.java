@@ -1,14 +1,28 @@
 package net.minestom.server.utils.chunk;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntSet;
+import net.minestom.server.coordinate.Area;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Vec;
-import net.minestom.server.instance.Chunk;
 import net.minestom.server.instance.Instance;
+import net.minestom.server.instance.Section;
+import net.minestom.server.instance.block.Block;
+import net.minestom.server.instance.storage.WorldView;
+import net.minestom.server.network.NetworkBuffer;
+import net.minestom.server.network.packet.server.play.ChunkDataPacket;
+import net.minestom.server.network.packet.server.play.data.ChunkData;
+import net.minestom.server.network.packet.server.play.data.LightData;
+import net.minestom.server.utils.MathUtils;
+import net.minestom.server.utils.ObjectPool;
 import net.minestom.server.utils.function.IntegerBiConsumer;
+import net.minestom.server.world.DimensionType;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jglrxavpok.hephaistos.nbt.NBT;
+import org.jglrxavpok.hephaistos.nbt.NBTCompound;
 
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
@@ -20,25 +34,23 @@ public final class ChunkUtils {
     }
 
     /**
-     * Executes {@link Instance#loadOptionalChunk(int, int)} for the array of chunks {@code chunks}
+     * Executes {@link Instance#loadArea(Area)} for the array of chunks {@code chunks}
      * with multiple callbacks, {@code eachCallback} which is executed each time a new chunk is loaded and
      * {@code endCallback} when all the chunks in the array have been loaded.
-     * <p>
-     * Be aware that {@link Instance#loadOptionalChunk(int, int)} can give a null chunk in the callback
-     * if {@link Instance#hasEnabledAutoChunkLoad()} returns false and the chunk is not already loaded.
      *
      * @param instance     the instance to load the chunks from
      * @param chunks       the chunks to loaded, long value from {@link #getChunkIndex(int, int)}
      * @param eachCallback the optional callback when a chunk get loaded
      * @return a {@link CompletableFuture} completed once all chunks have been processed
      */
-    public static CompletableFuture<Void> optionalLoadAll(Instance instance, long [] chunks,
-                                                                   @Nullable Consumer<Chunk> eachCallback) {
+    public static CompletableFuture<Void> loadAll(Instance instance, long [] chunks,
+                                                                   @Nullable Consumer<WorldView> eachCallback) {
         CompletableFuture<Void> completableFuture = new CompletableFuture<>();
         AtomicInteger counter = new AtomicInteger(0);
-        for (long visibleChunk : chunks) {
+        for (long visibleWorldView : chunks) {
             // WARNING: if autoload is disabled and no chunks are loaded beforehand, player will be stuck.
-            instance.loadOptionalChunk(getChunkCoordX(visibleChunk), getChunkCoordZ(visibleChunk))
+            Area chunkArea = Area.chunk(instance.dimensionType(), getChunkCoordX(visibleWorldView), getChunkCoordZ(visibleWorldView));
+            instance.loadArea(chunkArea)
                     .thenAccept((chunk) -> {
                         if (eachCallback != null) eachCallback.accept(chunk);
                         if (counter.incrementAndGet() == chunks.length) {
@@ -50,10 +62,6 @@ public final class ChunkUtils {
         return completableFuture;
     }
 
-    public static boolean isLoaded(@Nullable Chunk chunk) {
-        return chunk != null && chunk.isLoaded();
-    }
-
     /**
      * Gets if a chunk is loaded.
      *
@@ -63,36 +71,32 @@ public final class ChunkUtils {
      * @return true if the chunk is loaded, false otherwise
      */
     public static boolean isLoaded(Instance instance, double x, double z) {
-        final Chunk chunk = instance.getChunk(getChunkCoordinate(x), getChunkCoordinate(z));
-        return isLoaded(chunk);
+        final Area chunk = Area.chunk(instance.dimensionType(), getSectionCoordinate(x), getSectionCoordinate(z));
+        return instance.isAreaLoaded(chunk);
     }
 
     public static boolean isLoaded(Instance instance, Point point) {
-        final Chunk chunk = instance.getChunk(point.chunkX(), point.chunkZ());
-        return isLoaded(chunk);
+        return isLoaded(instance, point.x(), point.z());
     }
 
-    public static Chunk retrieve(Instance instance, Chunk originChunk, double x, double z) {
-        final int chunkX = getChunkCoordinate(x);
-        final int chunkZ = getChunkCoordinate(z);
-        final boolean sameChunk = originChunk != null &&
-                originChunk.getChunkX() == chunkX && originChunk.getChunkZ() == chunkZ;
-        return sameChunk ? originChunk : instance.getChunk(chunkX, chunkZ);
-    }
-
-    public static Chunk retrieve(Instance instance, Chunk originChunk, Point position) {
-        return retrieve(instance, originChunk, position.x(), position.z());
+    public static WorldView retrieve(Instance instance, @Nullable WorldView originWorldView, Point position) {
+        final int chunkX = position.sectionX();
+        final int chunkZ = position.sectionZ();
+        final boolean sameWorldView = originWorldView != null &&
+                originWorldView.area().contains(position);
+        Area chunk = Area.chunk(instance.dimensionType(), chunkX, chunkZ);
+        return sameWorldView ? originWorldView : instance.worldView(chunk);
     }
 
     /**
      * @param xz the instance coordinate to convert
      * @return the chunk X or Z based on the argument
      */
-    public static int getChunkCoordinate(double xz) {
-        return getChunkCoordinate((int) Math.floor(xz));
+    public static int getSectionCoordinate(double xz) {
+        return getSectionCoordinate((int) Math.floor(xz));
     }
 
-    public static int getChunkCoordinate(int xz) {
+    public static int getSectionCoordinate(int xz) {
         // Assume chunk/section size being 16 (4 bits)
         return xz >> 4;
     }
@@ -111,12 +115,8 @@ public final class ChunkUtils {
         return (((long) chunkX) << 32) | (chunkZ & 0xffffffffL);
     }
 
-    public static long getChunkIndex(Chunk chunk) {
-        return getChunkIndex(chunk.getChunkX(), chunk.getChunkZ());
-    }
-
     public static long getChunkIndex(Point point) {
-        return getChunkIndex(point.chunkX(), point.chunkZ());
+        return getChunkIndex(point.sectionX(), point.sectionZ());
     }
 
     /**
@@ -147,26 +147,26 @@ public final class ChunkUtils {
         return square * square;
     }
 
-    public static void forDifferingChunksInRange(int newChunkX, int newChunkZ,
-                                                 int oldChunkX, int oldChunkZ,
+    public static void forDifferingChunksInRange(int newWorldViewX, int newWorldViewZ,
+                                                 int oldWorldViewX, int oldWorldViewZ,
                                                  int range, IntegerBiConsumer callback) {
-        for (int x = newChunkX - range; x <= newChunkX + range; x++) {
-            for (int z = newChunkZ - range; z <= newChunkZ + range; z++) {
-                if (Math.abs(x - oldChunkX) > range || Math.abs(z - oldChunkZ) > range) {
+        for (int x = newWorldViewX - range; x <= newWorldViewX + range; x++) {
+            for (int z = newWorldViewZ - range; z <= newWorldViewZ + range; z++) {
+                if (Math.abs(x - oldWorldViewX) > range || Math.abs(z - oldWorldViewZ) > range) {
                     callback.accept(x, z);
                 }
             }
         }
     }
 
-    public static void forDifferingChunksInRange(int newChunkX, int newChunkZ,
-                                                 int oldChunkX, int oldChunkZ,
+    public static void forDifferingChunksInRange(int newWorldViewX, int newWorldViewZ,
+                                                 int oldWorldViewX, int oldWorldViewZ,
                                                  int range,
                                                  IntegerBiConsumer newCallback, IntegerBiConsumer oldCallback) {
         // Find the new chunks
-        forDifferingChunksInRange(newChunkX, newChunkZ, oldChunkX, oldChunkZ, range, newCallback);
+        forDifferingChunksInRange(newWorldViewX, newWorldViewZ, oldWorldViewX, oldWorldViewZ, range, newCallback);
         // Find the old chunks
-        forDifferingChunksInRange(oldChunkX, oldChunkZ, newChunkX, newChunkZ, range, oldCallback);
+        forDifferingChunksInRange(oldWorldViewX, oldWorldViewZ, newWorldViewX, newWorldViewZ, range, oldCallback);
     }
 
     public static void forChunksInRange(int chunkX, int chunkZ, int range, IntegerBiConsumer consumer) {
@@ -178,7 +178,7 @@ public final class ChunkUtils {
     }
 
     public static void forChunksInRange(Point point, int range, IntegerBiConsumer consumer) {
-        forChunksInRange(point.chunkX(), point.chunkZ(), range, consumer);
+        forChunksInRange(point.sectionX(), point.sectionZ(), range, consumer);
     }
 
     /**
@@ -190,8 +190,8 @@ public final class ChunkUtils {
      * @return an index which can be used to store and retrieve later data linked to a block position
      */
     public static int getBlockIndex(int x, int y, int z) {
-        x = x % Chunk.CHUNK_SIZE_X;
-        z = z % Chunk.CHUNK_SIZE_Z;
+        x = x % Instance.SECTION_SIZE;
+        z = z % Instance.SECTION_SIZE;
 
         int index = x & 0xF; // 4 bits
         if (y > 0) {
@@ -211,9 +211,9 @@ public final class ChunkUtils {
      * @return the instance position of the block located in {@code index}
      */
     public static Point getBlockPosition(int index, int chunkX, int chunkZ) {
-        final int x = blockIndexToChunkPositionX(index) + Chunk.CHUNK_SIZE_X * chunkX;
+        final int x = blockIndexToChunkPositionX(index) + Instance.SECTION_SIZE * chunkX;
         final int y = blockIndexToChunkPositionY(index);
-        final int z = blockIndexToChunkPositionZ(index) + Chunk.CHUNK_SIZE_Z * chunkZ;
+        final int z = blockIndexToChunkPositionZ(index) + Instance.SECTION_SIZE * chunkZ;
         return new Vec(x, y, z);
     }
 
@@ -265,5 +265,175 @@ public final class ChunkUtils {
 
     public static int ceilSection(int coordinate) {
         return ((coordinate - 1) | 15) + 1;
+    }
+
+    /**
+     * Creates a chunk packet from a {@link WorldView}.
+     * <p>
+     * NOTE: This method does not do any checks on the chunk data, it is up to the caller to ensure
+     * that all necessary chunk data is present.
+     * </p>
+     *
+     * @param blockStorage the block storage
+     * @param chunkX       the chunk X
+     * @param chunkZ       the chunk Z
+     * @return a chunk packet
+     */
+    public static ChunkDataPacket chunkPacket(WorldView blockStorage, DimensionType dimensionType, int chunkX, int chunkZ) {
+        return new ChunkDataPacket(chunkX, chunkZ,
+                chunkData(blockStorage, dimensionType, chunkX, chunkZ),
+                lightData(blockStorage, dimensionType, chunkX, chunkZ));
+    }
+
+    private static ChunkData chunkData(WorldView blockStorage, DimensionType dimensionType, int chunkX, int chunkZ) {
+        final NBTCompound heightmapsNBT;
+        // TODO: don't hardcode heightmaps
+        // Heightmap
+        {
+            int dimensionHeight = dimensionType.getHeight();
+            int[] motionBlocking = new int[16 * 16];
+            int[] worldSurface = new int[16 * 16];
+            for (int x = 0; x < 16; x++) {
+                for (int z = 0; z < 16; z++) {
+                    motionBlocking[x + z * 16] = 0;
+                    worldSurface[x + z * 16] = dimensionHeight - 1;
+                }
+            }
+            final int bitsForHeight = MathUtils.bitsToRepresent(dimensionHeight);
+            heightmapsNBT = NBT.Compound(Map.of(
+                    "MOTION_BLOCKING", NBT.LongArray(encodeBlocks(motionBlocking, bitsForHeight)),
+                    "WORLD_SURFACE", NBT.LongArray(encodeBlocks(worldSurface, bitsForHeight))));
+        }
+        // Data
+        final byte[] data = ObjectPool.PACKET_POOL.use(buffer ->
+            NetworkBuffer.makeArray(networkBuffer -> {
+                int minSection = dimensionType.getMinY() / Instance.SECTION_SIZE;
+                int maxSection = dimensionType.getMaxY() / Instance.SECTION_SIZE;
+                for (int section = minSection; section <= maxSection; section++) {
+                    createSection(blockStorage, chunkX, section, chunkZ).write(networkBuffer);
+                }
+            })
+        );
+        Int2ObjectOpenHashMap<Block> entries = new Int2ObjectOpenHashMap<>();
+        for (int x = 0; x < 16; x++) {
+            for (int z = 0; z < 16; z++) {
+                for (int y = 0; y < 16; y++) {
+                    final int blockX = x + chunkX * 16;
+                    final int blockY = y + chunkZ * 16;
+                    final int blockZ = z + chunkZ * 16;
+                    final Block block = blockStorage.getBlock(blockX, blockY, blockZ);
+                    final int index = getBlockIndex(x, y, z);
+                    entries.put(index, block);
+                }
+            }
+        }
+        return new ChunkData(heightmapsNBT, data, entries);
+    }
+
+    private static Section createSection(WorldView view, int sectionX, int sectionY, int sectionZ) {
+        Section section = new Section();
+        for (int x = 0; x < Instance.SECTION_SIZE; x++) {
+            for (int z = 0; z < Instance.SECTION_SIZE; z++) {
+                for (int y = 0; y < Instance.SECTION_SIZE; y++) {
+                    int blockX = x + sectionX * Instance.SECTION_SIZE;
+                    int blockY = y + sectionY * Instance.SECTION_SIZE;
+                    int blockZ = z + sectionZ * Instance.SECTION_SIZE;
+                    section.blockPalette().set(x, y, z, view.getBlock(blockX, blockY, blockZ).stateId());
+                    if (x % 4 == 0 && y % 4 == 0 && z % 4 == 0) {
+                        section.biomePalette().set(x / 4, y / 4, z / 4,
+                                view.getBiome(blockX, blockY, blockZ).id());
+                    }
+                    // TODO: Lighting
+                }
+            }
+        }
+        return section;
+    }
+
+    private static final int[] MAGIC = {
+            -1, -1, 0, Integer.MIN_VALUE, 0, 0, 1431655765, 1431655765, 0, Integer.MIN_VALUE,
+            0, 1, 858993459, 858993459, 0, 715827882, 715827882, 0, 613566756, 613566756,
+            0, Integer.MIN_VALUE, 0, 2, 477218588, 477218588, 0, 429496729, 429496729, 0,
+            390451572, 390451572, 0, 357913941, 357913941, 0, 330382099, 330382099, 0, 306783378,
+            306783378, 0, 286331153, 286331153, 0, Integer.MIN_VALUE, 0, 3, 252645135, 252645135,
+            0, 238609294, 238609294, 0, 226050910, 226050910, 0, 214748364, 214748364, 0,
+            204522252, 204522252, 0, 195225786, 195225786, 0, 186737708, 186737708, 0, 178956970,
+            178956970, 0, 171798691, 171798691, 0, 165191049, 165191049, 0, 159072862, 159072862,
+            0, 153391689, 153391689, 0, 148102320, 148102320, 0, 143165576, 143165576, 0,
+            138547332, 138547332, 0, Integer.MIN_VALUE, 0, 4, 130150524, 130150524, 0, 126322567,
+            126322567, 0, 122713351, 122713351, 0, 119304647, 119304647, 0, 116080197, 116080197,
+            0, 113025455, 113025455, 0, 110127366, 110127366, 0, 107374182, 107374182, 0,
+            104755299, 104755299, 0, 102261126, 102261126, 0, 99882960, 99882960, 0, 97612893,
+            97612893, 0, 95443717, 95443717, 0, 93368854, 93368854, 0, 91382282, 91382282,
+            0, 89478485, 89478485, 0, 87652393, 87652393, 0, 85899345, 85899345, 0,
+            84215045, 84215045, 0, 82595524, 82595524, 0, 81037118, 81037118, 0, 79536431,
+            79536431, 0, 78090314, 78090314, 0, 76695844, 76695844, 0, 75350303, 75350303,
+            0, 74051160, 74051160, 0, 72796055, 72796055, 0, 71582788, 71582788, 0,
+            70409299, 70409299, 0, 69273666, 69273666, 0, 68174084, 68174084, 0, Integer.MIN_VALUE,
+            0, 5};
+
+    private static long[] encodeBlocks(int[] blocks, int bitsPerEntry) {
+        final long maxEntryValue = (1L << bitsPerEntry) - 1;
+        final char valuesPerLong = (char) (64 / bitsPerEntry);
+        final int magicIndex = 3 * (valuesPerLong - 1);
+        final long divideMul = Integer.toUnsignedLong(MAGIC[magicIndex]);
+        final long divideAdd = Integer.toUnsignedLong(MAGIC[magicIndex + 1]);
+        final int divideShift = MAGIC[magicIndex + 2];
+        final int size = (blocks.length + valuesPerLong - 1) / valuesPerLong;
+
+        long[] data = new long[size];
+
+        for (int i = 0; i < blocks.length; i++) {
+            final long value = blocks[i];
+            final int cellIndex = (int) (i * divideMul + divideAdd >> 32L >> divideShift);
+            final int bitIndex = (i - cellIndex * valuesPerLong) * bitsPerEntry;
+            data[cellIndex] = data[cellIndex] & ~(maxEntryValue << bitIndex) | (value & maxEntryValue) << bitIndex;
+        }
+
+        return data;
+    }
+
+    private static LightData lightData(WorldView blockStorage, DimensionType dimensionType, int chunkX, int chunkZ) {
+        BitSet skyMask = new BitSet();
+        BitSet blockMask = new BitSet();
+        BitSet emptySkyMask = new BitSet();
+        BitSet emptyBlockMask = new BitSet();
+        List<byte[]> skyLights = new ArrayList<>();
+        List<byte[]> blockLights = new ArrayList<>();
+
+        int minSection = dimensionType.getMinY() / Instance.SECTION_SIZE;
+        int maxSection = dimensionType.getMaxY() / Instance.SECTION_SIZE;
+
+        int index = 0;
+        for (int sectionY = minSection; sectionY <= maxSection; sectionY++) {
+            Section section = createSection(blockStorage, chunkX, sectionY, chunkZ);
+            index++;
+            final byte[] skyLight = section.getSkyLight();
+            final byte[] blockLight = section.getBlockLight();
+            if (skyLight.length != 0) {
+                skyLights.add(skyLight);
+                skyMask.set(index);
+            } else {
+                emptySkyMask.set(index);
+            }
+            if (blockLight.length != 0) {
+                blockLights.add(blockLight);
+                blockMask.set(index);
+            } else {
+                emptyBlockMask.set(index);
+            }
+        }
+        return new LightData(true,
+                skyMask, blockMask,
+                emptySkyMask, emptyBlockMask,
+                skyLights, blockLights);
+    }
+
+    public static Map<Integer, Set<Point>> groupByY(Collection<Point> sections) {
+        Map<Integer, Set<Point>> grouped = new HashMap<>();
+        for (Point section : sections) {
+            grouped.computeIfAbsent(section.sectionY(), k -> new HashSet<>()).add(section);
+        }
+        return Collections.unmodifiableMap(grouped);
     }
 }

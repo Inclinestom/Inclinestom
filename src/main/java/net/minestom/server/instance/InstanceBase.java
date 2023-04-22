@@ -1,12 +1,14 @@
 package net.minestom.server.instance;
 
-import com.extollit.gaming.ai.path.model.IInstanceSpace;
+import it.unimi.dsi.fastutil.ints.*;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.pointer.Pointers;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.ServerProcess;
+import net.minestom.server.coordinate.Area;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Pos;
+import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.EntityCreature;
 import net.minestom.server.entity.ExperienceOrb;
@@ -18,10 +20,15 @@ import net.minestom.server.event.EventNode;
 import net.minestom.server.event.instance.InstanceTickEvent;
 import net.minestom.server.event.trait.InstanceEvent;
 import net.minestom.server.instance.block.Block;
+import net.minestom.server.network.packet.server.play.ChunkDataPacket;
 import net.minestom.server.network.packet.server.play.TimeUpdatePacket;
+import net.minestom.server.network.packet.server.play.UnloadChunkPacket;
 import net.minestom.server.tag.TagHandler;
 import net.minestom.server.timer.Scheduler;
+import net.minestom.server.utils.AreaUtils;
 import net.minestom.server.utils.PacketUtils;
+import net.minestom.server.utils.async.AsyncUtils;
+import net.minestom.server.utils.chunk.ChunkUtils;
 import net.minestom.server.utils.time.Cooldown;
 import net.minestom.server.utils.time.TimeUnit;
 import net.minestom.server.utils.validate.Check;
@@ -31,6 +38,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 /**
@@ -41,37 +49,38 @@ import java.util.stream.Collectors;
 public abstract class InstanceBase implements Instance {
 
 
-    private final DimensionType dimensionType;
+    protected final DimensionType dimensionType;
 
-    private final WorldBorder worldBorder;
+    protected final WorldBorder worldBorder;
 
     // Tick since the creation of the instance
-    private long worldAge;
+    protected long worldAge;
 
     // The time of the instance
-    private long time;
-    private int timeRate = 1;
-    private Duration timeUpdate = Duration.of(1, TimeUnit.SECOND);
-    private long lastTimeUpdate;
+    protected long time;
+    protected int timeRate = 1;
+    protected Duration timeUpdate = Duration.of(1, TimeUnit.SECOND);
+    protected long lastTimeUpdate;
 
     // Field for tick events
-    private long lastTickAge = System.currentTimeMillis();
+    protected long lastTickAge = System.currentTimeMillis();
 
-    private final EntityTracker entityTracker = new EntityTrackerImpl();
+    protected final EntityStorage entityStorage = new EntityStorageImpl();
+    protected final Map<Player, Area> player2LoadedSections = Collections.synchronizedMap(new WeakHashMap<>());
 
     // the uuid of this instance
     protected UUID uniqueId;
 
     // instance custom data
-    private final TagHandler tagHandler = TagHandler.newHandler();
-    private final Scheduler scheduler = Scheduler.newScheduler();
-    private final EventNode<InstanceEvent> eventNode;
+    protected final TagHandler tagHandler = TagHandler.newHandler();
+    protected final Scheduler scheduler = Scheduler.newScheduler();
+    protected final EventNode<InstanceEvent> eventNode;
 
     // Pathfinder
-    private final PFInstanceSpace instanceSpace = new PFInstanceSpace(this);
+    protected final PFInstanceSpace instanceSpace = new PFInstanceSpace(this);
 
     // Adventure
-    private final Pointers pointers;
+    protected final Pointers pointers;
 
     /**
      * Creates a new instance.
@@ -222,7 +231,7 @@ public abstract class InstanceBase implements Instance {
      * @return an unmodifiable {@link Set} containing all the entities in the instance
      */
     public Set<Entity> getEntities() {
-        return entityTracker.entities();
+        return entityStorage.entities();
     }
 
     /**
@@ -232,7 +241,7 @@ public abstract class InstanceBase implements Instance {
      */
     @Override
     public Set<Player> getPlayers() {
-        return entityTracker.entities(EntityTracker.Target.PLAYERS);
+        return entityStorage.entities(EntityStorage.Target.PLAYERS);
     }
 
     /**
@@ -242,7 +251,7 @@ public abstract class InstanceBase implements Instance {
      */
     @Deprecated
     public Set<EntityCreature> getCreatures() {
-        return entityTracker.entities().stream()
+        return entityStorage.entities().stream()
                 .filter(EntityCreature.class::isInstance)
                 .map(entity -> (EntityCreature) entity)
                 .collect(Collectors.toUnmodifiableSet());
@@ -255,7 +264,7 @@ public abstract class InstanceBase implements Instance {
      */
     @Deprecated
     public Set<ExperienceOrb> getExperienceOrbs() {
-        return entityTracker.entities().stream()
+        return entityStorage.entities().stream()
                 .filter(ExperienceOrb.class::isInstance)
                 .map(entity -> (ExperienceOrb) entity)
                 .collect(Collectors.toUnmodifiableSet());
@@ -269,17 +278,16 @@ public abstract class InstanceBase implements Instance {
      * @return entities that are not further than the specified distance from the transmitted position.
      */
     public Collection<Entity> getNearbyEntities(Point point, double range) {
-        List<Entity> result = new ArrayList<>();
-        this.entityTracker.nearbyEntities(point, range, EntityTracker.Target.ENTITIES, result::add);
-        return result;
+        Area area = Area.sphere(point, range);
+        return List.copyOf(this.entityStorage.entitiesInArea(area, EntityStorage.Target.ENTITIES));
     }
 
     @Override
     public abstract @Nullable Block getBlock(int x, int y, int z, Condition condition);
 
     @ApiStatus.Experimental
-    public EntityTracker entityTracker() {
-        return entityTracker;
+    public EntityStorage entityTracker() {
+        return entityStorage;
     }
 
     /**
@@ -299,9 +307,36 @@ public abstract class InstanceBase implements Instance {
      * @param time the tick time in milliseconds
      */
     @Override
-    public void tick(long time) {
+    public CompletableFuture<Void> tick(long time) {
         // Scheduled tasks
         this.scheduler.processTick();
+
+        // Update player chunks
+        Area totalChunks = Area.union(players().stream().map(Player::viewArea).toList());
+        loadArea(totalChunks).join();
+        players().forEach(player -> {
+            Area loadedSections = player2LoadedSections.computeIfAbsent(player, p -> Area.empty());
+
+            Area newSections = Area.exclude(player.viewArea(), loadedSections);
+            Area oldSections = Area.exclude(loadedSections, player.viewArea());
+
+            AreaUtils.forEachChunk(newSections, (x, z) -> {
+                ChunkDataPacket packet = chunkPacket(x, z);
+                player.sendPacket(packet);
+            });
+
+            AreaUtils.forEachChunk(oldSections, (x, z) -> {
+                UnloadChunkPacket packet = new UnloadChunkPacket(x, z);
+                player.sendPacket(packet);
+            });
+
+            player2LoadedSections.put(player, player.viewArea());
+        });
+
+        // blocks + entities
+        tickBlocks(time).join();
+        tickEntities(time).join();
+
         // Time
         {
             this.worldAge++;
@@ -321,7 +356,11 @@ public abstract class InstanceBase implements Instance {
             this.lastTickAge = time;
         }
         this.worldBorder.update();
+        return AsyncUtils.VOID_FUTURE;
     }
+
+    protected abstract CompletableFuture<Void> tickBlocks(long time);
+    protected abstract CompletableFuture<Void> tickEntities(long time);
 
     @Override
     public TagHandler tagHandler() {
@@ -379,5 +418,13 @@ public abstract class InstanceBase implements Instance {
     @Override
     public boolean isInVoid(Pos position) {
         return position.y() < this.dimensionType().getMinY();
+    }
+
+    @Override
+    public void refreshArea(Player player, Area area) {
+        AreaUtils.forEachChunk(area, (x, z) -> {
+            ChunkDataPacket packet = chunkPacket(x, z);
+            player.sendPacket(packet);
+        });
     }
 }

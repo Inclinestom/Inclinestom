@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
 @EnvTest
-public class EntityTrackerIntegrationTest {
+public class EntityStorageIntegrationTest {
 
     @Test
     public void maxDistance(Env env) {

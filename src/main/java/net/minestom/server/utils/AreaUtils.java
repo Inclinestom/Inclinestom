@@ -1,38 +1,63 @@
 package net.minestom.server.utils;
 
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
+import it.unimi.dsi.fastutil.longs.LongSet;
 import net.minestom.server.coordinate.Area;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Vec;
+import net.minestom.server.instance.Instance;
+import net.minestom.server.utils.chunk.ChunkUtils;
 import net.minestom.server.utils.function.IntegerBiConsumer;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Consumer;
 
 public class AreaUtils {
 
     public static void forEachChunk(Area area, IntegerBiConsumer consumer) {
-        Point min = area.min();
-        Point max = area.max();
+        if (area.size() == 0) return;
+        LongSet chunks = new LongOpenHashSet();
+        for (Area fill : area.subdivide()) {
+            Point min = fill.min();
+            Point max = fill.max();
 
-        int minWorldViewX = min.sectionX();
-        int minWorldViewZ = min.sectionZ();
-        int maxWorldViewX = max.sectionX();
-        int maxWorldViewZ = max.sectionZ();
+            int minChunkX = min.sectionX();
+            int minChunkZ = min.sectionZ();
 
-        for (int chunkX = minWorldViewX; chunkX <= maxWorldViewX; chunkX++) {
-            for (int chunkZ = minWorldViewZ; chunkZ <= maxWorldViewZ; chunkZ++) {
-                consumer.accept(chunkX, chunkZ);
+            for (int chunkX = minChunkX; chunkX <= max.sectionX(); chunkX++) {
+                for (int chunkZ = minChunkZ; chunkZ <= max.sectionZ(); chunkZ++) {
+                    long index = ChunkUtils.getChunkIndex(chunkX, chunkZ);
+                    if (chunks.contains(index)) continue;
+                    chunks.add(index);
+                    consumer.accept(chunkX, chunkZ);
+                }
             }
         }
     }
 
     public static void forEachSection(Area area, Consumer<Vec> positionConsumer) {
-        Point min = area.min();
-        Point max = area.max();
+        if (area.size() == 0) return;
+        Set<Vec> sections = new HashSet<>();
+        for (Area fill : area.subdivide()) {
+            Point min = fill.min();
+            Point max = fill.max();
 
-        forEachChunk(area, (chunkX, chunkZ) -> {
-            for (int sectionY = min.sectionY(); sectionY <= max.sectionY(); sectionY++) {
-                positionConsumer.accept(new Vec(chunkX, sectionY, chunkZ));
+            int minX = min.blockX();
+            int minY = min.blockY();
+            int minZ = min.blockZ();
+
+            for (int x = minX; x <= max.blockX(); x++) {
+                for (int y = minY; y <= max.blockY(); y++) {
+                    for (int z = minZ; z <= max.blockZ(); z++) {
+                        //noinspection IntegerDivisionInFloatingPointContext
+                        Vec section = new Vec(x / Instance.SECTION_SIZE, y / Instance.SECTION_SIZE, z / Instance.SECTION_SIZE);
+                        if (sections.contains(section)) continue;
+                        sections.add(section);
+                        positionConsumer.accept(section);
+                    }
+                }
             }
-        });
+        }
     }
 }

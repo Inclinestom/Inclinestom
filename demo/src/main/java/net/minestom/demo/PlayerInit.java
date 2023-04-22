@@ -3,6 +3,7 @@ package net.minestom.demo;
 import net.kyori.adventure.text.Component;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.adventure.audience.Audiences;
+import net.minestom.server.coordinate.Area;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.Entity;
@@ -16,7 +17,6 @@ import net.minestom.server.event.entity.EntityAttackEvent;
 import net.minestom.server.event.item.ItemDropEvent;
 import net.minestom.server.event.item.PickupItemEvent;
 import net.minestom.server.event.player.*;
-import net.minestom.server.event.server.ServerTickMonitorEvent;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.InstanceManager;
@@ -27,7 +27,6 @@ import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 import net.minestom.server.item.metadata.BundleMeta;
 import net.minestom.server.monitoring.BenchmarkManager;
-import net.minestom.server.monitoring.TickMonitor;
 import net.minestom.server.utils.MathUtils;
 import net.minestom.server.utils.chunk.ChunkUtils;
 import net.minestom.server.utils.time.TimeUnit;
@@ -126,7 +125,10 @@ public class PlayerInit {
 
         if (false) {
             System.out.println("start");
-            ChunkUtils.forChunksInRange(0, 0, 10, (x, z) -> instanceContainer.loadWorldView(x, z).join());
+            ChunkUtils.forChunksInRange(0, 0, 10, (x, z) -> {
+                Area chunk = Area.chunk(instanceContainer.dimensionType(), x, z);
+                instanceContainer.loadArea(chunk).join();
+            });
             System.out.println("load end");
         }
 
@@ -134,13 +136,9 @@ public class PlayerInit {
         inventory.setItemStack(3, ItemStack.of(Material.DIAMOND, 34));
     }
 
-    private static final AtomicReference<TickMonitor> LAST_TICK = new AtomicReference<>();
-
     public static void init() {
         var eventHandler = MinecraftServer.getGlobalEventHandler();
         eventHandler.addChild(DEMO_NODE);
-
-        eventHandler.addListener(ServerTickMonitorEvent.class, event -> LAST_TICK.set(event.getTickMonitor()));
 
         BenchmarkManager benchmarkManager = MinecraftServer.getBenchmarkManager();
         MinecraftServer.getSchedulerManager().buildTask(() -> {
@@ -149,16 +147,8 @@ public class PlayerInit {
                 return;
 
             long ramUsage = benchmarkManager.getUsedMemory();
-            ramUsage /= 1e6; // bytes to MB
-
-            TickMonitor tickMonitor = LAST_TICK.get();
-            final Component header = Component.text("RAM USAGE: " + ramUsage + " MB")
-                    .append(Component.newline())
-                    .append(Component.text("TICK TIME: " + MathUtils.round(tickMonitor.getTickTime(), 2) + "ms"))
-                    .append(Component.newline())
-                    .append(Component.text("ACQ TIME: " + MathUtils.round(tickMonitor.getAcquisitionTime(), 2) + "ms"));
+            ramUsage /= 1e6; // bytes to M
             final Component footer = benchmarkManager.getCpuMonitoringMessage();
-            Audiences.players().sendPlayerListHeaderAndFooter(header, footer);
         }).repeat(10, TimeUnit.SERVER_TICK).schedule();
     }
 }

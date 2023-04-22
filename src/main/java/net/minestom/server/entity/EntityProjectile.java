@@ -13,12 +13,13 @@ import net.minestom.server.event.entity.projectile.ProjectileUncollideEvent;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.instance.storage.WorldView;
-import org.jetbrains.annotations.NotNull;
+import net.minestom.server.utils.async.AsyncUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Random;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -87,13 +88,13 @@ public class EntityProjectile extends Entity {
     }
 
     @Override
-    public void tick(long time) {
+    public CompletableFuture<Void> tick(long time) {
         final Pos posBefore = getPosition();
-        super.tick(time);
+        super.tick(time).join();
         final Pos posNow = getPosition();
         if (isStuck(posBefore, posNow)) {
             if (super.onGround) {
-                return;
+                return AsyncUtils.VOID_FUTURE;
             }
             super.onGround = true;
             this.velocity = Vec.ZERO;
@@ -101,12 +102,13 @@ public class EntityProjectile extends Entity {
             setNoGravity(true);
         } else {
             if (!super.onGround) {
-                return;
+                return AsyncUtils.VOID_FUTURE;
             }
             super.onGround = false;
             setNoGravity(false);
             EventDispatcher.call(new ProjectileUncollideEvent(this));
         }
+        return AsyncUtils.VOID_FUTURE;
     }
 
     /**

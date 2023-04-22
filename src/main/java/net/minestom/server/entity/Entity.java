@@ -27,7 +27,7 @@ import net.minestom.server.event.entity.*;
 import net.minestom.server.event.instance.AddEntityToInstanceEvent;
 import net.minestom.server.event.instance.RemoveEntityFromInstanceEvent;
 import net.minestom.server.event.trait.EntityEvent;
-import net.minestom.server.instance.EntityTracker;
+import net.minestom.server.instance.EntityStorage;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.InstanceManager;
 import net.minestom.server.instance.block.Block;
@@ -48,7 +48,6 @@ import net.minestom.server.snapshot.SnapshotUpdater;
 import net.minestom.server.snapshot.Snapshotable;
 import net.minestom.server.tag.TagHandler;
 import net.minestom.server.tag.Taggable;
-import net.minestom.server.thread.Acquirable;
 import net.minestom.server.timer.Schedulable;
 import net.minestom.server.timer.Scheduler;
 import net.minestom.server.timer.TaskSchedule;
@@ -65,6 +64,7 @@ import net.minestom.server.world.DimensionType;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
 import space.vectrix.flare.fastutil.Int2ObjectSyncMap;
 
 import java.time.Duration;
@@ -96,7 +96,7 @@ public class Entity implements Viewable, Tickable, Schedulable, Snapshotable, Ev
     private final CachedPacket destroyPacketCache = new CachedPacket(() -> new DestroyEntitiesPacket(getEntityId()));
 
     protected Instance instance;
-    protected WorldView currentWorldView;
+    protected WorldView currentWorldView = WorldView.nullPointer();
     protected Pos position;
     protected Pos previousPosition;
     protected Pos lastSyncedPosition;
@@ -129,27 +129,8 @@ public class Entity implements Viewable, Tickable, Schedulable, Snapshotable, Ev
     private final int id;
     // Players must be aware of all surrounding entities
     // General entities should only be aware of surrounding players to update their viewing list
-    private final EntityTracker.Target<Entity> trackingTarget = this instanceof Player ?
-            EntityTracker.Target.ENTITIES : EntityTracker.Target.class.cast(EntityTracker.Target.PLAYERS);
-    protected final EntityTracker.Update<Entity> trackingUpdate = new EntityTracker.Update<>() {
-        @Override
-        public void add(Entity entity) {
-            viewEngine.handleAutoViewAddition(entity);
-        }
-
-        @Override
-        public void remove(Entity entity) {
-            viewEngine.handleAutoViewRemoval(entity);
-        }
-
-        @Override
-        public void referenceUpdate(Point point, @Nullable EntityTracker tracker) {
-            final Instance currentInstance = tracker != null ? instance : null;
-            assert currentInstance == null || currentInstance.entityTracker() == tracker :
-                    "EntityTracker does not match current instance";
-            viewEngine.updateTracker(currentInstance, point);
-        }
-    };
+    private final EntityStorage.Target<Entity> trackingTarget = this instanceof Player ?
+            EntityStorage.Target.ENTITIES : EntityStorage.Target.class.cast(EntityStorage.Target.PLAYERS);
 
     protected final EntityView viewEngine = new EntityView(this);
     protected final Set<Player> viewers = viewEngine.set;
@@ -177,8 +158,6 @@ public class Entity implements Viewable, Tickable, Schedulable, Snapshotable, Ev
 
     // Tick related
     private long ticks;
-
-    private final Acquirable<Entity> acquirable = Acquirable.of(this);
 
     public Entity(EntityType entityType, UUID uuid) {
         this.id = generateId();
@@ -522,13 +501,13 @@ public class Entity implements Viewable, Tickable, Schedulable, Snapshotable, Ev
      * @param time the update time in milliseconds
      */
     @Override
-    public void tick(long time) {
+    public CompletableFuture<Void> tick(long time) {
         if (instance == null || isRemoved() || !instance.isAreaLoaded(currentWorldView.area()))
-            return;
+            return AsyncUtils.VOID_FUTURE;
 
         // scheduled tasks
         this.scheduler.processTick();
-        if (isRemoved()) return;
+        if (isRemoved()) return AsyncUtils.VOID_FUTURE;
 
         // Entity tick
         {
@@ -553,6 +532,7 @@ public class Entity implements Viewable, Tickable, Schedulable, Snapshotable, Ev
         if (!Cooldown.hasCooldown(time, lastAbsoluteSynchronizationTime, getSynchronizationCooldown())) {
             synchronizePosition(false);
         }
+        return AsyncUtils.VOID_FUTURE;
     }
 
     private void velocityTick() {
@@ -832,7 +812,6 @@ public class Entity implements Viewable, Tickable, Schedulable, Snapshotable, Ev
     @ApiStatus.Internal
     protected void refreshCurrentArea(WorldView currentWorldView) {
         this.currentWorldView = currentWorldView;
-        MinecraftServer.process().dispatcher().updateElement(this, currentWorldView.area());
     }
 
     /**
@@ -840,7 +819,7 @@ public class Entity implements Viewable, Tickable, Schedulable, Snapshotable, Ev
      *
      * @return the entity instance, can be null if the entity doesn't have an instance yet
      */
-    public @Nullable Instance getInstance() {
+    public @UnknownNullability Instance getInstance() {
         return instance;
     }
 
@@ -876,7 +855,7 @@ public class Entity implements Viewable, Tickable, Schedulable, Snapshotable, Ev
                 if (this instanceof Player player) {
                     player.sendPacket(instance.timePacket());
                 }
-                instance.entityTracker().register(this, spawnPosition, trackingTarget, trackingUpdate);
+                instance.entityTracker().add(this, spawnPosition);
                 spawn();
                 EventDispatcher.call(new EntitySpawnEvent(this, instance));
             } catch (Exception e) {
@@ -904,7 +883,7 @@ public class Entity implements Viewable, Tickable, Schedulable, Snapshotable, Ev
 
     private void removeFromInstance(Instance instance) {
         EventDispatcher.call(new RemoveEntityFromInstanceEvent(instance, this));
-        instance.entityTracker().unregister(this, trackingTarget, trackingUpdate);
+        instance.entityTracker().remove(this);
         this.viewEngine.forManuals(this::removeViewer);
     }
 
@@ -1385,21 +1364,7 @@ public class Entity implements Viewable, Tickable, Schedulable, Snapshotable, Ev
                 updatePassengerPosition(newPosition, passenger);
             }
         }
-        // Handle chunk switch
-        final Instance instance = getInstance();
-        assert instance != null;
-        instance.entityTracker().move(this, newPosition, trackingTarget, trackingUpdate);
-        if (!currentWorldView.area().contains(newPosition)) {
-            final int newWorldViewX = newPosition.sectionX();
-            final int newWorldViewZ = newPosition.sectionZ();
-            // Entity moved in a new chunk
-            final WorldView newWorldView = instance.worldView(Area.chunk(this.instance.dimensionType(),
-                    newWorldViewX, newWorldViewZ));
-            Check.notNull(newWorldView, "The entity {0} tried to move in an unloaded chunk at {1}",
-                    getEntityId(), newPosition);
-            if (this instanceof Player player) player.sendWorldViewUpdates(newWorldViewX, newWorldViewZ);
-            refreshCurrentArea(newWorldView);
-        }
+        instance.entityTracker().move(this, newPosition);
     }
 
     /**
@@ -1482,7 +1447,6 @@ public class Entity implements Viewable, Tickable, Schedulable, Snapshotable, Ev
         if (!passengers.isEmpty()) passengers.forEach(this::removePassenger);
         final Entity vehicle = this.vehicle;
         if (vehicle != null) vehicle.removePassenger(this);
-        MinecraftServer.process().dispatcher().removeElement(this);
         this.removed = true;
         Entity.ENTITY_BY_ID.remove(id);
         Entity.ENTITY_BY_UUID.remove(uuid);
@@ -1585,11 +1549,6 @@ public class Entity implements Viewable, Tickable, Schedulable, Snapshotable, Ev
 
     private Duration getSynchronizationCooldown() {
         return Objects.requireNonNullElse(this.customSynchronizationCooldown, SYNCHRONIZATION_COOLDOWN);
-    }
-
-    @ApiStatus.Experimental
-    public <T extends Entity> Acquirable<T> getAcquirable() {
-        return (Acquirable<T>) acquirable;
     }
 
     @Override

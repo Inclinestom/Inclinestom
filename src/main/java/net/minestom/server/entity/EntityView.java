@@ -5,10 +5,10 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import net.minestom.server.MinecraftServer;
+import net.minestom.server.coordinate.Area;
 import net.minestom.server.coordinate.Point;
-import net.minestom.server.instance.EntityTracker;
+import net.minestom.server.instance.EntityStorage;
 import net.minestom.server.instance.Instance;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -33,7 +33,7 @@ final class EntityView {
 
     public EntityView(Entity entity) {
         this.entity = entity;
-        this.viewableOption = new Option<>(EntityTracker.Target.PLAYERS, Entity::autoViewEntities,
+        this.viewableOption = new Option<>(EntityStorage.Target.PLAYERS, Entity::autoViewEntities,
                 player -> {
                     // Add viewable
                     var lock1 = player.getEntityId() < entity.getEntityId() ? player : entity;
@@ -60,7 +60,7 @@ final class EntityView {
                     }
                     entity.updateOldViewer(player);
                 });
-        this.viewerOption = new Option<>(EntityTracker.Target.ENTITIES, Entity::isAutoViewable,
+        this.viewerOption = new Option<>(EntityStorage.Target.ENTITIES, Entity::isAutoViewable,
                 entity instanceof Player player ? e -> e.viewEngine.viewableOption.addition.accept(player) : null,
                 entity instanceof Player player ? e -> e.viewEngine.viewableOption.removal.accept(player) : null);
     }
@@ -128,7 +128,7 @@ final class EntityView {
         @SuppressWarnings("rawtypes")
         private static final AtomicIntegerFieldUpdater<EntityView.Option> UPDATER = AtomicIntegerFieldUpdater.newUpdater(EntityView.Option.class, "auto");
         // Entities that should be tracked from this option
-        private final EntityTracker.Target<T> target;
+        private final EntityStorage.Target<T> target;
         // The condition that must be met for this option to be considered auto.
         private final Predicate<T> loopPredicate;
         // The consumers to be called when an entity is added/removed.
@@ -141,7 +141,7 @@ final class EntityView {
         // null if auto-viewable
         private Predicate<T> predicate = null;
 
-        public Option(EntityTracker.Target<T> target, Predicate<T> loopPredicate,
+        public Option(EntityStorage.Target<T> target, Predicate<T> loopPredicate,
                       Consumer<T> addition, Consumer<T> removal) {
             this.target = target;
             this.loopPredicate = loopPredicate;
@@ -229,8 +229,9 @@ final class EntityView {
             final Point point = trackedLocation.point();
 
             Int2ObjectOpenHashMap<T> entityMap = new Int2ObjectOpenHashMap<>(lastSize);
-            instance.entityTracker().nearbyEntitiesByWorldViewRange(point, RANGE, target,
-                    (entity) -> entityMap.putIfAbsent(entity.getEntityId(), entity));
+            Area chunkRange = Area.chunkRange(instance.dimensionType(), point.sectionX(), point.sectionZ(), RANGE);
+            instance.entityTracker().entitiesInArea(chunkRange, target)
+                    .forEach(entity -> entityMap.putIfAbsent(entity.getEntityId(), entity));
             this.lastSize = entityMap.size();
             return entityMap.values();
         }

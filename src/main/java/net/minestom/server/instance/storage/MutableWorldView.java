@@ -15,14 +15,18 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Consumer;
 
-class InMemoryWorldView implements WorldView.Mutable {
+class MutableWorldView implements WorldView.Mutable {
 
     private final Long2ObjectMap<Int2ObjectMap<Block>> blocks = new Long2ObjectOpenHashMap<>();
     private final Long2ObjectMap<Int2ObjectMap<Biome>> biomes = new Long2ObjectOpenHashMap<>();
-    private Area area = Area.empty();
+    private Area area = Area.full();
+    private final WorldView fallback;
 
     private final ReadWriteLock blockLock = new ReentrantReadWriteLock();
     private final ReadWriteLock biomeLock = new ReentrantReadWriteLock();
+    public MutableWorldView(WorldView fallback) {
+        this.fallback = fallback;
+    }
 
     private @Nullable Block setBlockInternal(int x, int y, int z, Block block) {
         long key = index(x, z);
@@ -33,8 +37,10 @@ class InMemoryWorldView implements WorldView.Mutable {
     private @Nullable Block getBlockInternal(int x, int y, int z) {
         long key = index(x, z);
         Int2ObjectMap<Block> column = blocks.get(key);
-        if (column == null) return null;
-        return column.get(y);
+        if (column == null) return fallback.getBlock(x, y, z);
+        Block block = column.get(y);
+        if (block == null) return fallback.getBlock(x, y, z);
+        return block;
     }
 
     private @Nullable Biome setBiomeInternal(int x, int y, int z, Biome biome) {
@@ -46,8 +52,10 @@ class InMemoryWorldView implements WorldView.Mutable {
     private @Nullable Biome getBiomeInternal(int x, int y, int z) {
         long key = index(x, z);
         Int2ObjectMap<Biome> column = biomes.get(key);
-        if (column == null) return null;
-        return column.get(y);
+        if (column == null) return fallback.getBiome(x, y, z);
+        Biome biome = column.get(y);
+        if (biome == null) return fallback.getBiome(x, y, z);
+        return biome;
     }
 
 
@@ -56,7 +64,7 @@ class InMemoryWorldView implements WorldView.Mutable {
         return ((long) x << 32) | (z & 0xFFFFFFFFL);
     }
 
-    private void updateBounds(int x, int y, int z) {
+    private void updateArea(int x, int y, int z) {
         if (area.contains(x, y, z)) return;
         area = Area.union(area, Area.collection(new Vec(x, y, z)));
     }
@@ -66,7 +74,7 @@ class InMemoryWorldView implements WorldView.Mutable {
         try {
             blockLock.writeLock().lock();
             setBlockInternal(x, y, z, block);
-            updateBounds(x, y, z);
+            updateArea(x, y, z);
         } finally {
             blockLock.writeLock().unlock();
         }
@@ -76,10 +84,7 @@ class InMemoryWorldView implements WorldView.Mutable {
     public @UnknownNullability Block getBlock(int x, int y, int z, Condition condition) {
         try {
             blockLock.readLock().lock();
-            long key = index(x, z);
-            Int2ObjectMap<Block> map = blocks.get(key);
-            if (map == null) return null;
-            return map.get(y);
+            return getBlockInternal(x, y, z);
         } finally {
             blockLock.readLock().unlock();
         }
@@ -90,7 +95,7 @@ class InMemoryWorldView implements WorldView.Mutable {
         try {
             biomeLock.writeLock().lock();
             setBiomeInternal(x, y, z, biome);
-            updateBounds(x, y, z);
+            updateArea(x, y, z);
         } finally {
             biomeLock.writeLock().unlock();
         }
@@ -100,10 +105,7 @@ class InMemoryWorldView implements WorldView.Mutable {
     public @UnknownNullability Biome getBiome(int x, int y, int z) {
         try {
             biomeLock.readLock().lock();
-            long key = index(x, z);
-            Int2ObjectMap<Biome> map = biomes.get(key);
-            if (map == null) return null;
-            return map.get(y);
+            return getBiomeInternal(x, y, z);
         } finally {
             biomeLock.readLock().unlock();
         }
@@ -118,13 +120,13 @@ class InMemoryWorldView implements WorldView.Mutable {
                 @Override
                 public void setBlock(int x, int y, int z, Block block) {
                     setBlockInternal(x, y, z, block);
-                    updateBounds(x, y, z);
+                    updateArea(x, y, z);
                 }
 
                 @Override
                 public void setBiome(int x, int y, int z, Biome biome) {
                     setBiomeInternal(x, y, z, biome);
-                    updateBounds(x, y, z);
+                    updateArea(x, y, z);
                 }
             });
         } finally {

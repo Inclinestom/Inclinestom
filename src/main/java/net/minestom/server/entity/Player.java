@@ -35,7 +35,7 @@ import net.minestom.server.event.item.ItemDropEvent;
 import net.minestom.server.event.item.ItemUpdateStateEvent;
 import net.minestom.server.event.item.PickupExperienceEvent;
 import net.minestom.server.event.player.*;
-import net.minestom.server.instance.EntityTracker;
+import net.minestom.server.instance.EntityStorage;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.storage.WorldView;
 import net.minestom.server.inventory.Inventory;
@@ -68,10 +68,10 @@ import net.minestom.server.snapshot.SnapshotImpl;
 import net.minestom.server.snapshot.SnapshotUpdater;
 import net.minestom.server.statistic.PlayerStatistic;
 import net.minestom.server.timer.Scheduler;
+import net.minestom.server.utils.AreaUtils;
 import net.minestom.server.utils.MathUtils;
 import net.minestom.server.utils.PacketUtils;
 import net.minestom.server.utils.async.AsyncUtils;
-import net.minestom.server.utils.chunk.ChunkUtils;
 import net.minestom.server.utils.function.IntegerBiConsumer;
 import net.minestom.server.utils.identity.NamedAndIdentified;
 import net.minestom.server.utils.inventory.PlayerInventoryUtils;
@@ -94,7 +94,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
-import java.util.stream.Stream;
 
 /**
  * Those are the major actors of the server,
@@ -125,20 +124,6 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
      * in the range of {@link MinecraftServer#getChunkViewDistance()}
      */
     private Vec chunksLoadedByClient = Vec.ZERO;
-    final IntegerBiConsumer chunkAdder = (chunkX, chunkZ) -> {
-        DimensionType dimensionType = this.instance.dimensionType();
-        // Load new chunks
-        this.instance.loadArea(Area.chunk(this.instance.dimensionType(), chunkX, chunkZ)).thenAccept(storage -> {
-            try {
-                if (storage != null) {
-                    this.sendPacket(instance.chunkPacket(chunkX, chunkZ));
-                    EventDispatcher.call(new PlayerChunkLoadEvent(this, chunkX, chunkZ));
-                }
-            } catch (Exception e) {
-                MinecraftServer.getExceptionManager().handleException(e);
-            }
-        });
-    };
     final IntegerBiConsumer chunkRemover = (chunkX, chunkZ) -> {
         // Unload old chunks
         sendPacket(new UnloadChunkPacket(chunkX, chunkZ));
@@ -344,8 +329,9 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
         if (experiencePickupCooldown.isReady(time)) {
             experiencePickupCooldown.refreshLastUpdate(time);
             final Point loweredPosition = position.sub(0, .5, 0);
-            this.instance.entityTracker().nearbyEntities(position, expandedBoundingBox.width(),
-                    EntityTracker.Target.EXPERIENCE_ORBS, experienceOrb -> {
+            Area area = expandedBoundingBox.toArea().translate(position);
+            this.instance.entityTracker().entitiesInArea(area, EntityStorage.Target.EXPERIENCE_ORBS)
+                    .forEach(experienceOrb -> {
                         if (expandedBoundingBox.intersectEntity(loweredPosition, experienceOrb)) {
                             PickupExperienceEvent pickupExperienceEvent = new PickupExperienceEvent(this, experienceOrb);
                             EventDispatcher.callCancellable(pickupExperienceEvent, () -> {
@@ -429,11 +415,11 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
         super.kill();
     }
 
-    private void forEachViewableWorldView(IntegerBiConsumer consumer) {
-        forEachWorldViewAround(position, consumer);
+    private void forEachViewableChunk(IntegerBiConsumer consumer) {
+        forEachWorldChunk(position, consumer);
     }
 
-    private void forEachWorldViewAround(Point pos, IntegerBiConsumer consumer) {
+    private void forEachWorldChunk(Point pos, IntegerBiConsumer consumer) {
         int range = Math.min(MinecraftServer.getChunkViewDistance(), settings.getViewDistance());
         for (int chunkZ = -range; chunkZ <= range; chunkZ++) {
             for (int chunkX = -range; chunkX <= range; chunkX++) {
@@ -465,28 +451,22 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
         Pos respawnPosition = respawnEvent.getRespawnPosition();
 
         // The client unloads chunks when respawning, so resend all chunks next to spawn
-        forEachWorldViewAround(respawnPosition, (chunkX, chunkZ) -> {
-            this.instance.loadArea(Area.chunk(this.instance.dimensionType(), chunkX, chunkZ)).thenAccept(chunk -> {
-                try {
-                    if (chunk == null) return;
-                    this.sendPacket(this.instance.chunkPacket(chunkX, chunkZ));
-                } catch (Exception e) {
-                    MinecraftServer.getExceptionManager().handleException(e);
-                }
-            });
-        });
-
-
         chunksLoadedByClient = new Vec(respawnPosition.sectionX(), respawnPosition.sectionZ());
+
         // Client also needs all entities resent to them, since those are unloaded as well
-        this.instance.entityTracker().nearbyEntitiesByWorldViewRange(respawnPosition, Math.min(MinecraftServer.getChunkViewDistance(), settings.getViewDistance()),
-                EntityTracker.Target.ENTITIES, entity -> {
-                    // Skip refreshing self with a new viewer
-                    if (!entity.getUuid().equals(uuid)) {
-                        entity.updateNewViewer(this);
+        Area chunkRange = Area.chunkRange(instance.dimensionType(),
+                respawnPosition.sectionX(), respawnPosition.sectionZ(),
+                Math.min(MinecraftServer.getChunkViewDistance(), settings.getViewDistance()));
+        this.instance.entityTracker().entitiesInArea(chunkRange, EntityStorage.Target.ENTITIES)
+                .forEach(entity -> {
+                    if (entity != this) {
+                        entity.addViewer(this);
                     }
                 });
-        teleport(respawnPosition).thenRun(this::refreshAfterTeleport);
+        Area chunkArea = Area.chunk(instance.dimensionType(), respawnPosition.sectionX(), respawnPosition.sectionZ());
+        teleport(respawnPosition)
+                .thenRun(() -> this.instance.refreshArea(this, chunkArea))
+                .thenRun(this::refreshAfterTeleport);
     }
 
     /**
@@ -535,7 +515,7 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
         final int chunkX = position.sectionX();
         final int chunkZ = position.sectionZ();
         // Clear all viewable chunks
-        forEachWorldViewAround(new Vec(chunkX * Instance.SECTION_SIZE, chunkZ * Instance.SECTION_SIZE), chunkRemover);
+        forEachWorldChunk(new Vec(chunkX * Instance.SECTION_SIZE, chunkZ * Instance.SECTION_SIZE), chunkRemover);
         // Remove from the tab-list
         PacketUtils.broadcastPacket(getRemovePlayerToList());
 
@@ -581,8 +561,8 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
 
         // Ensure that surrounding chunks are loaded
         List<CompletableFuture<WorldView>> futures = new ArrayList<>();
-        forEachViewableWorldView((chunkX, chunkZ) -> {
-            final CompletableFuture<WorldView> future = instance.loadArea(Area.chunk(this.instance.dimensionType(), chunkX, chunkZ));
+        forEachViewableChunk((chunkX, chunkZ) -> {
+            final CompletableFuture<WorldView> future = instance.loadArea(Area.chunk(instance.dimensionType(), chunkX, chunkZ));
             if (!future.isDone()) futures.add(future);
         });
         if (futures.isEmpty()) {
@@ -654,7 +634,7 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
         if (!firstSpawn) {
             // Player instance changed, clear current viewable collections
             if (updateWorldViews)
-                forEachWorldViewAround(spawnPosition, chunkRemover);
+                forEachWorldChunk(spawnPosition, chunkRemover);
         }
 
         if (dimensionChange) sendDimension(instance.dimensionType());
@@ -666,7 +646,6 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
             final int chunkZ = spawnPosition.sectionZ();
             chunksLoadedByClient = new Vec(chunkX, chunkZ);
             sendPacket(new UpdateViewPositionPacket(chunkX, chunkZ));
-            forEachWorldViewAround(spawnPosition, chunkAdder);
         }
 
         synchronizePosition(true); // So the player doesn't get stuck
@@ -2079,22 +2058,18 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
     protected void sendWorldViewUpdates(int chunkX, int chunkZ) {
         final Vec old = chunksLoadedByClient;
         sendPacket(new UpdateViewPositionPacket(chunkX, chunkZ));
-        forDifferingWorldViewsInRange(chunkX, chunkZ, (int) old.x(), (int) old.z(),
-                MinecraftServer.getChunkViewDistance(), chunkAdder, chunkRemover);
+        Area chunk = Area.chunk(getDimensionType(), chunkX, chunkZ);
+        instance.refreshArea(this, chunk);
         this.chunksLoadedByClient = new Vec(chunkX, chunkZ);
     }
 
     public Area viewArea() {
         int viewDistance = MinecraftServer.getChunkViewDistance();
-        Stream.Builder<Area> chunks = Stream.builder();
-        ChunkUtils.forChunksInRange(position, viewDistance, (x, z) -> {
-            chunks.add(Area.chunk(this.instance.dimensionType(), x, z));
-        });
-        return Area.union(chunks.build().toArray(Area[]::new));
+        return Area.chunkRange(instance.dimensionType(), position.sectionX(), position.sectionZ(), viewDistance);
     }
 
     /**
-     * Represents the main or off hand of the player.
+     * Represents the main or offhand of the player.
      */
     public enum Hand {
         MAIN,

@@ -1,10 +1,13 @@
 package net.minestom.server.coordinate;
 
 import net.minestom.server.instance.Instance;
+import net.minestom.server.utils.chunk.ChunkUtils;
 import net.minestom.server.world.DimensionType;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -37,6 +40,40 @@ public sealed interface Area extends Iterable<Point> permits AreaImpl.Fill, Area
     }
 
     // Structures
+
+
+    /**
+     * Creates a new sphere area from a position and a range.
+     * @param position the center of the sphere
+     * @param range the radius of the sphere
+     * @return a new area
+     */
+    static Area sphere(Point position, double range) {
+        int min = (int) -Math.floor(range);
+        int max = (int) Math.ceil(range);
+        Stream.Builder<Point> builder = Stream.builder();
+        for (int x = min; x <= max; x++) {
+            for (int y = min; y <= max; y++) {
+                for (int z = min; z <= max; z++) {
+                    Point point = position.add(x, y, z);
+                    if (point.distanceSquared(position) <= range * range) {
+                        builder.add(point);
+                    }
+                }
+            }
+        }
+        return Area.collection(builder.build().toList());
+    }
+
+    /**
+     * Optimizes the given area's geometry.
+     * @param area the unoptimized area
+     * @return a new optimized area
+     */
+    static Area optimize(Area area) {
+        // Double invert should optimize the area somewhat, however TODO: look for better optimize solution
+        return Area.invert(Area.invert(area));
+    }
 
     /**
      * Creates a new area from an inverted source area.
@@ -109,17 +146,13 @@ public sealed interface Area extends Iterable<Point> permits AreaImpl.Fill, Area
 
     static Area intersection(Area... areas) {
         return Stream.of(areas)
-                .reduce(Area::intersection)
+                .reduce(Area::overlap)
                 .orElse(Area.empty());
-    }
-
-    static Area intersection(Area areaA, Area areaB) {
-        return AreaImpl.intersection(areaA, areaB);
     }
 
     // Arbitrary sizes
 
-    static Area section(Vec sectionPos) {
+    static Area section(Point sectionPos) {
         return fill(sectionPos, sectionPos.add(Instance.SECTION_SIZE));
     }
 
@@ -135,6 +168,18 @@ public sealed interface Area extends Iterable<Point> permits AreaImpl.Fill, Area
         Point chunkMin = new Vec(chunkX * Instance.SECTION_SIZE, dimensionType.getMinY(), chunkZ * Instance.SECTION_SIZE);
         Point chunkMax = chunkMin.add(Instance.SECTION_SIZE, 0, Instance.SECTION_SIZE).withY(dimensionType.getMaxY());
         return fill(chunkMin, chunkMax);
+    }
+
+    static Area chunkRange(DimensionType dimensionType, int chunkX, int chunkZ, int range) {
+        int minChunkX = chunkX - range;
+        int minChunkZ = chunkZ - range;
+        int maxChunkX = chunkX + range;
+        int maxChunkZ = chunkZ + range;
+
+        Point min = new Vec(minChunkX * Instance.SECTION_SIZE, dimensionType.getMinY(), minChunkZ * Instance.SECTION_SIZE);
+        Point max = new Vec(maxChunkX * Instance.SECTION_SIZE, dimensionType.getMaxY(), maxChunkZ * Instance.SECTION_SIZE);
+
+        return fill(min, max);
     }
 
     /**
@@ -197,6 +242,19 @@ public sealed interface Area extends Iterable<Point> permits AreaImpl.Fill, Area
      * @return true if the areas overlap
      */
     boolean overlaps(Area other);
+
+    /**
+     * Translates this area by the given vector.
+     * @param point the vector
+     * @return a new area
+     */
+    Area translate(Point point);
+
+    /**
+     * Subdivides this area into a set of {@link AreaImpl.Fill}s.
+     * @return the set of fill areas
+     */
+    Set<AreaImpl.Fill> subdivide();
 
     default Stream<Point> stream() {
         return StreamSupport.stream(spliterator(), false);

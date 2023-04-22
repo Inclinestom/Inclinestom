@@ -4,6 +4,7 @@ import net.kyori.adventure.sound.Sound.Source;
 import net.minestom.server.attribute.Attribute;
 import net.minestom.server.attribute.AttributeInstance;
 import net.minestom.server.collision.BoundingBox;
+import net.minestom.server.coordinate.Area;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.damage.DamageType;
@@ -14,7 +15,7 @@ import net.minestom.server.event.entity.EntityDeathEvent;
 import net.minestom.server.event.entity.EntityFireEvent;
 import net.minestom.server.event.item.EntityEquipEvent;
 import net.minestom.server.event.item.PickupItemEvent;
-import net.minestom.server.instance.EntityTracker;
+import net.minestom.server.instance.EntityStorage;
 import net.minestom.server.inventory.EquipmentHandler;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.network.ConnectionState;
@@ -204,8 +205,9 @@ public class LivingEntity extends Entity implements EquipmentHandler {
         if (canPickupItem() && itemPickupCooldown.isReady(time)) {
             itemPickupCooldown.refreshLastUpdate(time);
             final Point loweredPosition = position.sub(0, .5, 0);
-            this.instance.entityTracker().nearbyEntities(position, expandedBoundingBox.width(),
-                    EntityTracker.Target.ITEMS, itemEntity -> {
+            Area area = expandedBoundingBox.toArea().translate(position);
+            this.instance.entityTracker().entitiesInArea(area, EntityStorage.Target.ITEMS)
+                    .forEach(itemEntity -> {
                         if (this instanceof Player player && !itemEntity.isViewer(player)) return;
                         if (!itemEntity.isPickable()) return;
                         if (expandedBoundingBox.intersectEntity(loweredPosition, itemEntity)) {

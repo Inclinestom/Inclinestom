@@ -119,7 +119,7 @@ public class AnvilLoader implements WorldSource {
 
         final ChunkReader chunkReader = new ChunkReader(chunkData);
 
-        WorldView.Mutable chunk = WorldView.inMemory();
+        WorldView.Mutable chunk = WorldView.mutable();
         synchronized (chunk) {
             var yRange = chunkReader.getYRange();
             if (yRange.getStart() < instance.dimensionType().getMinY()) {

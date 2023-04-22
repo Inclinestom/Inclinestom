@@ -2,6 +2,7 @@ package net.minestom.server.collision;
 
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.doubles.DoubleList;
+import net.minestom.server.coordinate.Area;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.instance.block.Block;
@@ -10,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 final class ShapeImpl implements Shape {
     private static final Pattern PATTERN = Pattern.compile("\\d.\\d{1,3}", Pattern.MULTILINE);
@@ -77,6 +79,11 @@ final class ShapeImpl implements Shape {
     @Override
     public Point relativeEnd() {
         return relativeEnd;
+    }
+
+    @Override
+    public Area toArea() {
+        return Area.union(Stream.of(blockSections).map(BoundingBox::toArea).toList());
     }
 
     @Override

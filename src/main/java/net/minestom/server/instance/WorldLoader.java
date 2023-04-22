@@ -12,14 +12,12 @@ import java.util.concurrent.CompletableFuture;
 
 public interface WorldLoader {
     static WorldLoader filled(Block block, Biome biome) {
-        return area -> {
-            WorldView.Mutable mutable = WorldView.inMemory();
-            for (Point point : area) {
-                mutable.setBlock(point, block);
-                mutable.setBiome(point, biome);
-            }
-            return CompletableFuture.completedFuture(mutable);
-        };
+        WorldView filled = WorldView.filled(block, biome);
+        return area -> CompletableFuture.completedFuture(WorldView.view(filled, area));
+    }
+
+    static WorldLoader empty() {
+        return area -> CompletableFuture.completedFuture(null);
     }
 
     /**

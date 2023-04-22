@@ -12,10 +12,7 @@ record PlayerRadiusLoadingRule(Instance instance) implements LoadingRule {
     public Area update(Area area) {
         List<Area> loaded = new ArrayList<>();
         for (Player player : instance.players()) {
-            AreaUtils.forEachChunk(player.viewArea(), (x, z) -> {
-                Area chunk = Area.chunk(instance.dimensionType(), x, z);
-                loaded.add(chunk);
-            });
+            loaded.add(player.viewArea());
         }
         return Area.union(loaded);
     }

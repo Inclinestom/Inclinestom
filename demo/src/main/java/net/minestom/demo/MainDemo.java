@@ -28,7 +28,7 @@ public class MainDemo {
         // Create the instance
         InstanceContainer instanceContainer = instanceManager.createInstanceContainer();
         // Set the WorldViewGenerator
-        instanceContainer.setGenerator(unit -> unit.modifier().fillHeight(0, 40, Block.STONE));
+        instanceContainer.setGenerator(unit -> unit.modifier().setAll((x, y, z) -> Block.STONE));
 
         // Add an event callback to specify the spawning instance (and the spawn position)
         GlobalEventHandler globalEventHandler = MinecraftServer.getGlobalEventHandler();

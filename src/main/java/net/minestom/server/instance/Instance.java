@@ -24,7 +24,6 @@ import net.minestom.server.network.packet.server.play.ChunkDataPacket;
 import net.minestom.server.network.packet.server.play.TimeUpdatePacket;
 import net.minestom.server.snapshot.*;
 import net.minestom.server.tag.Taggable;
-import net.minestom.server.thread.ThreadDispatcher;
 import net.minestom.server.timer.Schedulable;
 import net.minestom.server.utils.PacketUtils;
 import net.minestom.server.world.DimensionType;
@@ -40,10 +39,6 @@ import java.util.concurrent.CompletableFuture;
  * <p>
  * An instance has entities and chunks, each instance contains its own entity list but the
  * chunk implementation has to be defined, see {@link InstanceContainer}.
- * <p>
- * WARNING: when making your own implementation registering the instance manually is required
- * with {@link InstanceManager#registerInstance(Instance)}, and
- * you need to be sure to signal the {@link ThreadDispatcher} of every partition/element changes.
  */
 public interface Instance extends Block.Getter, Block.Setter,
         Tickable, Schedulable, Snapshotable, EventHandler<InstanceEvent>, Taggable, PacketGroupingAudience {
@@ -196,7 +191,7 @@ public interface Instance extends Block.Getter, Block.Setter,
     /**
      * Gets all the players which view any part of the given chunk.
      * @param chunkX the chunk x
-     * @param chunkZ the chunk z
+     ** @param chunkZ the chunk z
      * @return the players viewing the chunk
      */
     default Viewable viewers(int chunkX, int chunkZ) {
@@ -252,7 +247,7 @@ public interface Instance extends Block.Getter, Block.Setter,
     Collection<Entity> nearbyEntities(Point point, double range);
 
     @ApiStatus.Experimental
-    EntityTracker entityTracker();
+    EntityStorage entityTracker();
 
     /**
      * Gets the instance unique id.
@@ -268,7 +263,8 @@ public interface Instance extends Block.Getter, Block.Setter,
      */
     boolean isInVoid(Pos position);
 
-    // Packets
+    // Packets (commonly subject to change)
+    void refreshArea(Player player, Area area);
     ChunkDataPacket chunkPacket(int chunkX, int chunkZ);
     TimeUpdatePacket timePacket();
 
@@ -289,5 +285,4 @@ public interface Instance extends Block.Getter, Block.Setter,
         final Set<Player> viewers = viewers(Area.collection(blockPosition)).getViewers();
         PacketUtils.sendGroupedPacket(viewers, new BlockActionPacket(blockPosition, actionId, actionParam, block));
     }
-
 }

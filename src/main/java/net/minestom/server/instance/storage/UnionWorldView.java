@@ -1,6 +1,7 @@
 package net.minestom.server.instance.storage;
 
 import net.minestom.server.coordinate.Area;
+import net.minestom.server.coordinate.Vec;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.world.biomes.Biome;
 import org.jetbrains.annotations.UnknownNullability;
@@ -44,10 +45,9 @@ class UnionWorldView implements WorldView.Union {
 
             if (!area.contains(x, y, z)) continue;
 
-            Block block = storage.getBlock(x, y, z, condition);
-            if (block != null) return block;
+            return storage.getBlock(x, y, z, condition);
         }
-        return null;
+        throw WorldView.outOfBounds();
     }
 
     @Override
@@ -61,7 +61,7 @@ class UnionWorldView implements WorldView.Union {
             Biome biome = storage.getBiome(x, y, z);
             if (biome != null) return biome;
         }
-        return null;
+        throw WorldView.outOfBounds();
     }
 
     @Override
@@ -71,7 +71,7 @@ class UnionWorldView implements WorldView.Union {
 
     @Override
     public void mutate(Consumer<Mutator> mutator) {
-        WorldView.Mutable mutable = WorldView.inMemory();
+        WorldView.Mutable mutable = WorldView.mutable();
         mutator.accept(new Mutator() {
             @Override
             public void setBlock(int x, int y, int z, Block block) {
@@ -101,19 +101,16 @@ class UnionWorldView implements WorldView.Union {
 
         this.storages.clear();
         this.storages.addAll(newStorages);
+        updateAreas();
     }
 
     @Override
     public void setBlock(int x, int y, int z, Block block) {
-        WorldView.Mutable mutable = WorldView.inMemory();
-        mutable.setBlock(x, y, z, block);
-        add(mutable);
+        add(WorldView.block(block, new Vec(x, y, z)));
     }
 
     @Override
     public void setBiome(int x, int y, int z, Biome biome) {
-        WorldView.Mutable mutable = WorldView.inMemory();
-        mutable.setBiome(x, y, z, biome);
-        add(mutable);
+        add(WorldView.biome(biome, new Vec(x, y, z)));
     }
 }

@@ -1,6 +1,7 @@
 package net.minestom.server.instance.storage;
 
 import net.minestom.server.coordinate.Area;
+import net.minestom.server.coordinate.Vec;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.world.DimensionType;
@@ -8,6 +9,7 @@ import net.minestom.server.world.biomes.Biome;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnknownNullability;
 
+import java.util.Arrays;
 import java.util.function.Consumer;
 
 import static net.minestom.server.instance.Instance.BIOME_SIZE;
@@ -17,32 +19,37 @@ class ChunkWorldView implements WorldView.Mutable {
 
     private final Block[] blocks; // xzy
     private final Biome[] biomes; // xzy
-    private final int minSection;
     private final Area area;
 
-    public ChunkWorldView(DimensionType dimensionType, Block defaultBlock, Biome defaultBiome, int chunkX, int chunkZ) {
-        int minY = dimensionType.getMinY();
-        int maxY = dimensionType.getMaxY();
-        int sectionCount = (maxY - minY) / SECTION_SIZE;
+    public ChunkWorldView(DimensionType dimensionType, Block defaultBlock, Biome defaultBiome) {
+        int maxY = dimensionType.getMaxY() - dimensionType.getMinY();
+        int sectionCount = maxY / SECTION_SIZE;
         this.blocks = new Block[SECTION_SIZE * SECTION_SIZE * (sectionCount * SECTION_SIZE)];
         this.biomes = new Biome[blocks.length / (BIOME_SIZE * BIOME_SIZE * BIOME_SIZE)];
-        this.minSection = minY / SECTION_SIZE;
-        this.area = Area.chunk(dimensionType, chunkX, chunkZ);
+        this.area = Area.fill(Vec.ZERO, new Vec(SECTION_SIZE).withY(maxY));
+        Arrays.fill(blocks, defaultBlock);
+        Arrays.fill(biomes, defaultBiome);
+    }
+
+    private int blockIndex(int x, int y, int z) {
+        return x + (z * SECTION_SIZE) + (y * SECTION_SIZE * SECTION_SIZE);
+    }
+
+    private int biomeIndex(int x, int y, int z) {
+        return x + (z * BIOME_SIZE) + (y * BIOME_SIZE * BIOME_SIZE);
     }
 
     @Override
     public void setBlock(int x, int y, int z, Block block) {
-        int sectionY = y / SECTION_SIZE;
-        int sectionIndex = sectionY - minSection;
-        int index = x + (z * SECTION_SIZE) + (sectionIndex * SECTION_SIZE * SECTION_SIZE);
+        if (!area.contains(x, y, z)) throw WorldView.outOfBounds();
+        int index = blockIndex(x, y, z);
         blocks[index] = block;
     }
 
     @Override
     public @UnknownNullability Block getBlock(int x, int y, int z, Condition condition) {
-        int sectionY = y / SECTION_SIZE;
-        int sectionIndex = sectionY - minSection;
-        int index = x + (z * SECTION_SIZE) + (sectionIndex * SECTION_SIZE * SECTION_SIZE);
+        if (!area.contains(x, y, z)) throw WorldView.outOfBounds();
+        int index = blockIndex(x, y, z);
         return blocks[index];
     }
 
@@ -68,22 +75,23 @@ class ChunkWorldView implements WorldView.Mutable {
 
     @Override
     public void clear(Area area) {
-
+        area.forEach((vec) -> {
+            int index = blockIndex(vec.blockX(), vec.blockY(), vec.blockZ());
+            blocks[index] = null;
+        });
     }
 
     @Override
     public void setBiome(int x, int y, int z, Biome biome) {
-        int sectionY = y / SECTION_SIZE;
-        int sectionIndex = sectionY - minSection;
-        int index = x + (z * SECTION_SIZE) + (sectionIndex * SECTION_SIZE * SECTION_SIZE);
-        biomes[index / (BIOME_SIZE * BIOME_SIZE * BIOME_SIZE)] = biome;
+        if (!area.contains(x, y, z)) throw WorldView.outOfBounds();
+        int index = biomeIndex(x / BIOME_SIZE, y / BIOME_SIZE, z / BIOME_SIZE);
+        biomes[index] = biome;
     }
 
     @Override
     public Biome getBiome(int x, int y, int z) {
-        int sectionY = y / SECTION_SIZE;
-        int sectionIndex = sectionY - minSection;
-        int index = x + (z * SECTION_SIZE) + (sectionIndex * SECTION_SIZE * SECTION_SIZE);
-        return biomes[index / (BIOME_SIZE * BIOME_SIZE * BIOME_SIZE)];
+        if (!area.contains(x, y, z)) throw WorldView.outOfBounds();
+        int index = biomeIndex(x / BIOME_SIZE, y / BIOME_SIZE, z / BIOME_SIZE);
+        return biomes[index];
     }
 }

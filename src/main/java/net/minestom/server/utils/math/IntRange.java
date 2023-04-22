@@ -2,11 +2,11 @@ package net.minestom.server.utils.math;
 
 public class IntRange extends Range<Integer> {
 
-    public IntRange(Integer minimum, Integer maximum) {
+    public IntRange(int minimum, int maximum) {
         super(minimum, maximum);
     }
 
-    public IntRange(Integer value) {
+    public IntRange(int value) {
         super(value);
     }
 
@@ -15,6 +15,10 @@ public class IntRange extends Range<Integer> {
      */
     @Override
     public boolean isInRange(Integer value) {
+        return value >= this.getMinimum() && value <= this.getMaximum();
+    }
+
+    public boolean isInRange(int value) {
         return value >= this.getMinimum() && value <= this.getMaximum();
     }
 }

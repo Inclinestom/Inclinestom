@@ -1,5 +1,7 @@
 package net.minestom.server.listener;
 
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.collision.CollisionUtils;
 import net.minestom.server.coordinate.Area;
@@ -25,9 +27,10 @@ import net.minestom.server.item.Material;
 import net.minestom.server.network.packet.client.play.ClientPlayerBlockPlacementPacket;
 import net.minestom.server.network.packet.server.play.AcknowledgeBlockChangePacket;
 import net.minestom.server.network.packet.server.play.BlockChangePacket;
-import net.minestom.server.network.packet.server.play.ChunkDataPacket;
-import net.minestom.server.utils.chunk.ChunkUtils;
 import net.minestom.server.utils.validate.Check;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class BlockPlacementListener {
     private static final BlockManager BLOCK_MANAGER = MinecraftServer.getBlockManager();
@@ -163,7 +166,7 @@ public class BlockPlacementListener {
 
     private static void refresh(Player player, Instance instance, int chunkX, int chunkZ) {
         player.getInventory().update();
-        ChunkDataPacket packet = instance.chunkPacket(chunkX, chunkZ);
-        if (packet != null) player.sendPacket(packet);
+        Area chunk = Area.chunk(instance.dimensionType(), chunkX, chunkZ);
+        instance.refreshArea(player, chunk);
     }
 }

@@ -4,21 +4,16 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minestom.server.advancements.AdvancementManager;
 import net.minestom.server.adventure.bossbar.BossBarManager;
 import net.minestom.server.command.CommandManager;
-import net.minestom.server.coordinate.Area;
 import net.minestom.server.entity.Entity;
-import net.minestom.server.event.EventDispatcher;
 import net.minestom.server.event.GlobalEventHandler;
-import net.minestom.server.event.server.ServerTickMonitorEvent;
 import net.minestom.server.exception.ExceptionManager;
 import net.minestom.server.extensions.ExtensionManager;
 import net.minestom.server.gamedata.tags.TagManager;
-import net.minestom.server.instance.storage.WorldView;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.InstanceManager;
 import net.minestom.server.instance.block.BlockManager;
 import net.minestom.server.listener.manager.PacketListenerManager;
 import net.minestom.server.monitoring.BenchmarkManager;
-import net.minestom.server.monitoring.TickMonitor;
 import net.minestom.server.network.ConnectionManager;
 import net.minestom.server.network.PacketProcessor;
 import net.minestom.server.network.socket.Server;
@@ -26,21 +21,22 @@ import net.minestom.server.recipe.RecipeManager;
 import net.minestom.server.scoreboard.TeamManager;
 import net.minestom.server.snapshot.*;
 import net.minestom.server.terminal.MinestomTerminal;
-import net.minestom.server.thread.Acquirable;
-import net.minestom.server.thread.ThreadDispatcher;
 import net.minestom.server.timer.SchedulerManager;
 import net.minestom.server.utils.PacketUtils;
+import net.minestom.server.utils.async.AsyncUtils;
 import net.minestom.server.utils.collection.MappedCollection;
 import net.minestom.server.world.DimensionTypeManager;
 import net.minestom.server.world.biomes.BiomeManager;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.SocketAddress;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -67,7 +63,6 @@ final class ServerProcessImpl implements ServerProcess {
     private final TagManager tag;
     private final Server server;
 
-    private final ThreadDispatcher<Area> dispatcher;
     private final Ticker ticker;
 
     private final AtomicBoolean started = new AtomicBoolean();
@@ -94,7 +89,6 @@ final class ServerProcessImpl implements ServerProcess {
         this.tag = new TagManager();
         this.server = new Server(packetProcessor);
 
-        this.dispatcher = ThreadDispatcher.singleThread();
         this.ticker = new TickerImpl();
     }
 
@@ -194,11 +188,6 @@ final class ServerProcessImpl implements ServerProcess {
     }
 
     @Override
-    public ThreadDispatcher<Area> dispatcher() {
-        return dispatcher;
-    }
-
-    @Override
     public Ticker ticker() {
         return ticker;
     }
@@ -251,7 +240,6 @@ final class ServerProcessImpl implements ServerProcess {
         LOGGER.info("Shutting down all thread pools.");
         benchmark.disable();
         MinestomTerminal.stop();
-        dispatcher.shutdown();
         LOGGER.info(MinecraftServer.getBrandName() + " server stopped successfully.");
     }
 
@@ -275,7 +263,7 @@ final class ServerProcessImpl implements ServerProcess {
 
     private final class TickerImpl implements Ticker {
         @Override
-        public void tick(long nanoTime) {
+        public CompletableFuture<Void> tick(long nanoTime) {
             final long msTime = System.currentTimeMillis();
 
             scheduler().processTick();
@@ -292,30 +280,22 @@ final class ServerProcessImpl implements ServerProcess {
             // Flush all waiting packets
             PacketUtils.flush();
 
-            // Monitoring
-            {
-                final double acquisitionTimeMs = Acquirable.resetAcquiringTime() / 1e6D;
-                final double tickTimeMs = (System.nanoTime() - nanoTime) / 1e6D;
-                final TickMonitor tickMonitor = new TickMonitor(tickTimeMs, acquisitionTimeMs);
-                EventDispatcher.call(new ServerTickMonitorEvent(tickMonitor));
-            }
+            return AsyncUtils.VOID_FUTURE;
         }
 
         private void serverTick(long tickStart) {
             // Tick all instances
-            for (Instance instance : instance().getInstances()) {
-                try {
-                    instance.tick(tickStart);
-                } catch (Exception e) {
-                    exception().handleException(e);
-                }
+            Collection<Instance> instances = instance().getInstances();
+            CompletableFuture<?>[] futures = new CompletableFuture[instances.size()];
+            int i = 0;
+            for (Instance instance : instances) {
+                futures[i++] = instance.tick(tickStart);
             }
-            // Tick all chunks (and entities inside)
-            dispatcher().updateAndAwait(tickStart);
-
-            // Clear removed entities & update threads
-            final long tickTime = System.currentTimeMillis() - tickStart;
-            dispatcher().refreshThreads(tickTime);
+            try {
+                CompletableFuture.allOf(futures).get();
+            } catch (InterruptedException | ExecutionException e) {
+                exception().handleException(e);
+            }
         }
     }
 }

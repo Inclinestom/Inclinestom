@@ -3,6 +3,7 @@ package net.minestom.demo.commands;
 import net.minestom.server.command.CommandSender;
 import net.minestom.server.command.builder.Command;
 import net.minestom.server.command.builder.CommandContext;
+import net.minestom.server.coordinate.Area;
 import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.Player;
 
@@ -25,8 +26,8 @@ public class FindCommand extends Command {
     private void executorEntity(CommandSender sender, CommandContext context) {
         Player player = (Player) sender;
         float range = context.get("range");
-
-        Collection<Entity> entities = player.getInstance().getNearbyEntities(player.getPosition(), range);
+        Area sphere = Area.sphere(player.getPosition(), range);
+        Collection<Entity> entities = player.getInstance().areaEntities(sphere);
 
         player.sendMessage("Search result: ");
 

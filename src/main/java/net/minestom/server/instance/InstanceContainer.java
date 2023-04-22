@@ -1,5 +1,6 @@
 package net.minestom.server.instance;
 
+import it.unimi.dsi.fastutil.ints.IntSet;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.Viewable;
 import net.minestom.server.coordinate.Area;
@@ -21,10 +22,10 @@ import net.minestom.server.instance.storage.WorldView;
 import net.minestom.server.network.packet.server.play.*;
 import net.minestom.server.utils.AreaUtils;
 import net.minestom.server.utils.PacketUtils;
+import net.minestom.server.utils.async.AsyncUtils;
 import net.minestom.server.utils.block.BlockUtils;
 import net.minestom.server.utils.chunk.ChunkUtils;
 import net.minestom.server.world.DimensionType;
-import net.minestom.server.world.biomes.Biome;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -46,7 +47,7 @@ public class InstanceContainer extends InstanceBase {
     private final WorldView.Union blockStorage = WorldView.union();
     private LoadingRule loadingRule = new PlayerRadiusLoadingRule(this);
 
-    private WorldLoader worldLoader = WorldLoader.filled(Block.AIR, Biome.PLAINS);
+    private WorldLoader worldLoader = WorldLoader.empty();
     private final Map<Vec, List<WorldView>> forks = new ConcurrentHashMap<>();
 
     private final Map<Area, AreaViewable> viewable = new WeakHashMap<>();
@@ -68,7 +69,7 @@ public class InstanceContainer extends InstanceBase {
 
     @Override
     public void setBlock(int x, int y, int z, Block block) {
-        if (!isAreaLoaded(Area.collection(new Vec(x, y, z)))) return;
+        if (!isAreaLoaded(Area.block(new Vec(x, y, z)))) return;
         UNSAFE_setBlock(x, y, z, block);
     }
 
@@ -89,10 +90,7 @@ public class InstanceContainer extends InstanceBase {
         }
 
         // Set the block
-        // TODO: reduce allocations
-        WorldView.Mutable newStorage = WorldView.inMemory();
-        newStorage.setBlock(x, y, z, block);
-        blockStorage.add(newStorage);
+        blockStorage.add(WorldView.block(block, new Vec(x, y, z)));
 
         // Refresh neighbors since a new block has been placed
 //        executeNeighboursBlockPlacementRule(blockPosition);
@@ -176,26 +174,29 @@ public class InstanceContainer extends InstanceBase {
 
     @Override
     public CompletableFuture<WorldView> loadArea(Area area) {
-        Point min = area.min();
-        Point max = area.max();
+        if (blockStorage.area().contains(area)) {
+            // Already loaded
+            return CompletableFuture.completedFuture(WorldView.view(blockStorage, area));
+        }
 
-        return worldLoader.load(area).thenApplyAsync(storage -> {
+        Area loadArea = Area.exclude(area, blockStorage.area());
+        return worldLoader.load(area).thenApply(storage -> {
             if (storage != null) {
                 return storage;
             }
 
             // Generate the worldView
             if (generator == null) {
-                throw new IllegalStateException("Cannot generate worldView " + area + " because no generator is set");
+                throw new IllegalStateException("Cannot generate worldView " + loadArea + " because no generator is set");
             }
-            GeneratorImpl.UnitImpl unit = GeneratorImpl.mutable(area);
+            GeneratorImpl.UnitImpl unit = GeneratorImpl.mutable(loadArea);
             generator.generate(unit);
 
             // Override old empty storage with filled one
             storage = ((GeneratorImpl.WorldViewModifierImpl) unit.modifier()).worldView();
 
             // Register forks or apply locally
-            Area newTotalArea = Area.union(area, blockStorage.area());
+            Area newTotalArea = Area.union(loadArea, blockStorage.area());
             for (GeneratorImpl.UnitImpl forkUnit : unit.forks()) {
                 GeneratorImpl.WorldViewModifierImpl forkAreaModifier = (GeneratorImpl.WorldViewModifierImpl) forkUnit.modifier();
 
@@ -214,7 +215,7 @@ public class InstanceContainer extends InstanceBase {
             }
 
             // Apply external forks
-            AreaUtils.forEachSection(area, sectionPos -> {
+            AreaUtils.forEachSection(loadArea, sectionPos -> {
                 List<WorldView> forks = removeForks(sectionPos);
                 if (forks == null) return;
                 for (WorldView fork : forks) {
@@ -223,7 +224,7 @@ public class InstanceContainer extends InstanceBase {
             });
 
             return storage;
-        }, ForkJoinPool.commonPool()).thenApply(storage -> {
+        }).thenApply(storage -> {
             blockStorage.add(storage);
             return storage;
         });
@@ -276,16 +277,33 @@ public class InstanceContainer extends InstanceBase {
     }
 
     @Override
-    public void tick(long time) {
+    public CompletableFuture<Void> tick(long time) {
         // unloading/loading worldView
         Area newLoadedArea = loadingRule.update(blockStorage.area());
         Area toUnload = Area.exclude(blockStorage.area(), newLoadedArea);
         Area toLoad = Area.exclude(newLoadedArea, blockStorage.area());
 
-        unloadArea(toUnload);
-        loadArea(toLoad);
+        return unloadArea(toUnload)
+                .thenCompose(ignored -> loadArea(toLoad))
+                .thenCompose(ignored -> super.tick(time));
+    }
 
-        super.tick(time);
+    @Override
+    protected CompletableFuture<Void> tickBlocks(long time) {
+        // TODO: ticking blocks
+        // ticking blocks should be implemented with a Map<Vec, Block>
+        return AsyncUtils.VOID_FUTURE;
+    }
+
+    @Override
+    protected CompletableFuture<Void> tickEntities(long time) {
+        Collection<Entity> entities = entityTracker().entities();
+        CompletableFuture<?>[] futures = new CompletableFuture<?>[entities.size()];
+        int i = 0;
+        for (Entity entity : entities) {
+            futures[i++] = entity.tick(time);
+        }
+        return CompletableFuture.allOf(futures);
     }
 
     @Override
@@ -315,7 +333,7 @@ public class InstanceContainer extends InstanceBase {
 
     @Override
     public Set<Player> players() {
-        return entityTracker().entities(EntityTracker.Target.PLAYERS);
+        return entityTracker().entities(EntityStorage.Target.PLAYERS);
     }
 
     @Override

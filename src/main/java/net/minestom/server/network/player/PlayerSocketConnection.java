@@ -20,7 +20,6 @@ import net.minestom.server.utils.binary.BinaryBuffer;
 import net.minestom.server.utils.validate.Check;
 import org.jctools.queues.MessagePassingQueue;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

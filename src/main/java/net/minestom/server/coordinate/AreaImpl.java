@@ -92,7 +92,7 @@ interface AreaImpl {
         return false;
     }
 
-    public static Area invert(Area source) {
+    static Area invert(Area source) {
         if (source instanceof Fill fill) {
             return new FillUnion(out -> FULL.fillsRemove(fill, out));
         } else if (source instanceof FillUnion union) {
@@ -110,7 +110,7 @@ interface AreaImpl {
         throw new IllegalArgumentException("Unknown area type for invert: " + source.getClass().getName());
     }
 
-    public static Area intersection(Area areaA, Area areaB) {
+    static Area intersection(Area areaA, Area areaB) {
         return areaA.overlap(areaB);
     }
 
@@ -218,6 +218,16 @@ interface AreaImpl {
                 return minX < maxX && minY < maxY && minZ < maxZ;
             }
             return other.overlaps(this); // custom impl
+        }
+
+        @Override
+        public Area translate(Point point) {
+            return new Fill(min.add(point), max.add(point));
+        }
+
+        @Override
+        public Set<Fill> subdivide() {
+            return Set.of(this);
         }
 
         @Override
@@ -401,6 +411,20 @@ interface AreaImpl {
                 }
             }
             return false;
+        }
+
+        @Override
+        public Area translate(Point point) {
+            Area[] newAreas = new Fill[areas.length];
+            for (int i = 0; i < areas.length; i++) {
+                newAreas[i] = areas[i].translate(point);
+            }
+            return Area.union(newAreas);
+        }
+
+        @Override
+        public Set<Fill> subdivide() {
+            return Set.of(areas);
         }
 
         @NotNull

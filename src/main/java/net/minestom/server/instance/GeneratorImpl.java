@@ -8,6 +8,7 @@ import net.minestom.server.instance.generator.GenerationUnit;
 import net.minestom.server.instance.generator.UnitModifier;
 import net.minestom.server.instance.storage.WorldView;
 import net.minestom.server.world.biomes.Biome;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Objects;
@@ -30,16 +31,13 @@ final class GeneratorImpl {
 
     static GenerationUnit section(int sectionX, int sectionY, int sectionZ, boolean fork) {
         Point pos = new Vec(sectionX, sectionY, sectionZ).mul(SIZE);
-        return section(WorldView.section(null, null, pos), sectionX, sectionY, sectionZ, fork);
+        WorldView.Mutable relative = WorldView.view(WorldView.mutable(WorldView.empty()), Area.section(Vec.ZERO));
+        return section(WorldView.translate(relative, pos), sectionX, sectionY, sectionZ, fork);
     }
 
     static UnitImpl mutable(Area area) {
-        WorldView.Mutable memory = WorldView.inMemory();
-        Point start = memory.area().min();
-        Point end = memory.area().max();
-        Point size = end.sub(start);
-        UnitModifier modifier = new WorldViewModifierImpl(memory, size, start, end);
-        return unit(modifier, start, end, null);
+        WorldView.Mutable translated = WorldView.translate(WorldView.mutable(WorldView.empty()), area.min());
+        return mutable(WorldView.view(translated, area));
     }
 
     static UnitImpl mutable(WorldView.Mutable memory) {
@@ -54,12 +52,6 @@ final class GeneratorImpl {
                          List<GenerationUnit> divided) {
         if (start.x() > end.x() || start.y() > end.y() || start.z() > end.z()) {
             throw new IllegalArgumentException("absoluteStart must be before absoluteEnd");
-        }
-        if (start.x() % SIZE != 0 || start.y() % SIZE != 0 || start.z() % SIZE != 0) {
-            throw new IllegalArgumentException("absoluteStart must be a multiple of SIZE");
-        }
-        if (end.x() % SIZE != 0 || end.y() % SIZE != 0 || end.z() % SIZE != 0) {
-            throw new IllegalArgumentException("absoluteEnd must be a multiple of SIZE");
         }
         final Point size = end.sub(start);
         return new UnitImpl(modifier, size, start, end, divided, new CopyOnWriteArrayList<>());
@@ -143,7 +135,7 @@ final class GeneratorImpl {
 
     record UnitImpl(UnitModifier modifier, Point size,
                     Point absoluteStart, Point absoluteEnd,
-                    List<GenerationUnit> divided,
+                    @Nullable List<GenerationUnit> divided,
                     List<UnitImpl> forks) implements GenerationUnit {
         @Override
         public GenerationUnit fork(Point start, Point end) {
@@ -197,8 +189,7 @@ final class GeneratorImpl {
                                             int width, int height, int depth) {
             final Point end = start.add(width * SIZE, height * SIZE, depth * SIZE);
             final Point size = end.sub(start);
-            final BoxedModifierImpl modifier = new BoxedModifierImpl(null,
-                    size, start, end, width, height, depth, sections);
+            final BoxedModifierImpl modifier = new BoxedModifierImpl(size, start, end, width, height, depth, sections);
             final UnitImpl fork = new UnitImpl(modifier, size, start, end, sections, forks);
             forks.add(fork);
             return fork;
@@ -269,14 +260,14 @@ final class GeneratorImpl {
 
         @Override
         public void setRelative(int x, int y, int z, Block block) {
-            worldView.setBlock(x, y, z, block);
+            worldView.setBlock(x + start.blockX(), y + start.blockY(), z + start.blockZ(), block);
         }
 
         @Override
         public void fillBiome(Biome biome) {
-            for (int x = 0; x < Instance.BIOME_SIZE; x++) {
-                for (int y = 0; y < Instance.BIOME_SIZE; y++) {
-                    for (int z = 0; z < Instance.BIOME_SIZE; z++) {
+            for (int x = start.blockX(); x < end.blockX(); x += Instance.BIOME_SIZE) {
+                for (int y = start.blockY(); y < end.blockY(); y += Instance.BIOME_SIZE) {
+                    for (int z = start.blockZ(); z < end.blockZ(); z += Instance.BIOME_SIZE) {
                         worldView.setBiome(x, y, z, biome);
                     }
                 }
@@ -289,8 +280,8 @@ final class GeneratorImpl {
         }
     }
 
-    record BoxedModifierImpl(WorldView chunk,
-                             Point size, Point start, Point end,
+    record BoxedModifierImpl(
+            Point size, Point start, Point end,
                              int width, int height, int depth,
                              List<GenerationUnit> sections) implements GenericModifier {
         @Override
@@ -452,13 +443,13 @@ final class GeneratorImpl {
 
         @Override
         default void setAllRelative(Supplier supplier) {
+            final Point start = start();
+            final Point end = end();
             final Point size = size();
-            final int endX = size.blockX();
-            final int endY = size.blockY();
-            final int endZ = size.blockZ();
-            for (int x = 0; x < endX; x++) {
-                for (int y = 0; y < endY; y++) {
-                    for (int z = 0; z < endZ; z++) {
+
+            for (int x = 0; x < size.blockX(); x++) {
+                for (int y = 0; y < size.blockY(); y++) {
+                    for (int z = 0; z < size.blockZ(); z++) {
                         setRelative(x, y, z, supplier.get(x, y, z));
                     }
                 }

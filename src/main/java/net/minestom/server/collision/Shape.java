@@ -1,5 +1,6 @@
 package net.minestom.server.collision;
 
+import net.minestom.server.coordinate.Area;
 import net.minestom.server.coordinate.Point;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -41,4 +42,11 @@ public interface Shape {
      * @return End of shape
      */
     Point relativeEnd();
+
+    /**
+     * To Area
+     *
+     * @return Area of shape
+     */
+    Area toArea();
 }

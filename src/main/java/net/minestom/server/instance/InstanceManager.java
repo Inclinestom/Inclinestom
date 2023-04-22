@@ -79,9 +79,6 @@ public final class InstanceManager {
             // Unload all chunks
             if (instance instanceof InstanceContainer) {
                 instance.unloadArea(Area.full()).join();
-                var dispatcher = MinecraftServer.process().dispatcher();
-                AreaUtils.forEachSection(instance.loadedArea(), pos ->
-                        dispatcher.deletePartition(Area.section(pos)));
             }
             // Unregister
             this.instances.remove(instance);
@@ -118,8 +115,5 @@ public final class InstanceManager {
      */
     private void UNSAFE_registerInstance(Instance instance) {
         this.instances.add(instance);
-        var dispatcher = MinecraftServer.process().dispatcher();
-        AreaUtils.forEachSection(instance.loadedArea(), pos ->
-                dispatcher.deletePartition(Area.section(pos)));
     }
 }

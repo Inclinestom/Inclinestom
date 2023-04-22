@@ -2,7 +2,7 @@ plugins {
     `java-library`
     id("minestom.publishing-conventions")
     id("minestom.native-conventions")
-    alias(libs.plugins.blossom)
+//    alias(libs.plugins.blossom)
 }
 
 allprojects {
@@ -41,19 +41,19 @@ tasks {
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     }
 
-    blossom {
-        val git = "src/main/java/net/minestom/server/Git.java"
-
-        val gitCommit = System.getenv("GIT_COMMIT")
-        val gitBranch = System.getenv("GIT_BRANCH")
-        val group = System.getenv("GROUP")
-        val artifact = System.getenv("ARTIFACT")
-
-        replaceToken("\"&COMMIT\"", if (gitCommit == null) "null" else "\"${gitCommit}\"", git)
-        replaceToken("\"&BRANCH\"", if (gitBranch == null) "null" else "\"${gitBranch}\"", git)
-        replaceToken("\"&GROUP\"", if (group == null) "null" else "\"${group}\"", git)
-        replaceToken("\"&ARTIFACT\"", if (artifact == null) "null" else "\"${artifact}\"", git)
-    }
+//    blossom {
+//        val git = "src/main/java/net/minestom/server/Git.java"
+//
+//        val gitCommit = System.getenv("GIT_COMMIT")
+//        val gitBranch = System.getenv("GIT_BRANCH")
+//        val group = System.getenv("GROUP")
+//        val artifact = System.getenv("ARTIFACT")
+//
+//        replaceToken("\"&COMMIT\"", if (gitCommit == null) "null" else "\"${gitCommit}\"", git)
+//        replaceToken("\"&BRANCH\"", if (gitBranch == null) "null" else "\"${gitBranch}\"", git)
+//        replaceToken("\"&GROUP\"", if (group == null) "null" else "\"${group}\"", git)
+//        replaceToken("\"&ARTIFACT\"", if (artifact == null) "null" else "\"${artifact}\"", git)
+//    }
 
 }
 

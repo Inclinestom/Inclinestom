@@ -23,7 +23,7 @@ public interface Env {
     <E extends Event> FlexibleListener<E> listen(Class<E> eventType);
 
     default void tick() {
-        process().ticker().tick(System.nanoTime());
+        process().ticker().tick(System.nanoTime()).join();
     }
 
     default boolean tickWhile(BooleanSupplier condition, Duration timeout) {
@@ -31,7 +31,7 @@ public interface Env {
         final long start = System.nanoTime();
         while (condition.getAsBoolean()) {
             final long tick = System.nanoTime();
-            ticker.tick(tick);
+            ticker.tick(tick).join();
             if (timeout != null && System.nanoTime() - start > timeout.toNanos()) {
                 return false;
             }
@@ -40,7 +40,9 @@ public interface Env {
     }
 
     default Player createPlayer(Instance instance, Pos pos) {
-        return createConnection().connect(instance, pos).join();
+        return createConnection()
+                .connect(instance, pos)
+                .join();
     }
 
     default Instance createFlatInstance() {
