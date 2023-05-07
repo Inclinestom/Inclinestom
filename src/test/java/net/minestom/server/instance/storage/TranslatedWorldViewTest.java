@@ -1,5 +1,6 @@
 package net.minestom.server.instance.storage;
 
+import net.minestom.server.coordinate.Area;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.instance.block.Block;
 import org.junit.jupiter.api.Test;
@@ -9,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class TranslatedWorldViewTest {
     @Test
     public void properties() {
-        WorldView.Mutable section = WorldView.section();
+        WorldView.Mutable section = WorldView.mutable(Area.section(Vec.ZERO));
         WorldView.Mutable mutable = WorldView.mutable();
 
         WorldView translatedSection = WorldView.translate(section, new Vec(8, 8, 8));

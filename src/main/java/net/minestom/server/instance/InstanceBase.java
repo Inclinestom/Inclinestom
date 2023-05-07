@@ -1,6 +1,5 @@
 package net.minestom.server.instance;
 
-import it.unimi.dsi.fastutil.ints.*;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.pointer.Pointers;
 import net.minestom.server.MinecraftServer;
@@ -8,7 +7,6 @@ import net.minestom.server.ServerProcess;
 import net.minestom.server.coordinate.Area;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Pos;
-import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.EntityCreature;
 import net.minestom.server.entity.ExperienceOrb;
@@ -20,20 +18,21 @@ import net.minestom.server.event.EventNode;
 import net.minestom.server.event.instance.InstanceTickEvent;
 import net.minestom.server.event.trait.InstanceEvent;
 import net.minestom.server.instance.block.Block;
+import net.minestom.server.instance.storage.WorldView;
 import net.minestom.server.network.packet.server.play.ChunkDataPacket;
+import net.minestom.server.network.packet.server.play.EntityMetaDataPacket;
 import net.minestom.server.network.packet.server.play.TimeUpdatePacket;
-import net.minestom.server.network.packet.server.play.UnloadChunkPacket;
 import net.minestom.server.tag.TagHandler;
 import net.minestom.server.timer.Scheduler;
 import net.minestom.server.utils.AreaUtils;
 import net.minestom.server.utils.PacketUtils;
 import net.minestom.server.utils.async.AsyncUtils;
-import net.minestom.server.utils.chunk.ChunkUtils;
 import net.minestom.server.utils.time.Cooldown;
 import net.minestom.server.utils.time.TimeUnit;
 import net.minestom.server.utils.validate.Check;
 import net.minestom.server.world.DimensionType;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
@@ -66,7 +65,6 @@ public abstract class InstanceBase implements Instance {
     protected long lastTickAge = System.currentTimeMillis();
 
     protected final EntityStorage entityStorage = new EntityStorageImpl();
-    protected final Map<Player, Area> player2LoadedSections = Collections.synchronizedMap(new WeakHashMap<>());
 
     // the uuid of this instance
     protected UUID uniqueId;
@@ -225,6 +223,18 @@ public abstract class InstanceBase implements Instance {
         return worldBorder;
     }
 
+    @Override
+    public CompletableFuture<Boolean> addEntity(@NotNull Entity entity, @NotNull Point spawnPosition) {
+        if (!entityStorage.add(entity, spawnPosition)) {
+            return CompletableFuture.completedFuture(false);
+        }
+
+        EntityMetaDataPacket metaDataPacket = entity.getMetadataPacket();
+        PacketUtils.sendGroupedPacket(getPlayers(), metaDataPacket);
+
+        return CompletableFuture.completedFuture(true);
+    }
+
     /**
      * Gets the entities in the instance;
      *
@@ -311,31 +321,11 @@ public abstract class InstanceBase implements Instance {
         // Scheduled tasks
         this.scheduler.processTick();
 
-        // Update player chunks
-        Area totalChunks = Area.union(players().stream().map(Player::viewArea).toList());
-        loadArea(totalChunks).join();
-        players().forEach(player -> {
-            Area loadedSections = player2LoadedSections.computeIfAbsent(player, p -> Area.empty());
-
-            Area newSections = Area.exclude(player.viewArea(), loadedSections);
-            Area oldSections = Area.exclude(loadedSections, player.viewArea());
-
-            AreaUtils.forEachChunk(newSections, (x, z) -> {
-                ChunkDataPacket packet = chunkPacket(x, z);
-                player.sendPacket(packet);
-            });
-
-            AreaUtils.forEachChunk(oldSections, (x, z) -> {
-                UnloadChunkPacket packet = new UnloadChunkPacket(x, z);
-                player.sendPacket(packet);
-            });
-
-            player2LoadedSections.put(player, player.viewArea());
-        });
-
-        // blocks + entities
-        tickBlocks(time).join();
-        tickEntities(time).join();
+        // Update loaded chunks
+        Area previous = loadedArea();
+        Area newLoadedArea = loadingRule().update(previous);
+        loadArea(newLoadedArea).join();
+        unloadArea(Area.exclude(previous, newLoadedArea)).join();
 
         // Time
         {
@@ -348,6 +338,11 @@ public abstract class InstanceBase implements Instance {
             }
 
         }
+
+        // blocks + entities
+        tickBlocks(time).join();
+        tickEntities(time).join();
+
         // Tick event
         {
             // Process tick events
@@ -359,8 +354,20 @@ public abstract class InstanceBase implements Instance {
         return AsyncUtils.VOID_FUTURE;
     }
 
-    protected abstract CompletableFuture<Void> tickBlocks(long time);
-    protected abstract CompletableFuture<Void> tickEntities(long time);
+    protected CompletableFuture<Void> tickBlocks(long time) {
+        // TODO: ticking blocks
+        // ticking blocks should be implemented with a Map<Vec, Block>
+        return AsyncUtils.VOID_FUTURE;
+    }
+    protected CompletableFuture<Void> tickEntities(long time) {
+        Collection<Entity> entities = entityTracker().entities();
+        CompletableFuture<?>[] futures = new CompletableFuture<?>[entities.size()];
+        int i = 0;
+        for (Entity entity : entities) {
+            futures[i++] = entity.tick(time);
+        }
+        return CompletableFuture.allOf(futures);
+    }
 
     @Override
     public TagHandler tagHandler() {
@@ -418,13 +425,5 @@ public abstract class InstanceBase implements Instance {
     @Override
     public boolean isInVoid(Pos position) {
         return position.y() < this.dimensionType().getMinY();
-    }
-
-    @Override
-    public void refreshArea(Player player, Area area) {
-        AreaUtils.forEachChunk(area, (x, z) -> {
-            ChunkDataPacket packet = chunkPacket(x, z);
-            player.sendPacket(packet);
-        });
     }
 }

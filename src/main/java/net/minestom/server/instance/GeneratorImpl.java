@@ -264,6 +264,25 @@ final class GeneratorImpl {
         }
 
         @Override
+        public void fill(Block block) {
+            // TODO: Optimize this through area operations
+            fill(start, end, block);
+        }
+
+        @Override
+        public void fill(Point start, Point end, Block block) {
+            worldView.mutate(setter -> {
+                for (int x = start.blockX(); x < end.blockX(); x++) {
+                    for (int y = start.blockY(); y < end.blockY(); y++) {
+                        for (int z = start.blockZ(); z < end.blockZ(); z++) {
+                            setter.setBlock(x, y, z, block);
+                        }
+                    }
+                }
+            });
+        }
+
+        @Override
         public void fillBiome(Biome biome) {
             for (int x = start.blockX(); x < end.blockX(); x += Instance.BIOME_SIZE) {
                 for (int y = start.blockY(); y < end.blockY(); y += Instance.BIOME_SIZE) {

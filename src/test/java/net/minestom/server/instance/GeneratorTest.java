@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 import static net.minestom.server.instance.GeneratorImpl.unit;
+import static net.minestom.server.instance.Instance.SECTION_SIZE;
 import static net.minestom.server.utils.chunk.ChunkUtils.ceilSection;
 import static net.minestom.server.utils.chunk.ChunkUtils.floorSection;
 import static org.junit.jupiter.api.Assertions.*;
@@ -240,7 +241,7 @@ public class GeneratorTest {
         final int chunkX = 3;
         final int chunkZ = -2;
         final int sectionCount = maxSection - minSection;
-        WorldView.Mutable worldView = WorldView.chunk();
+        WorldView.Mutable worldView = WorldView.mutable(Area.chunk(minSection * SECTION_SIZE, maxSection * SECTION_SIZE, chunkX, chunkZ));
         var chunkUnits = GeneratorImpl.mutable(worldView);
         Generator generator = chunk -> {
             var modifier = chunk.modifier();
@@ -257,7 +258,7 @@ public class GeneratorTest {
         final int minSection = -1;
         final int maxSection = 5;
         final int sectionCount = maxSection - minSection;
-        WorldView.Mutable worldView = WorldView.chunk();
+        WorldView.Mutable worldView = WorldView.mutable(Area.chunk(minSection * SECTION_SIZE, maxSection * SECTION_SIZE, 0, 0));
         var chunkUnits = GeneratorImpl.mutable(worldView);
         Generator generator = chunk -> chunk.modifier().fillHeight(0, 32, Block.STONE);
         generator.generate(chunkUnits);
@@ -296,8 +297,8 @@ public class GeneratorTest {
 
     @Test
     public void sectionFill() {
-        Point pos = new Vec(-1, -1, 0).mul(Instance.SECTION_SIZE);
-        WorldView.Mutable section = WorldView.section();
+        Point pos = new Vec(-1, -1, 0).mul(SECTION_SIZE);
+        WorldView.Mutable section = WorldView.mutable(Area.section(pos));
         var chunkUnit = GeneratorImpl.section(section, -1, -1, 0, false);
         Generator generator = chunk -> chunk.modifier().fill(Block.STONE);
         generator.generate(chunkUnit);

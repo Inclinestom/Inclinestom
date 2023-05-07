@@ -21,7 +21,6 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -154,16 +153,6 @@ public class EntityProjectile extends Entity {
                     teleport(pos);
                     return true;
                 }
-            }
-            if (currentWorldView != chunk) {
-                chunk = currentWorldView;
-                WorldView finalChunk = chunk;
-                entities = instance.entities()
-                        .stream()
-                        .filter(entity -> entity instanceof LivingEntity)
-                        .filter(entity -> finalChunk.area().contains(entity.getPosition()))
-                        .map(entity -> (LivingEntity) entity)
-                        .collect(Collectors.toSet());
             }
             final Point currentPos = pos;
             Stream<LivingEntity> victimsStream = entities.stream()

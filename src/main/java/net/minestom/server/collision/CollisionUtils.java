@@ -30,7 +30,7 @@ public final class CollisionUtils {
                                               @Nullable PhysicsResult lastPhysicsResult) {
         final Instance instance = entity.getInstance();
         assert instance != null;
-        return handlePhysics(instance, entity.getWorldView(),
+        return handlePhysics(instance, entity.getInstance().worldView(),
                 entity.getBoundingBox(),
                 entity.getPosition(), entityVelocity,
                 lastPhysicsResult);

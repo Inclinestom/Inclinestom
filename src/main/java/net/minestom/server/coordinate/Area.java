@@ -41,7 +41,6 @@ public sealed interface Area extends Iterable<Point> permits AreaImpl.Fill, Area
 
     // Structures
 
-
     /**
      * Creates a new sphere area from a position and a range.
      * @param position the center of the sphere
@@ -49,6 +48,7 @@ public sealed interface Area extends Iterable<Point> permits AreaImpl.Fill, Area
      * @return a new area
      */
     static Area sphere(Point position, double range) {
+        position = Vec.fromPoint(position); // This is used to prevent the `position` being a `Pos`.
         int min = (int) -Math.floor(range);
         int max = (int) Math.ceil(range);
         Stream.Builder<Point> builder = Stream.builder();
@@ -127,7 +127,7 @@ public sealed interface Area extends Iterable<Point> permits AreaImpl.Fill, Area
      * @param areas the areas to union
      * @return a new area
      */
-    static Area union(List<Area> areas) {
+    static Area union(Collection<Area> areas) {
         return areas.stream()
                 .reduce(Area::union)
                 .orElse(Area.empty());
@@ -141,7 +141,8 @@ public sealed interface Area extends Iterable<Point> permits AreaImpl.Fill, Area
      */
     static Area exclude(Area source, Area exclude) {
         Area outside = invert(union(source, exclude));
-        return invert(union(outside, exclude));
+        Area excluded = invert(union(outside, exclude));
+        return excluded.size() == 0 ? Area.empty() : excluded;
     }
 
     static Area intersection(Area... areas) {
@@ -164,9 +165,17 @@ public sealed interface Area extends Iterable<Point> permits AreaImpl.Fill, Area
         return AreaImpl.FULL;
     }
 
+    static Area chunk(DimensionType dimensionType) {
+        return chunk(dimensionType.getMinY(), dimensionType.getMaxY(), 0, 0);
+    }
+
     static Area chunk(DimensionType dimensionType, int chunkX, int chunkZ) {
-        Point chunkMin = new Vec(chunkX * Instance.SECTION_SIZE, dimensionType.getMinY(), chunkZ * Instance.SECTION_SIZE);
-        Point chunkMax = chunkMin.add(Instance.SECTION_SIZE, 0, Instance.SECTION_SIZE).withY(dimensionType.getMaxY());
+        return chunk(dimensionType.getMinY(), dimensionType.getMaxY(), chunkX, chunkZ);
+    }
+
+    static Area chunk(int minY, int maxY, int chunkX, int chunkZ) {
+        Point chunkMin = new Vec(chunkX * Instance.SECTION_SIZE, minY, chunkZ * Instance.SECTION_SIZE);
+        Point chunkMax = chunkMin.add(Instance.SECTION_SIZE, 0, Instance.SECTION_SIZE).withY(maxY);
         return fill(chunkMin, chunkMax);
     }
 
@@ -180,6 +189,15 @@ public sealed interface Area extends Iterable<Point> permits AreaImpl.Fill, Area
         Point max = new Vec(maxChunkX * Instance.SECTION_SIZE, dimensionType.getMaxY(), maxChunkZ * Instance.SECTION_SIZE);
 
         return fill(min, max);
+    }
+
+    /**
+     * Takes an Area and groups its neighboring areas that touch it on any side into connected groups.
+     * @param area the area
+     * @return a set of connected areas
+     */
+    static Set<Area> groupConnectedAreas(Area area) {
+        return AreaImpl.groupConnectedAreas(area);
     }
 
     /**
@@ -258,5 +276,9 @@ public sealed interface Area extends Iterable<Point> permits AreaImpl.Fill, Area
 
     default Stream<Point> stream() {
         return StreamSupport.stream(spliterator(), false);
+    }
+
+    static boolean equals(Area areaA, Area areaB) {
+        return areaA.overlapCount(areaB) == areaA.size();
     }
 }

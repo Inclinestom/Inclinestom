@@ -62,21 +62,21 @@ public interface Instance extends Block.Getter, Block.Setter,
 
     /**
      * Loads the {@link WorldView} necessary to entirely cover the given {@link Area}.
-     * Implementations of this method typically load the chunks
+     * Implementations of this method may load additional chunks beyond the bounds of the given area.
+     * Note that while the method may load more than just the given area, the resulting {@link WorldView} will always be the
+     * size of the given area.
      *
-     * @param area Area
-     * @return a {@link CompletableFuture} completed once the {@link Area} has been loaded, and failed if the load
-     * failed for any reason.
+     * @param area the area to load
+     * @return a {@link CompletableFuture} that completes when the area is loaded or fails if loading fails
      */
     CompletableFuture<WorldView> loadArea(Area area);
 
     /**
-     * Unloads all the {@link WorldView} necessary to entirely cover the given {@link Area}.
-     * <p>
-     *     Implementations may choose to unload as much as they want, provided that they unload at least the given worldView.
-     * </p>
+     * Unloads the {@link WorldView} covering the given {@link Area}.
+     * Implementations may unload more than the given area, but must unload at least the given area.
      *
-     * @param area the worldView to unload
+     * @param area the area to unload
+     * @return a {@link CompletableFuture} that completes when the area is unloaded
      */
     CompletableFuture<Void> unloadArea(Area area);
 
@@ -92,7 +92,7 @@ public interface Instance extends Block.Getter, Block.Setter,
     }
 
     /**
-     * Gets then {@link Area} which contains all loaded world data.
+     * Gets the {@link Area} which contains all loaded world data.
      *
      * @return the world view worldView
      */
@@ -123,14 +123,6 @@ public interface Instance extends Block.Getter, Block.Setter,
      */
     @NotNull LoadingRule loadingRule();
 
-
-    /**
-     * Sets the loading rule used by the instance.
-     *
-     * @param loadingRule the new loading rule
-     */
-    void setLoadingRule(@NotNull LoadingRule loadingRule);
-
     /**
      * Gets the world source used by the instance.
      *
@@ -160,11 +152,11 @@ public interface Instance extends Block.Getter, Block.Setter,
     void setGenerator(@Nullable Generator generator);
 
     /**
-     * Sets the logic to use when deciding which areas of the world should be loaded, and what the threading model should be.
-     * By default, this is an instance of {@link PlayerRadiusLoadingRule}.
+     * Sets the logic to use when deciding which areas of the world should be loaded.
      * @param loadingRule the new worldView load rule
+     * @see PlayerRadiusLoadingRule
      */
-    void setTickingRule(LoadingRule loadingRule);
+    void setLoadingRule(LoadingRule loadingRule);
 
     /**
      * Gets the instance {@link DimensionType}.
@@ -191,12 +183,30 @@ public interface Instance extends Block.Getter, Block.Setter,
     /**
      * Gets all the players which view any part of the given chunk.
      * @param chunkX the chunk x
-     ** @param chunkZ the chunk z
+     * @param chunkZ the chunk z
      * @return the players viewing the chunk
      */
     default Viewable viewers(int chunkX, int chunkZ) {
         return viewers(Area.chunk(dimensionType(), chunkX, chunkZ));
     }
+
+    /**
+     * NOTE: Generally you should use Entity#setInstance instead.
+     * Adds the given entity to the instance.
+     * @param entity the entity to add
+     * @return true if the entity has been added, false otherwise.
+     */
+    @ApiStatus.Internal
+    CompletableFuture<Boolean> addEntity(@NotNull Entity entity, @NotNull Point spawnPosition);
+
+    /**
+     * NOTE: Generally you should use Entity#setInstance instead.
+     * Removes the given entity from the instance.
+     * @param entity the entity to remove
+     * @return true if the entity has been removed, false otherwise.
+     */
+    @ApiStatus.Internal
+    CompletableFuture<Boolean> removeEntity(@NotNull Entity entity);
 
     /**
      * Gets the entities in the instance;
@@ -264,8 +274,8 @@ public interface Instance extends Block.Getter, Block.Setter,
     boolean isInVoid(Pos position);
 
     // Packets (commonly subject to change)
-    void refreshArea(Player player, Area area);
-    ChunkDataPacket chunkPacket(int chunkX, int chunkZ);
+    Collection<ChunkDataPacket> chunkPackets(Area area);
+
     TimeUpdatePacket timePacket();
 
     // Pathfinding...

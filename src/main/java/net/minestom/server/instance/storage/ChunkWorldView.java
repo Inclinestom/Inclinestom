@@ -21,8 +21,7 @@ class ChunkWorldView implements WorldView.Mutable {
     private final Biome[] biomes; // xzy
     private final Area area;
 
-    public ChunkWorldView(DimensionType dimensionType, Block defaultBlock, Biome defaultBiome) {
-        int maxY = dimensionType.getMaxY() - dimensionType.getMinY();
+    public ChunkWorldView(int maxY, Block defaultBlock, Biome defaultBiome) {
         int sectionCount = maxY / SECTION_SIZE;
         this.blocks = new Block[SECTION_SIZE * SECTION_SIZE * (sectionCount * SECTION_SIZE)];
         this.biomes = new Biome[blocks.length / (BIOME_SIZE * BIOME_SIZE * BIOME_SIZE)];

@@ -25,6 +25,7 @@ import net.minestom.server.utils.PacketUtils;
 import net.minestom.server.utils.async.AsyncUtils;
 import net.minestom.server.utils.block.BlockUtils;
 import net.minestom.server.utils.chunk.ChunkUtils;
+import net.minestom.server.utils.validate.Check;
 import net.minestom.server.world.DimensionType;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -47,6 +48,8 @@ public class InstanceContainer extends InstanceBase {
     private final WorldView.Union blockStorage = WorldView.union();
     private LoadingRule loadingRule = new PlayerRadiusLoadingRule(this);
 
+    private boolean autoLoad = true;
+
     private WorldLoader worldLoader = WorldLoader.empty();
     private final Map<Vec, List<WorldView>> forks = new ConcurrentHashMap<>();
 
@@ -67,9 +70,20 @@ public class InstanceContainer extends InstanceBase {
         return blockStorage.getBlock(x, y, z, condition);
     }
 
+    public boolean hasEnabledAutoChunkLoad() {
+        return autoLoad;
+    }
+
+    public void setAutoChunkLoad(boolean autoLoad) {
+        this.autoLoad = autoLoad;
+    }
+
     @Override
     public void setBlock(int x, int y, int z, Block block) {
-        if (!isAreaLoaded(Area.block(new Vec(x, y, z)))) return;
+        if (!isAreaLoaded(Area.block(new Vec(x, y, z)))) {
+            Check.stateCondition(!hasEnabledAutoChunkLoad(), "Tried to set a block to an unloaded chunk with auto chunk load disabled");
+            loadArea(Area.chunk(dimensionType, ChunkUtils.getSectionCoordinate(x), ChunkUtils.getSectionCoordinate(z))).join();
+        }
         UNSAFE_setBlock(x, y, z, block);
     }
 
@@ -277,36 +291,6 @@ public class InstanceContainer extends InstanceBase {
     }
 
     @Override
-    public CompletableFuture<Void> tick(long time) {
-        // unloading/loading worldView
-        Area newLoadedArea = loadingRule.update(blockStorage.area());
-        Area toUnload = Area.exclude(blockStorage.area(), newLoadedArea);
-        Area toLoad = Area.exclude(newLoadedArea, blockStorage.area());
-
-        return unloadArea(toUnload)
-                .thenCompose(ignored -> loadArea(toLoad))
-                .thenCompose(ignored -> super.tick(time));
-    }
-
-    @Override
-    protected CompletableFuture<Void> tickBlocks(long time) {
-        // TODO: ticking blocks
-        // ticking blocks should be implemented with a Map<Vec, Block>
-        return AsyncUtils.VOID_FUTURE;
-    }
-
-    @Override
-    protected CompletableFuture<Void> tickEntities(long time) {
-        Collection<Entity> entities = entityTracker().entities();
-        CompletableFuture<?>[] futures = new CompletableFuture<?>[entities.size()];
-        int i = 0;
-        for (Entity entity : entities) {
-            futures[i++] = entity.tick(time);
-        }
-        return CompletableFuture.allOf(futures);
-    }
-
-    @Override
     public @Nullable Generator generator() {
         return generator;
     }
@@ -317,13 +301,14 @@ public class InstanceContainer extends InstanceBase {
     }
 
     @Override
-    public void setTickingRule(LoadingRule loadingRule) {
-        this.loadingRule = loadingRule;
+    public Viewable viewers(Area area) {
+        return viewable.computeIfAbsent(area, AreaViewable::new);
     }
 
     @Override
-    public Viewable viewers(Area area) {
-        return viewable.computeIfAbsent(area, AreaViewable::new);
+    public CompletableFuture<Boolean> removeEntity(@NotNull Entity entity) {
+        boolean removed = entityTracker().remove(entity);
+        return CompletableFuture.completedFuture(removed);
     }
 
     @Override
@@ -373,8 +358,13 @@ public class InstanceContainer extends InstanceBase {
     }
 
     @Override
-    public ChunkDataPacket chunkPacket(int chunkX, int chunkZ) {
-        return ChunkUtils.chunkPacket(blockStorage, dimensionType(), chunkX, chunkZ);
+    public Collection<ChunkDataPacket> chunkPackets(Area area) {
+        if (!blockStorage.area().overlaps(area)) return List.of();
+        List<ChunkDataPacket> packets = new ArrayList<>();
+        AreaUtils.forEachChunk(area, (x, z) -> {
+            packets.add(ChunkUtils.chunkPacket(blockStorage, dimensionType(), x, z));
+        });
+        return List.copyOf(packets);
     }
 
     private class AreaViewable implements Viewable {
@@ -400,7 +390,7 @@ public class InstanceContainer extends InstanceBase {
         @Override
         public Set<Player> getViewers() {
             return players().stream()
-                    .filter(player -> area.contains(player.getPosition()))
+                    .filter(player -> player.viewArea().overlaps(area))
                     .collect(Collectors.toSet());
         }
     }

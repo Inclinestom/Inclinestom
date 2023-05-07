@@ -50,7 +50,7 @@ public abstract class PlayerConnection {
     public abstract void sendPacket(SendablePacket packet);
 
     @ApiStatus.Experimental
-    public void sendPackets(Collection<SendablePacket> packets) {
+    public void sendPackets(Collection<? extends SendablePacket> packets) {
         packets.forEach(this::sendPacket);
     }
 

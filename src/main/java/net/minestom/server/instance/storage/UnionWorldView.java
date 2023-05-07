@@ -14,6 +14,7 @@ import java.util.function.Consumer;
 class UnionWorldView implements WorldView.Union {
 
     private Area area = Area.empty();
+    private boolean optimizedArea = true;
 
     private final List<WorldView> storages = new CopyOnWriteArrayList<>();
 
@@ -26,6 +27,7 @@ class UnionWorldView implements WorldView.Union {
     private void updateAreas() {
         Area[] areas = storages.stream().map(WorldView::area).toArray(Area[]::new);
         this.area = Area.union(areas);
+        this.optimizedArea = false;
     }
 
     @Override
@@ -66,6 +68,10 @@ class UnionWorldView implements WorldView.Union {
 
     @Override
     public Area area() {
+        if (!optimizedArea) {
+            optimizedArea = true;
+            area = Area.optimize(area);
+        }
         return area;
     }
 

@@ -19,9 +19,12 @@ import net.minestom.server.utils.MathUtils;
 import net.minestom.server.utils.chunk.ChunkUtils;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -65,17 +68,13 @@ public class PlayerMovementIntegrationTest {
     public void chunkUpdateDebounceTest(Env env) {
         final Instance flatInstance = env.createFlatInstance();
         final int viewDiameter = MinecraftServer.getChunkViewDistance() * 2 + 1;
+
         // Preload all possible chunks to avoid issues due to async loading
-        Set<CompletableFuture<WorldView>> chunks = new HashSet<>();
-        ChunkUtils.forChunksInRange(0, 0, viewDiameter+2, (x, z) -> {
-            Area chunk = Area.chunk(flatInstance.dimensionType(), x, z);
-            chunks.add(flatInstance.loadArea(chunk));
-        });
-        CompletableFuture.allOf(chunks.toArray(CompletableFuture[]::new)).join();
+        flatInstance.loadArea(Area.chunkRange(flatInstance.dimensionType(), 0, 0, viewDiameter+2)).join();
+
         final TestConnection connection = env.createConnection();
-        final CompletableFuture<Player> future = connection.connect(flatInstance, new Pos(0.5, 40, 0.5));
         Collector<ChunkDataPacket> chunkDataPacketCollector = connection.trackIncoming(ChunkDataPacket.class);
-        final Player player = future.join();
+        final Player player = connection.connect(flatInstance, new Pos(0.5, 40, 0.5)).join();
         // Initial join
         chunkDataPacketCollector.assertCount(MathUtils.square(viewDiameter));
         player.addPacketToQueue(new ClientTeleportConfirmPacket(player.getLastSentTeleportId()));
@@ -84,6 +83,8 @@ public class PlayerMovementIntegrationTest {
         chunkDataPacketCollector = connection.trackIncoming(ChunkDataPacket.class);
         player.addPacketToQueue(new ClientPlayerPositionPacket(new Vec(-0.5, 40, 0.5), true));
         player.interpretPacketQueue();
+        env.tick();
+        env.tick();
         chunkDataPacketCollector.assertCount(viewDiameter);
 
         // Move to next chunk

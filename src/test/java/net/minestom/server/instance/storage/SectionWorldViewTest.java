@@ -1,5 +1,6 @@
 package net.minestom.server.instance.storage;
 
+import net.minestom.server.coordinate.Area;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.utils.NamespaceID;
@@ -14,7 +15,7 @@ public class SectionWorldViewTest {
 
     @Test
     public void properties() {
-        SectionWorldView section = (SectionWorldView) WorldView.section();
+        SectionWorldView section = (SectionWorldView) WorldView.mutable(Area.section(Vec.ZERO));
 
         assertEquals(section.area().min(), Vec.ZERO, () -> "Section view " + section.area() + " does not start at " + Vec.ZERO);
         assertEquals(section.area().max(), new Vec(SECTION_SIZE), () -> "Section view " + section.area() + " does not end at " + new Vec(SECTION_SIZE));
@@ -23,7 +24,7 @@ public class SectionWorldViewTest {
 
     @Test
     public void blocks() {
-        SectionWorldView section = (SectionWorldView) WorldView.section();
+        SectionWorldView section = (SectionWorldView) WorldView.mutable(Area.section(Vec.ZERO));
 
         // Default block is air
         for (int x = 0; x < SECTION_SIZE; x++) {
@@ -55,7 +56,7 @@ public class SectionWorldViewTest {
 
     @Test
     public void biomes() {
-        SectionWorldView section = (SectionWorldView) WorldView.section();
+        SectionWorldView section = (SectionWorldView) WorldView.mutable(Area.section(Vec.ZERO));
 
         for (int x = 0; x < SECTION_SIZE; x += BIOME_SIZE) {
             for (int y = 0; y < SECTION_SIZE; y += BIOME_SIZE) {

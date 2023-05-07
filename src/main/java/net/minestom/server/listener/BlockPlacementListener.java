@@ -1,7 +1,5 @@
 package net.minestom.server.listener;
 
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import it.unimi.dsi.fastutil.ints.IntSet;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.collision.CollisionUtils;
 import net.minestom.server.coordinate.Area;
@@ -28,9 +26,6 @@ import net.minestom.server.network.packet.client.play.ClientPlayerBlockPlacement
 import net.minestom.server.network.packet.server.play.AcknowledgeBlockChangePacket;
 import net.minestom.server.network.packet.server.play.BlockChangePacket;
 import net.minestom.server.utils.validate.Check;
-
-import java.util.HashSet;
-import java.util.Set;
 
 public class BlockPlacementListener {
     private static final BlockManager BLOCK_MANAGER = MinecraftServer.getBlockManager();
@@ -70,7 +65,7 @@ public class BlockPlacementListener {
             }
         }
         if (blockUse) {
-            refresh(player, instance, blockPosition.sectionX(), blockPosition.sectionZ());
+            refreshChunk(player, instance, blockPosition.sectionX(), blockPosition.sectionZ());
             return;
         }
 
@@ -112,7 +107,7 @@ public class BlockPlacementListener {
                 "A player tried to place a block in the border of a loaded chunk {0}", placementPosition);
         final WorldView chunk = instance.worldView(area);
         if (!(chunk instanceof WorldView.Mutable mutable)) {
-            refresh(player, instance, placementPosition.sectionX(), placementPosition.sectionZ());
+            refreshChunk(player, instance, placementPosition.sectionX(), placementPosition.sectionZ());
             return;
         }
 
@@ -124,7 +119,7 @@ public class BlockPlacementListener {
 
             // Client also doesn't predict placement of blocks on entities, but we need to refresh for cases where bounding boxes on the server don't match the client
             if (collisionEntity != player)
-                refresh(player, instance, placementPosition.sectionX(), placementPosition.sectionZ());
+                refreshChunk(player, instance, placementPosition.sectionX(), placementPosition.sectionZ());
             
             return;
         }
@@ -134,7 +129,7 @@ public class BlockPlacementListener {
         playerBlockPlaceEvent.consumeBlock(player.getGameMode() != GameMode.CREATIVE);
         EventDispatcher.call(playerBlockPlaceEvent);
         if (playerBlockPlaceEvent.isCancelled()) {
-            refresh(player, instance, placementPosition.sectionX(), placementPosition.sectionZ());
+            refreshChunk(player, instance, placementPosition.sectionX(), placementPosition.sectionZ());
             return;
         }
 
@@ -146,7 +141,7 @@ public class BlockPlacementListener {
             resultBlock = blockPlacementRule.blockPlace(instance, resultBlock, blockFace, blockPosition, player);
         }
         if (resultBlock == null) {
-            refresh(player, instance, placementPosition.sectionX(), placementPosition.sectionZ());
+            refreshChunk(player, instance, placementPosition.sectionX(), placementPosition.sectionZ());
             return;
         }
         // Place the block
@@ -164,9 +159,9 @@ public class BlockPlacementListener {
         }
     }
 
-    private static void refresh(Player player, Instance instance, int chunkX, int chunkZ) {
+    private static void refreshChunk(Player player, Instance instance, int chunkX, int chunkZ) {
         player.getInventory().update();
         Area chunk = Area.chunk(instance.dimensionType(), chunkX, chunkZ);
-        instance.refreshArea(player, chunk);
+        player.sendPackets(instance.chunkPackets(chunk));
     }
 }

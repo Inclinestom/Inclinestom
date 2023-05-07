@@ -119,7 +119,8 @@ public class AnvilLoader implements WorldSource {
 
         final ChunkReader chunkReader = new ChunkReader(chunkData);
 
-        WorldView.Mutable chunk = WorldView.mutable();
+        // Anvil chunks have a max height of 4096, so allocate chunk sizes of -4096 to 4096
+        WorldView.Mutable chunk = WorldView.mutable(Area.chunk(-4096, 4096, chunkX, chunkZ));
         synchronized (chunk) {
             var yRange = chunkReader.getYRange();
             if (yRange.getStart() < instance.dimensionType().getMinY()) {

@@ -29,7 +29,11 @@ public interface WorldView extends Block.Getter, Biome.Getter {
     }
 
     static Mutable mutable(Area area) {
-        return mutable(nullPointer());
+        return mutable(area, nullPointer());
+    }
+
+    static Mutable mutable(Area area, WorldView fallback) {
+        return mutable(area, fallback, Block.AIR, Biome.PLAINS);
     }
 
     /**
@@ -38,38 +42,33 @@ public interface WorldView extends Block.Getter, Biome.Getter {
      * @param fallback The fallback world view to use if the given area is out of bounds.
      * @return A mutable world view.
      */
-    static Mutable mutable(Area area, WorldView fallback) {
+    static Mutable mutable(Area area, WorldView fallback, Block defaultBlock, Biome defaultBiome) {
         Point min = area.min();
         Point max = area.max();
-        if (max.blockX() - min.blockX() <= Instance.SECTION_SIZE &&
-            max.blockY() - min.blockY() <= Instance.SECTION_SIZE &&
-            max.blockZ() - min.blockZ() <= Instance.SECTION_SIZE) {
-            return WorldView.view(WorldView.translate(WorldView.section(), min), area);
+
+        // Creating the smallest possible worldview will give us best performance possibility.
+        int width = max.blockX() - min.blockX();
+        int height = max.blockY() - min.blockY();
+        int depth = max.blockZ() - min.blockZ();
+
+        // Section
+        if (width <= Instance.SECTION_SIZE &&
+            height <= Instance.SECTION_SIZE &&
+            depth <= Instance.SECTION_SIZE) {
+            Mutable translatedSection = translate(new SectionWorldView(defaultBlock, defaultBiome), min);
+            return view(translatedSection, area);
         }
-        return WorldView.view(new MutableWorldView(fallback), area);
-    }
 
-    /**
-     * Creates a mutable world view with {@link net.minestom.server.instance.Instance#SECTION_SIZE} width, height, and depth.
-     */
-    static Mutable section(Block defaultBlock, Biome defaultBiome) {
-        return new SectionWorldView(defaultBlock, defaultBiome);
-    }
+        // Chunk
+        int chunkMaxY = Integer.MAX_VALUE / (Instance.SECTION_SIZE * Instance.SECTION_SIZE);
+        if (width <= Instance.SECTION_SIZE &&
+            height < chunkMaxY &&
+            depth <= Instance.SECTION_SIZE) {
+            Mutable translatedChunk = translate(new ChunkWorldView(height, defaultBlock, defaultBiome), min);
+            return view(translatedChunk, area);
+        }
 
-    static Mutable section() {
-        return new SectionWorldView(Block.AIR, Biome.PLAINS);
-    }
-
-    static Mutable chunk(DimensionType dimensionType, Block defaultBlock, Biome defaultBiome) {
-        return new ChunkWorldView(dimensionType, defaultBlock, defaultBiome);
-    }
-
-    static Mutable chunk(DimensionType dimensionType) {
-        return new ChunkWorldView(dimensionType, Block.AIR, Biome.PLAINS);
-    }
-
-    static Mutable chunk() {
-        return new ChunkWorldView(DimensionType.OVERWORLD, Block.AIR, Biome.PLAINS);
+        return view(mutable(fallback), area);
     }
 
     interface Mutable extends WorldView, Block.Setter, Biome.Setter {
@@ -81,6 +80,25 @@ public interface WorldView extends Block.Getter, Biome.Getter {
 
     static Union union() {
         return new UnionWorldView();
+    }
+
+    static boolean equals(WorldView previous, WorldView next) {
+        if (!Area.equals(previous.area(), next.area())) {
+            return false;
+        }
+
+        // TODO: Optimize equality
+        // Idea: Use the hash of sections of the world view to check for equality.
+        //       Ideally these sections would increase exponentially in size.
+        //       e.g. first equality hash would be 1 block in size, then 2, 4, 8, 16, 32, 64, 128, 256, 512, etc.
+        //       This could be implemented by subdividing, and then creating an iterator that goes over the
+        //       subdivisions' block points in some (arbitrary) deterministic order.
+        for (Point point : previous.area()) {
+            if (!previous.getBlock(point).compare(next.getBlock(point))) {
+                return false;
+            }
+        }
+        return true;
     }
 
     interface Union extends WorldView, Mutable {

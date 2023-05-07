@@ -160,7 +160,7 @@ public class PlayerSocketConnection extends PlayerConnection {
     }
 
     @Override
-    public void sendPackets(Collection<SendablePacket> packets) {
+    public void sendPackets(Collection<? extends SendablePacket> packets) {
         final List<SendablePacket> packetsCopy = List.copyOf(packets);
         final boolean compressed = this.compressed;
         this.workerQueue.relaxedOffer(() -> {

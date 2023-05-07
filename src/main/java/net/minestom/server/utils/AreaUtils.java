@@ -47,9 +47,9 @@ public class AreaUtils {
             int minY = min.blockY();
             int minZ = min.blockZ();
 
-            for (int x = minX; x <= max.blockX(); x++) {
-                for (int y = minY; y <= max.blockY(); y++) {
-                    for (int z = minZ; z <= max.blockZ(); z++) {
+            for (int x = minX; x <= max.blockX(); x += Instance.SECTION_SIZE) {
+                for (int y = minY; y <= max.blockY(); y += Instance.SECTION_SIZE) {
+                    for (int z = minZ; z <= max.blockZ(); z += Instance.SECTION_SIZE) {
                         //noinspection IntegerDivisionInFloatingPointContext
                         Vec section = new Vec(x / Instance.SECTION_SIZE, y / Instance.SECTION_SIZE, z / Instance.SECTION_SIZE);
                         if (sections.contains(section)) continue;

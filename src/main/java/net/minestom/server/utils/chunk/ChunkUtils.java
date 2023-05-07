@@ -17,6 +17,7 @@ import net.minestom.server.utils.MathUtils;
 import net.minestom.server.utils.ObjectPool;
 import net.minestom.server.utils.function.IntegerBiConsumer;
 import net.minestom.server.world.DimensionType;
+import net.minestom.server.world.biomes.Biome;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.jglrxavpok.hephaistos.nbt.NBT;
@@ -77,15 +78,6 @@ public final class ChunkUtils {
 
     public static boolean isLoaded(Instance instance, Point point) {
         return isLoaded(instance, point.x(), point.z());
-    }
-
-    public static WorldView retrieve(Instance instance, @Nullable WorldView originWorldView, Point position) {
-        final int chunkX = position.sectionX();
-        final int chunkZ = position.sectionZ();
-        final boolean sameWorldView = originWorldView != null &&
-                originWorldView.area().contains(position);
-        Area chunk = Area.chunk(instance.dimensionType(), chunkX, chunkZ);
-        return sameWorldView ? originWorldView : instance.worldView(chunk);
     }
 
     /**
@@ -286,6 +278,7 @@ public final class ChunkUtils {
     }
 
     private static ChunkData chunkData(WorldView blockStorage, DimensionType dimensionType, int chunkX, int chunkZ) {
+        Area chunkArea = Area.chunk(dimensionType, chunkX, chunkZ);
         final NBTCompound heightmapsNBT;
         // TODO: don't hardcode heightmaps
         // Heightmap
@@ -315,17 +308,9 @@ public final class ChunkUtils {
             })
         );
         Int2ObjectOpenHashMap<Block> entries = new Int2ObjectOpenHashMap<>();
-        for (int x = 0; x < 16; x++) {
-            for (int z = 0; z < 16; z++) {
-                for (int y = 0; y < 16; y++) {
-                    final int blockX = x + chunkX * 16;
-                    final int blockY = y + chunkZ * 16;
-                    final int blockZ = z + chunkZ * 16;
-                    final Block block = blockStorage.getBlock(blockX, blockY, blockZ);
-                    final int index = getBlockIndex(x, y, z);
-                    entries.put(index, block);
-                }
-            }
+        for (Point point : chunkArea) {
+            Block block = blockStorage.getBlock(point);
+            entries.put(block.stateId(), block);
         }
         return new ChunkData(heightmapsNBT, data, entries);
     }
@@ -338,10 +323,13 @@ public final class ChunkUtils {
                     int blockX = x + sectionX * Instance.SECTION_SIZE;
                     int blockY = y + sectionY * Instance.SECTION_SIZE;
                     int blockZ = z + sectionZ * Instance.SECTION_SIZE;
-                    section.blockPalette().set(x, y, z, view.getBlock(blockX, blockY, blockZ).stateId());
+                    short stateId = view.area().contains(blockX, blockY, blockZ) ?
+                            view.getBlock(blockX, blockY, blockZ).stateId() : Block.AIR.stateId();
+                    section.blockPalette().set(x, y, z, stateId);
                     if (x % 4 == 0 && y % 4 == 0 && z % 4 == 0) {
-                        section.biomePalette().set(x / 4, y / 4, z / 4,
-                                view.getBiome(blockX, blockY, blockZ).id());
+                        Biome biome = view.area().contains(blockX, blockY, blockZ) ?
+                                view.getBiome(blockX, blockY, blockZ) : Biome.PLAINS;
+                        section.biomePalette().set(x / 4, y / 4, z / 4, biome.id());
                     }
                     // TODO: Lighting
                 }

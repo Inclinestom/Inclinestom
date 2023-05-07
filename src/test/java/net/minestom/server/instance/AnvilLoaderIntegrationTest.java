@@ -57,6 +57,7 @@ public class AnvilLoaderIntegrationTest {
 
         Consumer<WorldView> checkChunk = chunk -> {
             synchronized (chunk) {
+                Point min = chunk.area().min();
                 assertEquals(-4, chunk.area().min().sectionY());
                 assertEquals(20, chunk.area().max().sectionY());
 
@@ -65,7 +66,7 @@ public class AnvilLoaderIntegrationTest {
                 for (int y = 0; y < 16; y++) {
                     for (int x = 0; x < 16; x++) {
                         for (int z = 0; z < 16; z++) {
-                            Biome b = chunk.getBiome(x, y, z);
+                            Biome b = chunk.getBiome(min.blockX() + x, min.blockY() + y, min.blockZ() + z);
                             assertEquals(NamespaceID.from("minecraft:plains"), b.name());
                         }
                     }

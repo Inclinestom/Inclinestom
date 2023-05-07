@@ -1,5 +1,6 @@
 package net.minestom.server.instance.storage;
 
+import net.minestom.server.coordinate.Area;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.block.Block;
@@ -18,7 +19,7 @@ public class ChunkWorldViewTest {
 
     @Test
     public void properties() {
-        ChunkWorldView chunk = (ChunkWorldView) WorldView.chunk(OVERWORLD);
+        ChunkWorldView chunk = (ChunkWorldView) WorldView.mutable(Area.chunk(OVERWORLD));
 
         assertEquals(chunk.area().min(), Vec.ZERO, () -> "Chunk view " + chunk.area() + " does not start at " + Vec.ZERO);
         assertEquals(chunk.area().max(), new Vec(CHUNK_WIDTH).withY(CHUNK_MAX_Y), () -> "Chunk view " + chunk.area() + " does not end at " + new Vec(CHUNK_WIDTH).withY(CHUNK_MAX_Y));
@@ -27,7 +28,7 @@ public class ChunkWorldViewTest {
 
     @Test
     public void blocks() {
-        ChunkWorldView chunk = (ChunkWorldView) WorldView.chunk();
+        ChunkWorldView chunk = (ChunkWorldView) WorldView.mutable(Area.chunk(OVERWORLD));
 
         // Default block is air
         for (int x = 0; x < CHUNK_WIDTH; x++) {
@@ -59,7 +60,7 @@ public class ChunkWorldViewTest {
 
     @Test
     public void biomes() {
-        ChunkWorldView chunk = (ChunkWorldView) WorldView.chunk();
+        ChunkWorldView chunk = (ChunkWorldView) WorldView.mutable(Area.chunk(OVERWORLD));
 
         // Default biome is plains
         for (int x = 0; x < CHUNK_WIDTH; x++) {

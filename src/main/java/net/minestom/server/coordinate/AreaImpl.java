@@ -114,6 +114,60 @@ interface AreaImpl {
         return areaA.overlap(areaB);
     }
 
+    static Set<Area> groupConnectedAreas(Area area) {
+        Set<Area> connectedAreas = new HashSet<>();
+        Queue<Area> queue = new ArrayDeque<>();
+
+        if (area instanceof Fill) {
+            connectedAreas.add(area);
+            return connectedAreas;
+        }
+
+        FillUnion union = (FillUnion) area;
+        Set<Fill> fills = union.subdivide();
+
+        for (Fill fill : fills) {
+            if (connectedAreas.contains(fill)) continue;
+
+            connectedAreas.add(fill);
+            queue.offer(fill);
+
+            while (!queue.isEmpty()) {
+                Area current = queue.poll();
+
+                forEachNeighbor(current, fills, neighbor -> {
+                    if (connectedAreas.contains(neighbor)) return;
+                    connectedAreas.add(neighbor);
+                    queue.offer(neighbor);
+                });
+            }
+        }
+
+        return connectedAreas;
+    }
+
+    private static void forEachNeighbor(Area area, Set<Fill> fills, Consumer<Fill> consumer) {
+        for (Fill fill : fills) {
+            if (isNeighbor(area, fill)) {
+                consumer.accept(fill);
+            }
+        }
+    }
+
+    private static boolean isNeighbor(Area a, Area b) {
+        if (Area.equals(a, b)) return false;
+
+        Point aMin = a.min();
+        Point aMax = a.max();
+        Point bMin = b.min();
+        Point bMax = b.max();
+
+        // check if the areas touch on any side
+        return aMax.blockX() == bMin.blockX() - 1 || bMax.blockX() == aMin.blockX() - 1 ||
+                aMax.blockY() == bMin.blockY() - 1 || bMax.blockY() == aMin.blockY() - 1 ||
+                aMax.blockZ() == bMin.blockZ() - 1 || bMax.blockZ() == aMin.blockZ() - 1;
+    }
+
     record Fill(Vec min, Vec max) implements Area {
         public Fill(Point min, Point max) {
             this(Vec.fromPoint(min), Vec.fromPoint(max));
@@ -191,15 +245,13 @@ interface AreaImpl {
         @Override
         public long overlapCount(Area other) {
             if (other instanceof Fill fill) {
-                int minX = Math.max(min.blockX(), fill.min.blockX());
-                int minY = Math.max(min.blockY(), fill.min.blockY());
-                int minZ = Math.max(min.blockZ(), fill.min.blockZ());
+                // The overlap of two 3d rectangular prisms.
 
-                int maxX = Math.min(max.blockX(), fill.max.blockX());
-                int maxY = Math.min(max.blockY(), fill.max.blockY());
-                int maxZ = Math.min(max.blockZ(), fill.max.blockZ());
+                long xOverlap = Math.max(0, Math.min(max.blockX(), fill.max.blockX()) - Math.max(min.blockX(), fill.min.blockX()));
+                long yOverlap = Math.max(0, Math.min(max.blockY(), fill.max.blockY()) - Math.max(min.blockY(), fill.min.blockY()));
+                long zOverlap = Math.max(0, Math.min(max.blockZ(), fill.max.blockZ()) - Math.max(min.blockZ(), fill.min.blockZ()));
 
-                return (long) (maxX - minX) * (maxY - minY) * (maxZ - minZ);
+                return xOverlap * yOverlap * zOverlap;
             }
             return other.overlapCount(this); // custom impl
         }
@@ -335,7 +387,7 @@ interface AreaImpl {
         }
     }
 
-    record FillUnion(Fill[] areas, Point min, Point max, long size) implements Area {
+    record FillUnion(Fill[] areas, Vec min, Vec max, long size) implements Area {
 
         public FillUnion(Fill... areas) {
             this(areas, findMin(areas),
@@ -441,7 +493,7 @@ interface AreaImpl {
 
     // Analysis methods
 
-    static Point findMin(Point... points) {
+    static Vec findMin(Point... points) {
         double minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE, minZ = Integer.MAX_VALUE;
         for (Point point : points) {
             minX = Math.min(minX, point.x());
@@ -451,7 +503,7 @@ interface AreaImpl {
         return new Vec(minX, minY, minZ);
     }
 
-    static Point findMin(Area... areas) {
+    static Vec findMin(Area... areas) {
         double minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE, minZ = Integer.MAX_VALUE;
         for (Area area : areas) {
             minX = Math.min(minX, area.min().x());
@@ -461,7 +513,7 @@ interface AreaImpl {
         return new Vec(minX, minY, minZ);
     }
 
-    static Point findMax(Point... points) {
+    static Vec findMax(Point... points) {
         double maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE, maxZ = Integer.MIN_VALUE;
         for (Point point : points) {
             maxX = Math.max(maxX, point.x());
@@ -471,7 +523,7 @@ interface AreaImpl {
         return new Vec(maxX, maxY, maxZ);
     }
 
-    static Point findMax(Area... areas) {
+    static Vec findMax(Area... areas) {
         double maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE, maxZ = Integer.MIN_VALUE;
         for (Area area : areas) {
             maxX = Math.max(maxX, area.max().x());

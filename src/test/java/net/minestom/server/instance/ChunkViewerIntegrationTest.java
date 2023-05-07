@@ -8,8 +8,6 @@ import net.minestom.server.utils.chunk.ChunkUtils;
 import net.minestom.testing.Env;
 import net.minestom.testing.EnvTest;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -36,8 +34,8 @@ public class ChunkViewerIntegrationTest {
             for (int x = -viewRadius; x <= viewRadius; x++) {
                 for (int z = -viewRadius; z <= viewRadius; z++) {
                     Area chunkArea = Area.chunk(instance.dimensionType(), x, z);
-                    ChunkDataPacket packet = instance.chunkPacket(x, z);
-                    instance.viewers(chunkArea).sendPacketToViewers(packet);
+                    var packets = instance.chunkPackets(Area.chunk(instance.dimensionType(), x, z));
+                    instance.viewers(chunkArea).sendPacketsToViewers(packets);
                 }
             }
             assertEquals(count, tracker.collect().size());

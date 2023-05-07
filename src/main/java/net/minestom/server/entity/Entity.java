@@ -96,7 +96,6 @@ public class Entity implements Viewable, Tickable, Schedulable, Snapshotable, Ev
     private final CachedPacket destroyPacketCache = new CachedPacket(() -> new DestroyEntitiesPacket(getEntityId()));
 
     protected Instance instance;
-    protected WorldView currentWorldView = WorldView.nullPointer();
     protected Pos position;
     protected Pos previousPosition;
     protected Pos lastSyncedPosition;
@@ -273,7 +272,7 @@ public class Entity implements Viewable, Tickable, Schedulable, Snapshotable, Ev
      * @throws IllegalStateException if you try to teleport an entity before settings its instance
      */
     public CompletableFuture<Void> teleport(Pos position, long @Nullable [] chunks) {
-        Check.stateCondition(instance == null, "You need to use Entity#setInstance before teleporting an entity!");
+        Check.stateCondition(instance == null, "You need to use Instance#addEntitiy before teleporting an entity!");
         final Runnable endCallback = () -> {
             this.previousPosition = this.position;
             this.position = position;
@@ -502,7 +501,7 @@ public class Entity implements Viewable, Tickable, Schedulable, Snapshotable, Ev
      */
     @Override
     public CompletableFuture<Void> tick(long time) {
-        if (instance == null || isRemoved() || !instance.isAreaLoaded(currentWorldView.area()))
+        if (instance == null || isRemoved() || !instance.isAreaLoaded(Area.block(getPosition())))
             return AsyncUtils.VOID_FUTURE;
 
         // scheduled tasks
@@ -589,7 +588,6 @@ public class Entity implements Viewable, Tickable, Schedulable, Snapshotable, Ev
                 return;
             }
         }
-        final WorldView finalWorldView = ChunkUtils.retrieve(instance, currentWorldView, finalVelocityPosition);
         if (!ChunkUtils.isLoaded(instance, finalVelocityPosition)) {
             // Entity shouldn't be updated when moving in an unloaded chunk
             return;
@@ -625,8 +623,7 @@ public class Entity implements Viewable, Tickable, Schedulable, Snapshotable, Ev
         final double airDrag = type == EntitySpawnType.LIVING || type == EntitySpawnType.PLAYER ? 0.91 : 0.98;
         final double drag;
         if (wasOnGround) {
-            final WorldView chunk = ChunkUtils.retrieve(instance, currentWorldView, position);
-            drag = chunk.getBlock(positionBeforeMove.sub(0, 0.5000001, 0)).registry().friction() * airDrag;
+            drag = instance.getBlock(positionBeforeMove.sub(0, 0.5000001, 0)).registry().friction() * airDrag;
         } else drag = airDrag;
 
         double gravity = flying ? 0 : gravityAcceleration;
@@ -649,7 +646,6 @@ public class Entity implements Viewable, Tickable, Schedulable, Snapshotable, Ev
         // TODO do not call every tick (it is pretty expensive)
         final Pos position = this.position;
         final BoundingBox boundingBox = this.boundingBox;
-        WorldView cache = currentWorldView;
 
         final int minX = (int) Math.floor(boundingBox.minX() + position.x());
         final int maxX = (int) Math.ceil(boundingBox.maxX() + position.x());
@@ -661,7 +657,7 @@ public class Entity implements Viewable, Tickable, Schedulable, Snapshotable, Ev
         for (int y = minY; y <= maxY; y++) {
             for (int x = minX; x <= maxX; x++) {
                 for (int z = minZ; z <= maxZ; z++) {
-                    final Block block = cache.getBlock(x, y, z, Block.Getter.Condition.CACHED);
+                    final Block block = instance.getBlock(x, y, z, Block.Getter.Condition.CACHED);
                     if (block == null) continue;
                     final BlockHandler handler = block.handler();
                     if (handler != null) {
@@ -801,20 +797,6 @@ public class Entity implements Viewable, Tickable, Schedulable, Snapshotable, Ev
     }
 
     /**
-     * Convenient method to get the entity's current chunk.
-     *
-     * @return the entity's current chunk, can be null even if unlikely
-     */
-    public @Nullable WorldView getWorldView() {
-        return currentWorldView;
-    }
-
-    @ApiStatus.Internal
-    protected void refreshCurrentArea(WorldView currentWorldView) {
-        this.currentWorldView = currentWorldView;
-    }
-
-    /**
      * Gets the entity current instance.
      *
      * @return the entity instance, can be null if the entity doesn't have an instance yet
@@ -839,19 +821,26 @@ public class Entity implements Viewable, Tickable, Schedulable, Snapshotable, Ev
         }
         AddEntityToInstanceEvent event = new AddEntityToInstanceEvent(instance, this);
         EventDispatcher.call(event);
-        if (event.isCancelled()) return null; // TODO what to return?
+        if (event.isCancelled()) {
+            return CompletableFuture.failedFuture(new IllegalStateException("AddEntityToInstanceEvent was cancelled"));
+        }
 
-        if (previousInstance != null) removeFromInstance(previousInstance);
+        CompletableFuture<Void> future = new CompletableFuture<>();
+        if (previousInstance != null) {
+            previousInstance.removeEntity(this).thenRun(() -> future.complete(null));
+        } else {
+            future.complete(null);
+        }
 
         this.isActive = true;
         this.position = spawnPosition;
         this.previousPosition = spawnPosition;
         this.instance = instance;
         Area area = Area.chunk(instance.dimensionType(), spawnPosition.sectionX(), spawnPosition.sectionZ());
-        return instance.loadArea(area).thenAccept(chunk -> {
+        return future.thenCompose(ignored -> instance.loadArea(area))
+                .thenAccept(chunk -> {
             try {
                 Check.notNull(chunk, "Entity has been placed in an unloaded chunk!");
-                refreshCurrentArea(chunk);
                 if (this instanceof Player player) {
                     player.sendPacket(instance.timePacket());
                 }
@@ -864,27 +853,12 @@ public class Entity implements Viewable, Tickable, Schedulable, Snapshotable, Ev
         });
     }
 
-    public CompletableFuture<Void> setInstance(Instance instance, Point spawnPosition) {
-        return setInstance(instance, Pos.fromPoint(spawnPosition));
-    }
 
     /**
-     * Changes the entity instance.
-     *
-     * @param instance the new instance of the entity
-     * @return a {@link CompletableFuture} called once the entity's instance has been set,
-     * this is due to chunks needing to load
-     * @throws NullPointerException  if {@code instance} is null
-     * @throws IllegalStateException if {@code instance} has not been registered in {@link InstanceManager}
+     * @see #setInstance(Instance, Pos)
      */
     public CompletableFuture<Void> setInstance(Instance instance) {
-        return setInstance(instance, this.position);
-    }
-
-    private void removeFromInstance(Instance instance) {
-        EventDispatcher.call(new RemoveEntityFromInstanceEvent(instance, this));
-        instance.entityTracker().remove(this);
-        this.viewEngine.forManuals(this::removeViewer);
+        return setInstance(instance, position);
     }
 
     /**
@@ -1288,7 +1262,7 @@ public class Entity implements Viewable, Tickable, Schedulable, Snapshotable, Ev
         final double distanceZ = Math.abs(position.z() - lastSyncedPosition.z());
         final boolean positionChange = (distanceX + distanceY + distanceZ) > 0;
 
-        final WorldView chunk = getWorldView();
+        final WorldView chunk = instance.worldView();
         assert chunk != null;
         if (distanceX > 8 || distanceY > 8 || distanceZ > 8) {
             PacketUtils.prepareViewablePacket(instance.viewers(chunk.area()), new EntityTeleportPacket(getEntityId(), position, isOnGround()), this);
@@ -1454,6 +1428,12 @@ public class Entity implements Viewable, Tickable, Schedulable, Snapshotable, Ev
         if (currentInstance != null) removeFromInstance(currentInstance);
     }
 
+    private void removeFromInstance(Instance instance) {
+        EventDispatcher.call(new RemoveEntityFromInstanceEvent(instance, this));
+        instance.entityTracker().remove(this);
+        this.viewEngine.forManuals(this::removeViewer);
+    }
+
     /**
      * Gets if this entity has been removed.
      *
@@ -1521,7 +1501,7 @@ public class Entity implements Viewable, Tickable, Schedulable, Snapshotable, Ev
     protected void synchronizePosition(boolean includeSelf) {
         final Pos posCache = this.position;
         final ServerPacket packet = new EntityTeleportPacket(getEntityId(), posCache, isOnGround());
-        PacketUtils.prepareViewablePacket(instance.viewers(currentWorldView.area()), packet, this);
+        PacketUtils.prepareViewablePacket(instance.viewers(Area.block(posCache)), packet, this);
         this.lastAbsoluteSynchronizationTime = System.currentTimeMillis();
         this.lastSyncedPosition = posCache;
     }
@@ -1563,7 +1543,7 @@ public class Entity implements Viewable, Tickable, Schedulable, Snapshotable, Ev
 
     @Override
     public EntitySnapshot updateSnapshot(SnapshotUpdater updater) {
-        final WorldView chunk = currentWorldView;
+        final WorldView chunk = instance.worldView(Area.chunk(instance.dimensionType(), position.sectionX(), position.sectionZ()));
         final int[] viewersId = this.viewEngine.viewableOption.bitSet.toIntArray();
         final int[] passengersId = ArrayUtils.mapToIntArray(passengers, Entity::getEntityId);
         final Entity vehicle = this.vehicle;
@@ -1643,7 +1623,8 @@ public class Entity implements Viewable, Tickable, Schedulable, Snapshotable, Ev
         if (!entity.boundingBox.boundingBoxRayIntersectionCheck(start.asVec(), direction, entity.getPosition())) {
             return false;
         }
-        return CollisionUtils.isLineOfSightReachingShape(instance, currentWorldView, start, end, entity.boundingBox);
+        final WorldView chunk = instance.worldView(Area.chunk(instance.dimensionType(), position.sectionX(), position.sectionZ()));
+        return CollisionUtils.isLineOfSightReachingShape(instance, chunk, start, end, entity.boundingBox);
     }
 
     /**
@@ -1668,12 +1649,13 @@ public class Entity implements Viewable, Tickable, Schedulable, Snapshotable, Ev
             return null;
         }
 
+        final WorldView chunk = instance.worldView(Area.chunk(instance.dimensionType(), position.sectionX(), position.sectionZ()));
         final Pos start = position.withY(position.y() + getEyeHeight());
         final Vec startAsVec = start.asVec();
         final Predicate<Entity> finalPredicate = e -> e != this
                 && e.boundingBox.boundingBoxRayIntersectionCheck(startAsVec, position.direction(), e.getPosition())
                 && predicate.test(e)
-                && CollisionUtils.isLineOfSightReachingShape(instance, currentWorldView, start,
+                && CollisionUtils.isLineOfSightReachingShape(instance, chunk, start,
                 e.position.withY(e.position.y() + e.getEyeHeight()), e.boundingBox);
 
         Optional<Entity> nearby = instance.nearbyEntities(position, range).stream()

@@ -11,17 +11,13 @@ public final class EntityUtils {
     }
 
     public static boolean isOnGround(Entity entity) {
-        final WorldView chunk = entity.getWorldView();
-        if (chunk == null)
+        final WorldView view = entity.getInstance().worldView();
+        if (view == null)
             return false;
         final Pos entityPosition = entity.getPosition();
         // TODO: check entire bounding box
         try {
-            final Block block;
-            synchronized (chunk) {
-                block = chunk.getBlock(entityPosition.sub(0, 1, 0));
-            }
-            return block.isSolid();
+            return view.getBlock(entityPosition.sub(0, 1, 0)).isSolid();
         } catch (NullPointerException e) {
             // Probably an entity at the border of an unloaded chunk
             return false;

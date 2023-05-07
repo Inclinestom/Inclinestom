@@ -37,7 +37,6 @@ import net.minestom.server.event.item.PickupExperienceEvent;
 import net.minestom.server.event.player.*;
 import net.minestom.server.instance.EntityStorage;
 import net.minestom.server.instance.Instance;
-import net.minestom.server.instance.storage.WorldView;
 import net.minestom.server.inventory.Inventory;
 import net.minestom.server.inventory.PlayerInventory;
 import net.minestom.server.item.ItemStack;
@@ -67,11 +66,9 @@ import net.minestom.server.snapshot.PlayerSnapshot;
 import net.minestom.server.snapshot.SnapshotImpl;
 import net.minestom.server.snapshot.SnapshotUpdater;
 import net.minestom.server.statistic.PlayerStatistic;
-import net.minestom.server.timer.Scheduler;
 import net.minestom.server.utils.AreaUtils;
 import net.minestom.server.utils.MathUtils;
 import net.minestom.server.utils.PacketUtils;
-import net.minestom.server.utils.async.AsyncUtils;
 import net.minestom.server.utils.function.IntegerBiConsumer;
 import net.minestom.server.utils.identity.NamedAndIdentified;
 import net.minestom.server.utils.inventory.PlayerInventoryUtils;
@@ -90,9 +87,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 
 /**
@@ -123,7 +118,7 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
      * Keeps track of what chunks are sent to the client, this defines the center of the loaded area
      * in the range of {@link MinecraftServer#getChunkViewDistance()}
      */
-    private Vec chunksLoadedByClient = Vec.ZERO;
+    private Area clientLoadedArea = Area.empty();
     final IntegerBiConsumer chunkRemover = (chunkX, chunkZ) -> {
         // Unload old chunks
         sendPacket(new UnloadChunkPacket(chunkX, chunkZ));
@@ -319,6 +314,19 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
     }
 
     @Override
+    public CompletableFuture<Void> tick(long time) {
+        Point oldPos = getPosition();
+        return super.tick(time).thenRun(() -> {
+            Point newPos = getPosition();
+
+            if (oldPos.sectionX() != newPos.sectionX() || oldPos.sectionZ() != newPos.sectionZ()) {
+                // Player changed chunk
+                sendPacket(new UpdateViewPositionPacket(newPos.sectionX(), newPos.sectionZ()));
+            }
+        }).thenRun(this::updateChunks); // Send chunk updates (if any)
+    }
+
+    @Override
     public void update(long time) {
         // Process received packets
         interpretPacketQueue();
@@ -451,7 +459,7 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
         Pos respawnPosition = respawnEvent.getRespawnPosition();
 
         // The client unloads chunks when respawning, so resend all chunks next to spawn
-        chunksLoadedByClient = new Vec(respawnPosition.sectionX(), respawnPosition.sectionZ());
+        clientLoadedArea = Area.empty();
 
         // Client also needs all entities resent to them, since those are unloaded as well
         Area chunkRange = Area.chunkRange(instance.dimensionType(),
@@ -465,7 +473,7 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
                 });
         Area chunkArea = Area.chunk(instance.dimensionType(), respawnPosition.sectionX(), respawnPosition.sectionZ());
         teleport(respawnPosition)
-                .thenRun(() -> this.instance.refreshArea(this, chunkArea))
+                .thenRun(() -> this.sendPacket(new UpdateViewPositionPacket(position.sectionX(), position.sectionZ())))
                 .thenRun(this::refreshAfterTeleport);
     }
 
@@ -554,53 +562,15 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
         final Instance currentInstance = this.instance;
         Check.argCondition(currentInstance == instance, "Instance should be different than the current one");
 
-        // Must update the player chunks
-        final boolean dimensionChange = !Objects.equals(dimensionType, instance.dimensionType());
-        final Consumer<Instance> runnable = (i) -> spawnPlayer(i, spawnPosition,
-                currentInstance == null, dimensionChange, true);
+        return super.setInstance(instance, spawnPosition).thenRun(() -> {
+            // Set the chunk loaded region to nothing.
+            // TODO: Check if the player's current chunks are the same as the ones in the new instance
+            this.clientLoadedArea = Area.empty();
 
-        // Ensure that surrounding chunks are loaded
-        List<CompletableFuture<WorldView>> futures = new ArrayList<>();
-        forEachViewableChunk((chunkX, chunkZ) -> {
-            final CompletableFuture<WorldView> future = instance.loadArea(Area.chunk(instance.dimensionType(), chunkX, chunkZ));
-            if (!future.isDone()) futures.add(future);
+            boolean dimensionChange = getDimensionType() != instance.dimensionType();
+            spawnPlayer(instance, spawnPosition, currentInstance == null, dimensionChange, true);
+            updateChunks(); // Sends chunk packets if applicable.
         });
-        if (futures.isEmpty()) {
-            // All chunks are already loaded
-            runnable.accept(instance);
-            return AsyncUtils.VOID_FUTURE;
-        }
-
-        // One or more chunks need to be loaded
-        final Thread runThread = Thread.currentThread();
-        CountDownLatch latch = new CountDownLatch(1);
-        Scheduler scheduler = MinecraftServer.getSchedulerManager();
-        CompletableFuture<Void> future = new CompletableFuture<>() {
-            @Override
-            public Void join() {
-                // Prevent deadlock
-                if (runThread == Thread.currentThread()) {
-                    try {
-                        latch.await();
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                    scheduler.process();
-                    assert isDone();
-                }
-                return super.join();
-            }
-        };
-
-        CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new))
-                .thenRun(() -> {
-                    scheduler.scheduleNextProcess(() -> {
-                        runnable.accept(instance);
-                        future.complete(null);
-                    });
-                    latch.countDown();
-                });
-        return future;
     }
 
     /**
@@ -618,33 +588,15 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
     }
 
     /**
-     * Used to spawn the player once the client has all the required chunks.
-     * <p>
-     * Does add the player to {@code instance}, remove all viewable entities and call {@link PlayerSpawnEvent}.
-     * <p>
-     * UNSAFE: only called with {@link #setInstance(Instance, Pos)}.
-     *
-     * @param spawnPosition the position to teleport the player
-     * @param firstSpawn    true if this is the player first spawn
-     * @param updateWorldViews  true if chunks should be refreshed, false if the new instance shares the same
-     *                      chunks
+     * Used to update various player data when spawning.
      */
-    private void spawnPlayer(Instance instance, Pos spawnPosition,
-                             boolean firstSpawn, boolean dimensionChange, boolean updateWorldViews) {
-        if (!firstSpawn) {
-            // Player instance changed, clear current viewable collections
-            if (updateWorldViews)
-                forEachWorldChunk(spawnPosition, chunkRemover);
-        }
-
+    private void spawnPlayer(Instance instance, Pos spawnPosition, boolean firstSpawn, boolean dimensionChange,
+                             boolean updateWorldViews) {
         if (dimensionChange) sendDimension(instance.dimensionType());
-
-        super.setInstance(instance, spawnPosition);
 
         if (updateWorldViews) {
             final int chunkX = spawnPosition.sectionX();
             final int chunkZ = spawnPosition.sectionZ();
-            chunksLoadedByClient = new Vec(chunkX, chunkZ);
             sendPacket(new UpdateViewPositionPacket(chunkX, chunkZ));
         }
 
@@ -1207,7 +1159,7 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
     }
 
     @ApiStatus.Experimental
-    public void sendPackets(Collection<SendablePacket> packets) {
+    public void sendPackets(Collection<? extends SendablePacket> packets) {
         this.playerConnection.sendPackets(packets);
     }
 
@@ -2055,17 +2007,37 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
         forDifferingWorldViewsInRange(oldWorldViewX, oldWorldViewZ, newWorldViewX, newWorldViewZ, range, oldCallback);
     }
 
-    protected void sendWorldViewUpdates(int chunkX, int chunkZ) {
-        final Vec old = chunksLoadedByClient;
-        sendPacket(new UpdateViewPositionPacket(chunkX, chunkZ));
-        Area chunk = Area.chunk(getDimensionType(), chunkX, chunkZ);
-        instance.refreshArea(this, chunk);
-        this.chunksLoadedByClient = new Vec(chunkX, chunkZ);
+    protected void updateChunks() {
+        int chunkX = position.sectionX();
+        int chunkZ = position.sectionZ();
+        Area viewingArea = this.viewArea();
+        Area loadArea = Area.exclude(viewingArea, clientLoadedArea);
+        Area unloadArea = Area.exclude(clientLoadedArea, viewingArea);
+        Area instanceLoadedArea = instance.loadedArea();
+
+        // Update the client loaded area
+        this.sendPackets(instance.chunkPackets(loadArea));
+        Area newlySentArea = instanceLoadedArea.overlap(loadArea);
+
+        // Unload relevant chunks
+        List<Area> unloadingAreas = new ArrayList<>();
+        AreaUtils.forEachChunk(unloadArea, (x, z) -> {
+            Area chunkArea = Area.chunk(instance.dimensionType(), x, z);
+            if (instanceLoadedArea.overlaps(chunkArea)) {
+                return; // Still relevant :)
+            }
+            sendPacket(new UnloadChunkPacket(x, z)); // Irrelevant :(
+        });
+
+        Area unloadingArea = Area.union(unloadingAreas);
+        Area loadedTakeUnloaded = Area.exclude(instanceLoadedArea, unloadingArea);
+        this.clientLoadedArea = Area.union(loadedTakeUnloaded, newlySentArea);
     }
 
     public Area viewArea() {
         int viewDistance = MinecraftServer.getChunkViewDistance();
-        return Area.chunkRange(instance.dimensionType(), position.sectionX(), position.sectionZ(), viewDistance);
+        DimensionType dimension = instance == null ? DimensionType.OVERWORLD : instance.dimensionType();
+        return Area.chunkRange(dimension, position.sectionX(), position.sectionZ(), viewDistance);
     }
 
     /**
