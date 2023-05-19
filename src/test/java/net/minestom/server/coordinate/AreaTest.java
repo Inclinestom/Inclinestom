@@ -1,5 +1,6 @@
 package net.minestom.server.coordinate;
 
+import net.minestom.server.world.DimensionType;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -172,6 +173,30 @@ public class AreaTest {
     }
 
     @Test
+    public void overlapArea() {
+        // Union(
+        //  Fill(Vec[x=-304.0, y=-64.0, z=-304.0], Vec[x=0.0, y=320.0, z=304.0]),
+        //  Fill(Vec[x=0.0, y=-64.0, z=-304.0], Vec[x=304.0, y=320.0, z=304.0])
+        //)
+        Area larger = Area.union(
+                Area.fill(new Vec(-304, -64, -304), new Vec(0, 320, 304)),
+                Area.fill(new Vec(0, -64, -304), new Vec(304, 320, 304))
+        );
+        // Union(
+        //  Fill(Vec[x=-128.0, y=-64.0, z=-128.0], Vec[x=0.0, y=320.0, z=128.0]),
+        //  Fill(Vec[x=0.0, y=-64.0, z=-128.0], Vec[x=128.0, y=320.0, z=128.0])
+        //)
+        Area smaller = Area.union(
+                Area.fill(new Vec(-128, -64, -128), new Vec(0, 320, 128)),
+                Area.fill(new Vec(0, -64, -128), new Vec(128, 320, 128))
+        );
+
+        Area overlappedA = larger.overlap(smaller);
+
+        assertEquals(overlappedA.size(), smaller.size());
+    }
+
+    @Test
     public void complexUnionArea() {
         Area areaA = Area.fill(new Vec(0), new Vec(100));
         Area areaB = Area.fill(new Vec(50), new Vec(100));
@@ -181,6 +206,14 @@ public class AreaTest {
         assertContains(area, 0, 0, 0);
         assertEquals(100 * 100 * 100, area.size());
         assertEquals(2 * 2 * 2, area.overlapCount(Area.fill(new Vec(50), new Vec(52))));
+    }
+
+    @Test
+    public void excludeEmpty() {
+        Area area = Area.exclude(Area.fill(new Vec(-100), new Vec(100)), Area.empty());
+
+        assertContains(area, 0, 0, 0);
+        assertEquals(200 * 200 * 200, area.size());
     }
 
     private void assertContains(Area area, double x, double y, double z) {

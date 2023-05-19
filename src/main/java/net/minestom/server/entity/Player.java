@@ -2023,15 +2023,16 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
         List<Area> unloadingAreas = new ArrayList<>();
         AreaUtils.forEachChunk(unloadArea, (x, z) -> {
             Area chunkArea = Area.chunk(instance.dimensionType(), x, z);
-            if (instanceLoadedArea.overlaps(chunkArea)) {
+            if (viewingArea.overlaps(chunkArea)) {
                 return; // Still relevant :)
             }
             sendPacket(new UnloadChunkPacket(x, z)); // Irrelevant :(
         });
 
         Area unloadingArea = Area.union(unloadingAreas);
-        Area loadedTakeUnloaded = Area.exclude(instanceLoadedArea, unloadingArea);
-        this.clientLoadedArea = Area.union(loadedTakeUnloaded, newlySentArea);
+        Area leftOverArea = Area.exclude(clientLoadedArea, unloadingArea);
+        Area newLoadedArea = Area.union(leftOverArea, newlySentArea);
+        this.clientLoadedArea = newLoadedArea;
     }
 
     public Area viewArea() {

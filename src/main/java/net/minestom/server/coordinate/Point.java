@@ -69,18 +69,18 @@ public sealed interface Point permits Vec, Pos {
 
     @Contract(pure = true)
     default int sectionX() {
-        return blockX() / Instance.SECTION_SIZE;
+        return (int) Math.floor(x() / Instance.SECTION_SIZE);
     }
 
     @Contract(pure = true)
     @ApiStatus.Experimental
     default int sectionY() {
-        return blockY() / Instance.SECTION_SIZE;
+        return (int) Math.floor(y() / Instance.SECTION_SIZE);
     }
 
     @Contract(pure = true)
     default int sectionZ() {
-        return blockZ() / Instance.SECTION_SIZE;
+        return (int) Math.floor(z() / Instance.SECTION_SIZE);
     }
 
     /**

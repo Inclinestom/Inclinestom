@@ -8,6 +8,7 @@ import net.minestom.server.command.builder.arguments.ArgumentEnum;
 import net.minestom.server.command.builder.arguments.ArgumentType;
 import net.minestom.server.command.builder.arguments.minecraft.registry.ArgumentEntityType;
 import net.minestom.server.command.builder.condition.Conditions;
+import net.minestom.server.coordinate.Pos;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.*;
 import net.minestom.server.utils.location.RelativeVec;
@@ -39,7 +40,7 @@ public class SummonCommand extends Command {
     private void execute(CommandSender commandSender, CommandContext commandContext) {
         final Entity entity = commandContext.get(entityClass).instantiate(commandContext.get(this.entity));
         //noinspection ConstantConditions - One couldn't possibly execute a command without being in an instance
-        entity.setInstance(((Player) commandSender).getInstance(), commandContext.get(pos).fromSender(commandSender));
+        entity.setInstance(((Player) commandSender).getInstance(), Pos.fromPoint(commandContext.get(pos).fromSender(commandSender)));
     }
 
     @SuppressWarnings("unused")

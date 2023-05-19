@@ -42,12 +42,12 @@ interface AreaImpl {
         throw new IllegalArgumentException("Unknown area type for union: " + areaA.getClass().getName() + " and " + areaB.getClass().getName());
     }
 
-    private static FillUnion safeUnion(Fill... fills) {
+    private static Area safeUnion(Fill... fills) {
         // Remove equal areas
         fills = Arrays.stream(fills).distinct().toArray(Fill[]::new);
 
         if (!overlaps(fills)) { // safely doesn't overlap
-            return new FillUnion(fills);
+            return quickOptimize(new FillUnion(fills));
         }
 
         // We need to remove an overlap
@@ -94,7 +94,7 @@ interface AreaImpl {
 
     static Area invert(Area source) {
         if (source instanceof Fill fill) {
-            return new FillUnion(out -> FULL.fillsRemove(fill, out));
+            return quickOptimize(new FillUnion(out -> FULL.fillsRemove(fill, out)));
         } else if (source instanceof FillUnion union) {
             List<Fill> out = new ArrayList<>();
             out.add(FULL);
@@ -350,41 +350,6 @@ interface AreaImpl {
             }
             throw new IllegalArgumentException("Unsupported area type: " + other.getClass().getName());
         }
-
-        private void fillsOverlap(Area other, Consumer<Fill> out) {
-            // Intersection
-            if (other instanceof Fill fill) {
-                int minX = Math.max(min.blockX(), fill.min.blockX());
-                int minY = Math.max(min.blockY(), fill.min.blockY());
-                int minZ = Math.max(min.blockZ(), fill.min.blockZ());
-
-                int maxX = Math.min(max.blockX(), fill.max.blockX());
-                int maxY = Math.min(max.blockY(), fill.max.blockY());
-                int maxZ = Math.min(max.blockZ(), fill.max.blockZ());
-
-                if (minX >= maxX || minY >= maxY || minZ >= maxZ) {
-                    return;
-                }
-
-                // No intersection
-                if (minX == min.blockX() && minY == min.blockY() && minZ == min.blockZ() &&
-                        maxX == max.blockX() && maxY == max.blockY() && maxZ == max.blockZ()) {
-                    out.accept(this);
-                    return;
-                }
-
-                // Partial intersection
-                out.accept(new Fill(min, new Vec(maxX, maxY, maxZ)));
-                out.accept(new Fill(new Vec(minX, minY, minZ), max));
-                return;
-            } else if (other instanceof FillUnion union) {
-                for (Fill area : union.areas) {
-                    fillsOverlap(area, out);
-                }
-                return;
-            }
-            throw new UnsupportedOperationException("Unsupported area type: " + other.getClass().getName());
-        }
     }
 
     record FillUnion(Fill[] areas, Vec min, Vec max, long size) implements Area {
@@ -439,11 +404,10 @@ interface AreaImpl {
 
         @Override
         public Area overlap(Area other) {
-            List<Fill> out = new ArrayList<>();
-            for (Fill area : areas) {
-                area.fillsOverlap(other, out::add);
-            }
-            return AreaImpl.safeUnion(out.toArray(Fill[]::new));
+            Area invertedA = invert(this);
+            Area invertedB = invert(other);
+            Area invertedOverlap = union(invertedA, invertedB);
+            return invert(invertedOverlap);
         }
 
         @Override
@@ -551,6 +515,18 @@ interface AreaImpl {
                 max.blockX() >= otherMax.blockX() &&
                 max.blockY() >= otherMax.blockY() &&
                 max.blockZ() >= otherMax.blockZ();
+    }
+
+    static Area quickOptimize(Area area) {
+        if (area instanceof FillUnion union) {
+            long size = union.size();
+            Area fill = new Fill(union.min(), union.max());
+            if (fill.size() == size) {
+                return fill;
+            }
+            return area;
+        }
+        return area;
     }
 
     static String toString(Area area) {

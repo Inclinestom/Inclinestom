@@ -84,7 +84,6 @@ public class PlayerMovementIntegrationTest {
         player.addPacketToQueue(new ClientPlayerPositionPacket(new Vec(-0.5, 40, 0.5), true));
         player.interpretPacketQueue();
         env.tick();
-        env.tick();
         chunkDataPacketCollector.assertCount(viewDiameter);
 
         // Move to next chunk
