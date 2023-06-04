@@ -323,12 +323,14 @@ public final class ChunkUtils {
                     int blockX = x + sectionX * Instance.SECTION_SIZE;
                     int blockY = y + sectionY * Instance.SECTION_SIZE;
                     int blockZ = z + sectionZ * Instance.SECTION_SIZE;
-                    short stateId = view.area().contains(blockX, blockY, blockZ) ?
-                            view.getBlock(blockX, blockY, blockZ).stateId() : Block.AIR.stateId();
-                    section.blockPalette().set(x, y, z, stateId);
+                    Block block = view.area().contains(blockX, blockY, blockZ) ?
+                            view.getBlock(blockX, blockY, blockZ) : null;
+                    if (block == null) block = Block.AIR;
+                    section.blockPalette().set(x, y, z, block.stateId());
                     if (x % 4 == 0 && y % 4 == 0 && z % 4 == 0) {
                         Biome biome = view.area().contains(blockX, blockY, blockZ) ?
-                                view.getBiome(blockX, blockY, blockZ) : Biome.PLAINS;
+                                view.getBiome(blockX, blockY, blockZ) : null;
+                        if (biome == null) biome = Biome.PLAINS;
                         section.biomePalette().set(x / 4, y / 4, z / 4, biome.id());
                     }
                     // TODO: Lighting

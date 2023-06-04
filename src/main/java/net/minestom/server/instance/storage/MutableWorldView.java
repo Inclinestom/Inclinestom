@@ -20,12 +20,10 @@ class MutableWorldView implements WorldView.Mutable {
     private final Long2ObjectMap<Int2ObjectMap<Block>> blocks = new Long2ObjectOpenHashMap<>();
     private final Long2ObjectMap<Int2ObjectMap<Biome>> biomes = new Long2ObjectOpenHashMap<>();
     private Area area = Area.full();
-    private final WorldView fallback;
 
     private final ReadWriteLock blockLock = new ReentrantReadWriteLock();
     private final ReadWriteLock biomeLock = new ReentrantReadWriteLock();
-    public MutableWorldView(WorldView fallback) {
-        this.fallback = fallback;
+    public MutableWorldView() {
     }
 
     private @Nullable Block setBlockInternal(int x, int y, int z, Block block) {
@@ -37,10 +35,8 @@ class MutableWorldView implements WorldView.Mutable {
     private @Nullable Block getBlockInternal(int x, int y, int z) {
         long key = index(x, z);
         Int2ObjectMap<Block> column = blocks.get(key);
-        if (column == null) return fallback.getBlock(x, y, z);
-        Block block = column.get(y);
-        if (block == null) return fallback.getBlock(x, y, z);
-        return block;
+        if (column == null) return null;
+        return column.get(y);
     }
 
     private @Nullable Biome setBiomeInternal(int x, int y, int z, Biome biome) {
@@ -52,10 +48,8 @@ class MutableWorldView implements WorldView.Mutable {
     private @Nullable Biome getBiomeInternal(int x, int y, int z) {
         long key = index(x, z);
         Int2ObjectMap<Biome> column = biomes.get(key);
-        if (column == null) return fallback.getBiome(x, y, z);
-        Biome biome = column.get(y);
-        if (biome == null) return fallback.getBiome(x, y, z);
-        return biome;
+        if (column == null) return null;
+        return column.get(y);
     }
 
 
@@ -139,14 +133,22 @@ class MutableWorldView implements WorldView.Mutable {
     public void clear(Area area) {
         try {
             blockLock.writeLock().lock();
+            biomeLock.writeLock().lock();
             area.forEach(point -> {
                 long key = index(point.blockX(), point.blockZ());
                 Int2ObjectMap<Block> map = blocks.get(key);
                 if (map == null) return;
                 map.remove(point.blockY());
             });
+            area.forEach(point -> {
+                long key = index(point.blockX(), point.blockZ());
+                Int2ObjectMap<Biome> map = biomes.get(key);
+                if (map == null) return;
+                map.remove(point.blockY());
+            });
         } finally {
             blockLock.writeLock().unlock();
+            biomeLock.writeLock().unlock();
         }
     }
 

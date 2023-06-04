@@ -273,7 +273,7 @@ public interface Instance extends Block.Getter, Block.Setter,
      */
     boolean isInVoid(Pos position);
 
-    // Packets (commonly subject to change)
+    // Packets. (The signatures of these methods WILL likely change between protocol updates)
     Collection<ChunkDataPacket> chunkPackets(Area area);
 
     TimeUpdatePacket timePacket();

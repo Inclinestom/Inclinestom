@@ -54,6 +54,7 @@ public class AnvilLoaderIntegrationTest {
 
         Instance instance = env.createFlatInstance();
         AnvilLoader chunkLoader = new AnvilLoader(instance, worldFolder);
+        instance.setWorldSource(chunkLoader);
 
         Consumer<WorldView> checkChunk = chunk -> {
             synchronized (chunk) {

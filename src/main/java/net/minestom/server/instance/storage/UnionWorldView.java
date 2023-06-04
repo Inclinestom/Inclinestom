@@ -41,19 +41,26 @@ class UnionWorldView implements WorldView.Union {
 
     @Override
     public @UnknownNullability Block getBlock(int x, int y, int z, Condition condition) {
+        if (!this.area().contains(x, y, z)) {
+            throw WorldView.outOfBounds();
+        }
         for (int i = storages.size() - 1; i >= 0; i--) {
             WorldView storage = storages.get(i);
             Area area = storage.area();
 
             if (!area.contains(x, y, z)) continue;
 
-            return storage.getBlock(x, y, z, condition);
+            Block block = storage.getBlock(x, y, z, condition);
+            if (block != null) return block;
         }
-        throw WorldView.outOfBounds();
+        return null;
     }
 
     @Override
     public Biome getBiome(int x, int y, int z) {
+        if (!this.area().contains(x, y, z)) {
+            throw WorldView.outOfBounds();
+        }
         for (int i = storages.size() - 1; i >= 0; i--) {
             WorldView storage = storages.get(i);
             Area area = storage.area();
@@ -63,7 +70,7 @@ class UnionWorldView implements WorldView.Union {
             Biome biome = storage.getBiome(x, y, z);
             if (biome != null) return biome;
         }
-        throw WorldView.outOfBounds();
+        return null;
     }
 
     @Override

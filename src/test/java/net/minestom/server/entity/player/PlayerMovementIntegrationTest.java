@@ -90,31 +90,36 @@ public class PlayerMovementIntegrationTest {
         chunkDataPacketCollector = connection.trackIncoming(ChunkDataPacket.class);
         player.addPacketToQueue(new ClientPlayerPositionPacket(new Vec(-0.5, 40, -0.5), true));
         player.interpretPacketQueue();
+        env.tick();
         chunkDataPacketCollector.assertCount(viewDiameter);
 
         // Move to next chunk
         chunkDataPacketCollector = connection.trackIncoming(ChunkDataPacket.class);
         player.addPacketToQueue(new ClientPlayerPositionPacket(new Vec(0.5, 40, -0.5), true));
         player.interpretPacketQueue();
+        env.tick();
         chunkDataPacketCollector.assertCount(viewDiameter);
 
         // Move to next chunk
         chunkDataPacketCollector = connection.trackIncoming(ChunkDataPacket.class);
         player.addPacketToQueue(new ClientPlayerPositionPacket(new Vec(0.5, 40, 0.5), true));
         player.interpretPacketQueue();
-        chunkDataPacketCollector.assertEmpty();
+        env.tick();
+        chunkDataPacketCollector.assertCount(viewDiameter);
 
         // Move to next chunk
         chunkDataPacketCollector = connection.trackIncoming(ChunkDataPacket.class);
         player.addPacketToQueue(new ClientPlayerPositionPacket(new Vec(0.5, 40, -0.5), true));
         player.interpretPacketQueue();
-        chunkDataPacketCollector.assertEmpty();
+        env.tick();
+        chunkDataPacketCollector.assertCount(viewDiameter);
 
         // Move to next chunk
         chunkDataPacketCollector = connection.trackIncoming(ChunkDataPacket.class);
         // Abuse the fact that there is no delta check
         player.addPacketToQueue(new ClientPlayerPositionPacket(new Vec(16.5, 40, -16.5), true));
         player.interpretPacketQueue();
+        env.tick();
         chunkDataPacketCollector.assertCount(viewDiameter * 2 - 1);
     }
 }

@@ -16,7 +16,7 @@ class SectionWorldView implements WorldView.Mutable {
 
     private static final int SECTION_SIZE = Instance.SECTION_SIZE;
     private static final int BIOME_SIZE = Instance.BIOME_SIZE;
-    private final Area area;
+    private final Area area = Area.fill(Vec.ZERO, new Vec(SECTION_SIZE));
 
     private final Block[] blocks = new Block[SECTION_SIZE * SECTION_SIZE * SECTION_SIZE];
     private final Block defaultBlock;
@@ -29,8 +29,6 @@ class SectionWorldView implements WorldView.Mutable {
 
         Arrays.fill(blocks, defaultBlock);
         Arrays.fill(biomes, defaultBiome);
-
-        this.area = Area.fill(Vec.ZERO, new Vec(SECTION_SIZE));
     }
 
     private int blockIndex(int x, int y, int z) {

@@ -25,8 +25,8 @@ public class AreaUtils {
             int minChunkX = min.sectionX();
             int minChunkZ = min.sectionZ();
 
-            for (int chunkX = minChunkX; chunkX <= max.sectionX(); chunkX++) {
-                for (int chunkZ = minChunkZ; chunkZ <= max.sectionZ(); chunkZ++) {
+            for (int chunkX = minChunkX; chunkX < max.sectionX(); chunkX++) {
+                for (int chunkZ = minChunkZ; chunkZ < max.sectionZ(); chunkZ++) {
                     long index = ChunkUtils.getChunkIndex(chunkX, chunkZ);
                     if (chunks.contains(index)) continue;
                     chunks.add(index);

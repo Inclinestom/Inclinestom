@@ -4,6 +4,7 @@ import net.minestom.demo.commands.GamemodeCommand;
 import net.minestom.demo.commands.SaveCommand;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.Pos;
+import net.minestom.server.entity.GameMode;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.GlobalEventHandler;
 import net.minestom.server.event.player.PlayerLoginEvent;
@@ -37,6 +38,7 @@ public class MainDemo {
             player.setPermissionLevel(2);
             event.setSpawningInstance(instanceContainer);
             player.setRespawnPoint(new Pos(0, 42, 0));
+            player.setGameMode(GameMode.CREATIVE);
         });
 
         // Start the server on port 25565

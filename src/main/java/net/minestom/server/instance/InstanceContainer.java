@@ -1,6 +1,5 @@
 package net.minestom.server.instance;
 
-import it.unimi.dsi.fastutil.ints.IntSet;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.Viewable;
 import net.minestom.server.coordinate.Area;
@@ -22,7 +21,6 @@ import net.minestom.server.instance.storage.WorldView;
 import net.minestom.server.network.packet.server.play.*;
 import net.minestom.server.utils.AreaUtils;
 import net.minestom.server.utils.PacketUtils;
-import net.minestom.server.utils.async.AsyncUtils;
 import net.minestom.server.utils.block.BlockUtils;
 import net.minestom.server.utils.chunk.ChunkUtils;
 import net.minestom.server.utils.validate.Check;
@@ -35,7 +33,6 @@ import org.jglrxavpok.hephaistos.nbt.NBTCompound;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Collectors;
 
 /**
@@ -50,11 +47,11 @@ public class InstanceContainer extends InstanceBase {
 
     private boolean autoLoad = true;
 
-    private WorldLoader worldLoader = WorldLoader.empty();
     private final Map<Vec, List<WorldView>> forks = new ConcurrentHashMap<>();
 
     private final Map<Area, AreaViewable> viewable = new WeakHashMap<>();
-    private WorldSource worldSource = new AnvilLoader(this, "world");
+
+    private WorldSource worldSource = /*new AnvilLoader(this, "world"); */ WorldSource.empty();
 
     @ApiStatus.Experimental
     public InstanceContainer(UUID uniqueId, DimensionType dimensionType, @Nullable WorldSource loader) {
@@ -104,7 +101,7 @@ public class InstanceContainer extends InstanceBase {
         }
 
         // Set the block
-        blockStorage.add(WorldView.block(block, new Vec(x, y, z)));
+        blockStorage.setBlock(x, y, z, block);
 
         // Refresh neighbors since a new block has been placed
 //        executeNeighboursBlockPlacementRule(blockPosition);
@@ -194,7 +191,7 @@ public class InstanceContainer extends InstanceBase {
         }
 
         Area loadArea = Area.exclude(area, blockStorage.area());
-        return worldLoader.load(area).thenApply(storage -> {
+        return worldSource.load(area).thenApply(storage -> {
             if (storage != null) {
                 return storage;
             }
@@ -203,16 +200,23 @@ public class InstanceContainer extends InstanceBase {
             if (generator == null) {
                 throw new IllegalStateException("Cannot generate worldView " + loadArea + " because no generator is set");
             }
-            GeneratorImpl.UnitImpl unit = GeneratorImpl.mutable(loadArea);
-            generator.generate(unit);
+            List<GeneratorImpl.UnitImpl> units = GeneratorImpl.mutable(loadArea);
+            units.forEach(generator::generate);
 
             // Override old empty storage with filled one
-            storage = ((GeneratorImpl.WorldViewModifierImpl) unit.modifier()).worldView();
+            WorldView.Union union = WorldView.union();
+            units.forEach(unit -> {
+                union.add(((GeneratorImpl.CubeWorldViewModifierImpl) unit.modifier()).worldView());
+            });
+            storage = union;
+
+            // Collect forks
+            var forks = units.stream().map(GeneratorImpl.UnitImpl::forks).flatMap(List::stream).toList();
 
             // Register forks or apply locally
             Area newTotalArea = Area.union(loadArea, blockStorage.area());
-            for (GeneratorImpl.UnitImpl forkUnit : unit.forks()) {
-                GeneratorImpl.WorldViewModifierImpl forkAreaModifier = (GeneratorImpl.WorldViewModifierImpl) forkUnit.modifier();
+            for (GeneratorImpl.UnitImpl forkUnit : forks) {
+                GeneratorImpl.CubeWorldViewModifierImpl forkAreaModifier = (GeneratorImpl.CubeWorldViewModifierImpl) forkUnit.modifier();
 
                 WorldView.Mutable fork = forkAreaModifier.worldView();
 
@@ -230,9 +234,9 @@ public class InstanceContainer extends InstanceBase {
 
             // Apply external forks
             AreaUtils.forEachSection(loadArea, sectionPos -> {
-                List<WorldView> forks = removeForks(sectionPos);
-                if (forks == null) return;
-                for (WorldView fork : forks) {
+                List<WorldView> forksToApply = removeForks(sectionPos);
+                if (forksToApply == null) return;
+                for (WorldView fork : forksToApply) {
                     applyFork(fork);
                 }
             });
@@ -267,7 +271,7 @@ public class InstanceContainer extends InstanceBase {
 
     @Override
     public CompletableFuture<Void> save() {
-        return worldLoader.save(this.blockStorage);
+        return worldSource.save(this.blockStorage);
     }
 
     @Override
@@ -362,7 +366,10 @@ public class InstanceContainer extends InstanceBase {
         if (!blockStorage.area().overlaps(area)) return List.of();
         List<ChunkDataPacket> packets = new ArrayList<>();
         AreaUtils.forEachChunk(area, (x, z) -> {
-            packets.add(ChunkUtils.chunkPacket(blockStorage, dimensionType(), x, z));
+            Area chunkArea = Area.chunk(dimensionType, x, z);
+            if (blockStorage.area().contains(chunkArea)) {
+                packets.add(ChunkUtils.chunkPacket(blockStorage, dimensionType(), x, z));
+            }
         });
         return List.copyOf(packets);
     }

@@ -19,14 +19,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class MutableWorldViewTest {
     @Test
     public void properties() {
-        MutableWorldView mutableWorldView = (MutableWorldView) WorldView.mutable();
+        WorldView.Mutable mutableWorldView = WorldView.mutable();
 
         assertEquals(mutableWorldView.area(), Area.full(), () -> "MutableWorldView view " + mutableWorldView.area() + " is not " + Area.full());
     }
 
     @Test
     public void blocks() {
-        MutableWorldView mutableWorldView = (MutableWorldView) WorldView.mutable(WorldView.empty());
+        WorldView.Mutable mutableWorldView = WorldView.mutable(WorldView.empty());
 
         Random random = new Random();
         Set<Vec> points = IntStream.generate(() -> 0)
@@ -57,7 +57,7 @@ public class MutableWorldViewTest {
 
     @Test
     public void biomes() {
-        MutableWorldView mutableWorldView = (MutableWorldView) WorldView.mutable(WorldView.empty());
+        WorldView.Mutable mutableWorldView = WorldView.mutable(WorldView.empty());
 
         Random random = new Random();
         Set<Vec> points = IntStream.generate(() -> 0)

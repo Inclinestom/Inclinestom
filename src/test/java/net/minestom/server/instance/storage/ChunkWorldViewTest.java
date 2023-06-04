@@ -1,6 +1,7 @@
 package net.minestom.server.instance.storage;
 
 import net.minestom.server.coordinate.Area;
+import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.block.Block;
@@ -14,25 +15,29 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class ChunkWorldViewTest {
 
     private static final DimensionType OVERWORLD = DimensionType.OVERWORLD;
-    private static final int CHUNK_MAX_Y = OVERWORLD.getMaxY() - OVERWORLD.getMinY();
+    private static final int CHUNK_MIN_Y = OVERWORLD.getMinY();
+    private static final int CHUNK_MAX_Y = OVERWORLD.getMaxY();
     private static final int CHUNK_WIDTH = Instance.SECTION_SIZE;
 
     @Test
     public void properties() {
-        ChunkWorldView chunk = (ChunkWorldView) WorldView.mutable(Area.chunk(OVERWORLD));
+        WorldView.Mutable chunk = WorldView.mutable(Area.chunk(OVERWORLD));
 
-        assertEquals(chunk.area().min(), Vec.ZERO, () -> "Chunk view " + chunk.area() + " does not start at " + Vec.ZERO);
-        assertEquals(chunk.area().max(), new Vec(CHUNK_WIDTH).withY(CHUNK_MAX_Y), () -> "Chunk view " + chunk.area() + " does not end at " + new Vec(CHUNK_WIDTH).withY(CHUNK_MAX_Y));
-        assertEquals(chunk.area().size(), (long) CHUNK_WIDTH * CHUNK_MAX_Y * CHUNK_WIDTH, () -> "Chunk view " + chunk.area() + " is not " + CHUNK_WIDTH * CHUNK_MAX_Y * CHUNK_WIDTH);
+        Point expectedMin = new Vec(0, CHUNK_MIN_Y, 0);
+        Point expectedMax = new Vec(CHUNK_WIDTH, CHUNK_MAX_Y, CHUNK_WIDTH);
+        double expectedSize = CHUNK_WIDTH * CHUNK_WIDTH * (CHUNK_MAX_Y - CHUNK_MIN_Y);
+        assertEquals(chunk.area().min(), expectedMin, () -> "Chunk view " + chunk.area() + " does not start at " + expectedMin);
+        assertEquals(chunk.area().max(), expectedMax, () -> "Chunk view " + chunk.area() + " does not end at " + expectedMax);
+        assertEquals(chunk.area().size(), expectedSize, () -> "Chunk view " + chunk.area() + " is not " + expectedSize);
     }
 
     @Test
     public void blocks() {
-        ChunkWorldView chunk = (ChunkWorldView) WorldView.mutable(Area.chunk(OVERWORLD));
+        WorldView.Mutable chunk = WorldView.mutable(Area.chunk(OVERWORLD));
 
         // Default block is air
         for (int x = 0; x < CHUNK_WIDTH; x++) {
-            for (int y = 0; y < CHUNK_MAX_Y; y++) {
+            for (int y = CHUNK_MIN_Y; y < CHUNK_MAX_Y; y++) {
                 for (int z = 0; z < CHUNK_WIDTH; z++) {
                     assertEquals(chunk.getBlock(x, y, z), Block.AIR, "Block at " + new Vec(x, y, z) + " is not " + Block.AIR);
                 }
@@ -41,7 +46,7 @@ public class ChunkWorldViewTest {
 
         // Set all to stone
         for (int x = 0; x < CHUNK_WIDTH; x++) {
-            for (int y = 0; y < CHUNK_MAX_Y; y++) {
+            for (int y = CHUNK_MIN_Y; y < CHUNK_MAX_Y; y++) {
                 for (int z = 0; z < CHUNK_WIDTH; z++) {
                     chunk.setBlock(x, y, z, Block.STONE);
                 }
@@ -50,7 +55,7 @@ public class ChunkWorldViewTest {
 
         // Assert stone
         for (int x = 0; x < CHUNK_WIDTH; x++) {
-            for (int y = 0; y < CHUNK_MAX_Y; y++) {
+            for (int y = CHUNK_MIN_Y; y < CHUNK_MAX_Y; y++) {
                 for (int z = 0; z < CHUNK_WIDTH; z++) {
                     assertEquals(chunk.getBlock(x, y, z), Block.STONE, "Block at " + new Vec(x, y, z) + " is not " + Block.STONE);
                 }
@@ -60,11 +65,11 @@ public class ChunkWorldViewTest {
 
     @Test
     public void biomes() {
-        ChunkWorldView chunk = (ChunkWorldView) WorldView.mutable(Area.chunk(OVERWORLD));
+        WorldView.Mutable chunk = WorldView.mutable(Area.chunk(OVERWORLD));
 
         // Default biome is plains
         for (int x = 0; x < CHUNK_WIDTH; x++) {
-            for (int y = 0; y < CHUNK_MAX_Y; y++) {
+            for (int y = CHUNK_MIN_Y; y < CHUNK_MAX_Y; y++) {
                 for (int z = 0; z < CHUNK_WIDTH; z++) {
                     assertEquals(chunk.getBiome(x, y, z), Biome.PLAINS, "Biome at " + new Vec(x, y, z) + " is not " + Biome.PLAINS);
                 }
@@ -74,7 +79,7 @@ public class ChunkWorldViewTest {
         // Set all to custom biome
         Biome customBiome = Biome.builder().name(NamespaceID.from("custom")).build();
         for (int x = 0; x < CHUNK_WIDTH; x++) {
-            for (int y = 0; y < CHUNK_MAX_Y; y++) {
+            for (int y = CHUNK_MIN_Y; y < CHUNK_MAX_Y; y++) {
                 for (int z = 0; z < CHUNK_WIDTH; z++) {
                     chunk.setBiome(x, y, z, customBiome);
                 }
@@ -83,7 +88,7 @@ public class ChunkWorldViewTest {
 
         // Assert custom biome
         for (int x = 0; x < CHUNK_WIDTH; x++) {
-            for (int y = 0; y < CHUNK_MAX_Y; y++) {
+            for (int y = CHUNK_MIN_Y; y < CHUNK_MAX_Y; y++) {
                 for (int z = 0; z < CHUNK_WIDTH; z++) {
                     assertEquals(chunk.getBiome(x, y, z), customBiome, "Biome at " + new Vec(x, y, z) + " is not " + customBiome);
                 }

@@ -7,6 +7,7 @@ import net.minestom.server.instance.block.Block;
 import net.minestom.server.world.DimensionType;
 import net.minestom.server.world.biomes.Biome;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
 
 import java.util.Arrays;
@@ -46,7 +47,7 @@ class ChunkWorldView implements WorldView.Mutable {
     }
 
     @Override
-    public @UnknownNullability Block getBlock(int x, int y, int z, Condition condition) {
+    public @Nullable Block getBlock(int x, int y, int z, Condition condition) {
         if (!area.contains(x, y, z)) throw WorldView.outOfBounds();
         int index = blockIndex(x, y, z);
         return blocks[index];
@@ -88,7 +89,7 @@ class ChunkWorldView implements WorldView.Mutable {
     }
 
     @Override
-    public Biome getBiome(int x, int y, int z) {
+    public @Nullable Biome getBiome(int x, int y, int z) {
         if (!area.contains(x, y, z)) throw WorldView.outOfBounds();
         int index = biomeIndex(x / BIOME_SIZE, y / BIOME_SIZE, z / BIOME_SIZE);
         return biomes[index];

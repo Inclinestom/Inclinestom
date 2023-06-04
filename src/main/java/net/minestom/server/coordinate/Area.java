@@ -128,9 +128,14 @@ public sealed interface Area extends Iterable<Point> permits AreaImpl.Fill, Area
      * @return a new area
      */
     static Area union(Collection<Area> areas) {
-        return areas.stream()
-                .reduce(Area::union)
-                .orElse(Area.empty());
+        if (areas.isEmpty()) {
+            return Area.empty();
+        }
+        AreaImpl.Fill[] fillArray = areas.stream()
+                .flatMap(area -> area.subdivide().stream())
+                .map(area -> (AreaImpl.Fill) area)
+                .toArray(AreaImpl.Fill[]::new);
+        return AreaImpl.safeUnion(fillArray);
     }
 
     /**
@@ -179,16 +184,18 @@ public sealed interface Area extends Iterable<Point> permits AreaImpl.Fill, Area
         return fill(chunkMin, chunkMax);
     }
 
-    static Area chunkRange(DimensionType dimensionType, int chunkX, int chunkZ, int range) {
-        int minChunkX = chunkX - range;
-        int minChunkZ = chunkZ - range;
-        int maxChunkX = chunkX + range;
-        int maxChunkZ = chunkZ + range;
+    static Area chunkRange(DimensionType dimensionType, int chunkX, int chunkZ, int radius) {
+        int minX = -radius * Instance.SECTION_SIZE;
+        int maxX = (radius + 1) * Instance.SECTION_SIZE;
+        int minY = dimensionType.getMinY();
+        int maxY = dimensionType.getMaxY();
+        int minZ = -radius * Instance.SECTION_SIZE;
+        int maxZ = (radius + 1) * Instance.SECTION_SIZE;
 
-        Point min = new Vec(minChunkX * Instance.SECTION_SIZE, dimensionType.getMinY(), minChunkZ * Instance.SECTION_SIZE);
-        Point max = new Vec(maxChunkX * Instance.SECTION_SIZE, dimensionType.getMaxY(), maxChunkZ * Instance.SECTION_SIZE);
+        int offsetX = chunkX * Instance.SECTION_SIZE;
+        int offsetZ = chunkZ * Instance.SECTION_SIZE;
 
-        return fill(min, max);
+        return fill(new Vec(minX, minY, minZ).add(offsetX, 0, offsetZ), new Vec(maxX, maxY, maxZ).add(offsetX, 0, offsetZ));
     }
 
     /**
@@ -272,7 +279,7 @@ public sealed interface Area extends Iterable<Point> permits AreaImpl.Fill, Area
      * Subdivides this area into a set of {@link AreaImpl.Fill}s.
      * @return the set of fill areas
      */
-    Set<AreaImpl.Fill> subdivide();
+    Set<Area> subdivide();
 
     default Stream<Point> stream() {
         return StreamSupport.stream(spliterator(), false);

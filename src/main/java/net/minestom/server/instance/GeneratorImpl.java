@@ -10,6 +10,7 @@ import net.minestom.server.instance.storage.WorldView;
 import net.minestom.server.world.biomes.Biome;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -31,21 +32,26 @@ final class GeneratorImpl {
 
     static GenerationUnit section(int sectionX, int sectionY, int sectionZ, boolean fork) {
         Point pos = new Vec(sectionX, sectionY, sectionZ).mul(SIZE);
-        WorldView.Mutable relative = WorldView.view(WorldView.mutable(WorldView.empty()), Area.section(Vec.ZERO));
+        WorldView.Mutable relative = WorldView.mutable(Area.section(Vec.ZERO));
         return section(WorldView.translate(relative, pos), sectionX, sectionY, sectionZ, fork);
     }
 
-    static UnitImpl mutable(Area area) {
-        WorldView.Mutable translated = WorldView.translate(WorldView.mutable(WorldView.empty()), area.min());
-        return mutable(WorldView.view(translated, area));
+    static List<UnitImpl> mutable(Area area) {
+        return mutable(WorldView.mutable(area));
     }
 
-    static UnitImpl mutable(WorldView.Mutable memory) {
-        Point start = memory.area().min();
-        Point end = memory.area().max();
+    static List<UnitImpl> mutable(WorldView.Mutable memory) {
+        Area area = memory.area();
+        Point start = area.min();
+        Point end = area.max();
         Point size = end.sub(start);
-        UnitModifier modifier = new WorldViewModifierImpl(memory, size, start, end);
-        return unit(modifier, start, end, null);
+        List<UnitImpl> units = new ArrayList<>();
+        for (Area sub : area.subdivide()) {
+            WorldView.Mutable subMemory = WorldView.view(memory, sub);
+            UnitModifier modifier = new CubeWorldViewModifierImpl(subMemory, sub.min(), sub.max());
+            units.add(unit(modifier, sub.min(), sub.max(), null));
+        }
+        return List.copyOf(units);
     }
 
     static UnitImpl unit(UnitModifier modifier, Point start, Point end,
@@ -251,7 +257,7 @@ final class GeneratorImpl {
         }
     }
 
-    record WorldViewModifierImpl(WorldView.Mutable worldView, Point size, Point start, Point end) implements GenericModifier {
+    record CubeWorldViewModifierImpl(WorldView.Mutable worldView, Point start, Point end) implements GenericModifier {
 
         @Override
         public void setBlock(int x, int y, int z, Block block) {
@@ -271,10 +277,18 @@ final class GeneratorImpl {
 
         @Override
         public void fill(Point start, Point end, Block block) {
+            int startX = Math.max(start.blockX(), this.start.blockX());
+            int startY = Math.max(start.blockY(), this.start.blockY());
+            int startZ = Math.max(start.blockZ(), this.start.blockZ());
+
+            int endX = Math.min(end.blockX(), this.end.blockX());
+            int endY = Math.min(end.blockY(), this.end.blockY());
+            int endZ = Math.min(end.blockZ(), this.end.blockZ());
+
             worldView.mutate(setter -> {
-                for (int x = start.blockX(); x < end.blockX(); x++) {
-                    for (int y = start.blockY(); y < end.blockY(); y++) {
-                        for (int z = start.blockZ(); z < end.blockZ(); z++) {
+                for (int x = startX; x < endX; x++) {
+                    for (int y = startY; y < endY; y++) {
+                        for (int z = startZ; z < endZ; z++) {
                             setter.setBlock(x, y, z, block);
                         }
                     }
@@ -290,6 +304,20 @@ final class GeneratorImpl {
                         worldView.setBiome(x, y, z, biome);
                     }
                 }
+            }
+        }
+
+        @Override
+        public void fillHeight(int minHeight, int maxHeight, Block block) {
+            final Point start = start();
+            final Point end = end();
+            final int startY = start.blockY();
+            final int endY = end.blockY();
+            Point min = start.withY(Math.max(minHeight, startY));
+            Point max = end.withY(Math.min(maxHeight, endY));
+            Area fillArea = Area.fill(min, max);
+            for (Area fillBox : worldView().area().overlap(fillArea).subdivide()) {
+                fill(fillBox.min(), fillBox.max(), block);
             }
         }
 
@@ -437,8 +465,7 @@ final class GeneratorImpl {
     }
 
     sealed interface GenericModifier extends UnitModifier
-            permits WorldViewModifierImpl, BoxedModifierImpl, SectionModifierImpl {
-        Point size();
+            permits CubeWorldViewModifierImpl, BoxedModifierImpl, SectionModifierImpl {
 
         Point start();
 
@@ -464,7 +491,7 @@ final class GeneratorImpl {
         default void setAllRelative(Supplier supplier) {
             final Point start = start();
             final Point end = end();
-            final Point size = size();
+            final Point size = end.sub(start);
 
             for (int x = 0; x < size.blockX(); x++) {
                 for (int y = 0; y < size.blockY(); y++) {
@@ -502,10 +529,13 @@ final class GeneratorImpl {
             final int endY = end.blockY();
             if (startY >= minHeight && endY <= maxHeight) {
                 // Fast path if the unit is fully contained in the height range
+                // TODO: FillAll optimization
                 fill(start, end, block);
             } else {
                 // Slow path if the unit is not fully contained in the height range
-                fill(start.withY(Math.max(minHeight, startY)), end.withY(Math.min(maxHeight, endY)), block);
+                Point min = start.withY(Math.max(minHeight, startY));
+                Point max = end.withY(Math.min(maxHeight, endY));
+                fill(min, max, block);
             }
         }
     }

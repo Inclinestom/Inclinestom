@@ -34,52 +34,87 @@ interface AreaImpl {
         }
         if (areaA instanceof FillUnion unionA) {
             if (areaB instanceof Fill fillB) {
-                return safeUnion(Stream.concat(Stream.of(unionA.areas), Stream.of(fillB)).toArray(Fill[]::new));
+                Fill[] fills = new Fill[unionA.areas.length + 1];
+                System.arraycopy(unionA.areas, 0, fills, 0, unionA.areas.length);
+                fills[fills.length - 1] = fillB;
+                return safeUnion(fills);
             } else if (areaB instanceof FillUnion unionB) {
-                return safeUnion(Stream.concat(Stream.of(unionA.areas), Stream.of(unionB.areas)).toArray(Fill[]::new));
+                Fill[] fills = new Fill[unionA.areas.length + unionB.areas.length];
+                System.arraycopy(unionA.areas, 0, fills, 0, unionA.areas.length);
+                System.arraycopy(unionB.areas, 0, fills, unionA.areas.length, unionB.areas.length);
+                return safeUnion(fills);
             }
         }
         throw new IllegalArgumentException("Unknown area type for union: " + areaA.getClass().getName() + " and " + areaB.getClass().getName());
     }
 
-    private static Area safeUnion(Fill... fills) {
-        // Remove equal areas
-        fills = Arrays.stream(fills).distinct().toArray(Fill[]::new);
+    static <T> List<T> collect(Consumer<Consumer<T>> consumer) {
+        List<T> output = new ArrayList<>();
+        consumer.accept(output::add);
+        return output;
+    }
 
-        if (!overlaps(fills)) { // safely doesn't overlap
-            return quickOptimize(new FillUnion(fills));
-        }
-
-        // We need to remove an overlap
-
-        // Find the overlap
-        Fill overlapAreaA = null;
-        Fill overlapAreaB = null;
-        for (Fill areaA : fills) {
-            if (overlapAreaA != null) break;
+    static List<Fill> fillsRemove(List<Fill> fills, Fill newFill) {
+        List<Fill> output = new ArrayList<>(fills.size());
+        output.add(newFill);
+        for (int i = 0; i < output.size(); i++) {
+            Fill outFill = output.get(i);
             for (Fill fill : fills) {
-                if (areaA.equals(fill)) continue;
-                if (areaA.overlaps(fill)) {
-                    overlapAreaA = areaA;
-                    overlapAreaB = fill;
+                if (fill.overlaps(outFill)) {
+                    output.remove(i);
+                    outFill.fillsRemove(fill, output::add); // Guaranteed to have at least one output here
+                    i = i - 1;
                     break;
                 }
             }
         }
+        return output;
+    }
 
-        if (overlapAreaA == null || overlapAreaB == null) {
-            throw new IllegalStateException("Failed to find an overlap in " + Arrays.toString(fills));
+    static Area safeUnion(Fill... fills) {
+        if (!overlaps(fills)) { // safely doesn't overlap
+            return quickOptimize(new FillUnion(fills));
         }
 
-        // Remove the overlap
-        List<Fill> buffer = new ArrayList<>(List.of(fills));
-        buffer.remove(overlapAreaA);
+        // We need to remove any overlaps
 
-        // Add the replacements
-        overlapAreaA.fillsRemove(overlapAreaB, buffer::add);
+        // Find the overlap
+        List<Fill> output = new ArrayList<>();
+        Queue<Fill> queue = new ArrayDeque<>(List.of(fills));
 
-        // Reattempt to create the union
-        return safeUnion(buffer.toArray(Fill[]::new));
+        while (!queue.isEmpty()) {
+            Fill fill = queue.remove();
+            output.addAll(fillsRemove(output, fill));
+        }
+
+        return quickOptimize(new FillUnion(output.toArray(Fill[]::new)));
+
+//        Fill overlapAreaA = null;
+//        Fill overlapAreaB = null;
+//        for (Fill areaA : fills) {
+//            if (overlapAreaA != null) break;
+//            for (Fill fill : fills) {
+//                if (areaA.overlaps(fill)) {
+//                    overlapAreaA = areaA;
+//                    overlapAreaB = fill;
+//                    break;
+//                }
+//            }
+//        }
+//
+//        if (overlapAreaA == null || overlapAreaB == null) {
+//            throw new IllegalStateException("Failed to find an overlap in " + Arrays.toString(fills));
+//        }
+//
+//        // Remove the overlap
+//        List<Fill> buffer = new ArrayList<>(List.of(fills));
+//        buffer.remove(overlapAreaA);
+//
+//        // Add the replacements
+//        overlapAreaA.fillsRemove(overlapAreaB, buffer::add);
+//
+//        // Reattempt to create the union
+//        return safeUnion(buffer.toArray(Fill[]::new));
     }
 
     private static boolean overlaps(Fill... fills) {
@@ -124,9 +159,9 @@ interface AreaImpl {
         }
 
         FillUnion union = (FillUnion) area;
-        Set<Fill> fills = union.subdivide();
+        Set<Area> fills = union.subdivide();
 
-        for (Fill fill : fills) {
+        for (Area fill : fills) {
             if (connectedAreas.contains(fill)) continue;
 
             connectedAreas.add(fill);
@@ -146,8 +181,8 @@ interface AreaImpl {
         return connectedAreas;
     }
 
-    private static void forEachNeighbor(Area area, Set<Fill> fills, Consumer<Fill> consumer) {
-        for (Fill fill : fills) {
+    private static void forEachNeighbor(Area area, Set<Area> fills, Consumer<Area> consumer) {
+        for (Area fill : fills) {
             if (isNeighbor(area, fill)) {
                 consumer.accept(fill);
             }
@@ -278,7 +313,7 @@ interface AreaImpl {
         }
 
         @Override
-        public Set<Fill> subdivide() {
+        public Set<Area> subdivide() {
             return Set.of(this);
         }
 
@@ -288,7 +323,7 @@ interface AreaImpl {
         }
 
         private void fillsRemove(Area other, Consumer<Fill> out) {
-            // We output the necessary fills to recreate this area without the other area
+            // We output the necessary fills to recreate this area excluding the other area
             // Intersection
             if (other instanceof Fill fill) {
                 Vec thisMin = min;
@@ -439,7 +474,7 @@ interface AreaImpl {
         }
 
         @Override
-        public Set<Fill> subdivide() {
+        public Set<Area> subdivide() {
             return Set.of(areas);
         }
 

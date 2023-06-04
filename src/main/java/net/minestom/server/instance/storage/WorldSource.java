@@ -4,6 +4,7 @@ import net.minestom.server.coordinate.Area;
 import net.minestom.server.instance.AnvilLoader;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.utils.async.AsyncUtils;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -21,7 +22,7 @@ public interface WorldSource {
      * @return a {@link CompletableFuture} completed once the {@link Area} has been loaded, and failed if the load
      * failed for any reason.
      */
-    CompletableFuture<WorldView> load(Area area);
+    CompletableFuture<@Nullable WorldView> load(Area area);
 
     /**
      * Saves a {@link WorldView}.
@@ -33,7 +34,7 @@ public interface WorldSource {
     CompletableFuture<Void> save(WorldView storage);
 
     /**
-     * Called when an view is unloaded, so that this chunk loader can unload any resource it is holding.
+     * Called when a view is unloaded, so that this world source can unload any resource it is holding.
      * Note: Minestom currently has no way to determine whether the chunk comes from this loader, so you may get
      * unload requests for chunks not created by the loader.
      *
@@ -42,5 +43,19 @@ public interface WorldSource {
      */
     default CompletableFuture<Void> unloadArea(Area area) {
         return AsyncUtils.VOID_FUTURE;
+    }
+
+    static WorldSource empty() {
+        return new WorldSource() {
+            @Override
+            public CompletableFuture<@Nullable WorldView> load(Area area) {
+                return CompletableFuture.completedFuture(null);
+            }
+
+            @Override
+            public CompletableFuture<Void> save(WorldView storage) {
+                return CompletableFuture.failedFuture(new UnsupportedOperationException("Cannot save to an empty world source"));
+            }
+        };
     }
 }

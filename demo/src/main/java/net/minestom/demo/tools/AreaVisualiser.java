@@ -8,35 +8,34 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 class AreaVisualiser {
 
     private static final int width = 800;
 
-    private static double zoom = 1;
+    private static double zoom = 1.5;
 
     public static void main(String[] args) {
+        Random random = new Random(0);
+        List<Area> areas = new ArrayList<>();
 
-        Area larger = Area.union(
-                Area.fill(new Vec(-304, -64, -304), new Vec(0, 320, 304)),
-                Area.fill(new Vec(0, -64, -304), new Vec(304, 320, 304))
-        );
+        Supplier<Double> randomDouble = () -> random.nextDouble() * 1000 - 500;
+        Supplier<Vec> randomVec = () -> new Vec(randomDouble.get(), randomDouble.get(), randomDouble.get());
 
-        Area smaller = Area.union(
-                Area.fill(new Vec(-128, -64, -128), new Vec(0, 320, 128)),
-                Area.fill(new Vec(0, -64, -128), new Vec(128, 320, 128))
-        );
+        for (int i = 0; i < 1000; i++) {
+            areas.add(Area.fill(randomVec.get(), randomVec.get()));
+        }
 
-        Area overlappedA = larger.overlap(smaller);
+        Area union = Area.optimize(Area.union(areas));
 
         window(graphics -> {
             graphics.setColor(new Color(0x40C67432, true));
-            drawArea(graphics, larger);
-            graphics.setColor(new Color(0x4059879E, true));
-            drawArea(graphics, smaller);
-            graphics.setColor(new Color(0x403D8D56, true));
-            drawArea(graphics, overlappedA);
+            drawArea(graphics, union);
         });
     }
 
@@ -45,7 +44,7 @@ class AreaVisualiser {
 
         for (Area fill : area.subdivide()) {
             graphics.setColor(color);
-            net.minestom.server.coordinate.Point min = fill.min();
+            Point min = fill.min();
             Point max = fill.max();
             double widthd2 = width / 2.0;
             graphics.fillRect(
@@ -92,7 +91,7 @@ class AreaVisualiser {
             }
         });
         window.addMouseWheelListener(evt -> {
-            zoom = Math.max(1.0, zoom + evt.getPreciseWheelRotation());
+            zoom *= 1.0 + (evt.getPreciseWheelRotation() * 0.5);
             window.repaint();
         });
 

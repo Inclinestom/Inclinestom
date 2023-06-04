@@ -1,15 +1,12 @@
 package net.minestom.server.coordinate;
 
+import net.minestom.server.instance.Instance;
 import net.minestom.server.world.DimensionType;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.Random;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class AreaTest {
 
@@ -174,18 +171,10 @@ public class AreaTest {
 
     @Test
     public void overlapArea() {
-        // Union(
-        //  Fill(Vec[x=-304.0, y=-64.0, z=-304.0], Vec[x=0.0, y=320.0, z=304.0]),
-        //  Fill(Vec[x=0.0, y=-64.0, z=-304.0], Vec[x=304.0, y=320.0, z=304.0])
-        //)
         Area larger = Area.union(
                 Area.fill(new Vec(-304, -64, -304), new Vec(0, 320, 304)),
                 Area.fill(new Vec(0, -64, -304), new Vec(304, 320, 304))
         );
-        // Union(
-        //  Fill(Vec[x=-128.0, y=-64.0, z=-128.0], Vec[x=0.0, y=320.0, z=128.0]),
-        //  Fill(Vec[x=0.0, y=-64.0, z=-128.0], Vec[x=128.0, y=320.0, z=128.0])
-        //)
         Area smaller = Area.union(
                 Area.fill(new Vec(-128, -64, -128), new Vec(0, 320, 128)),
                 Area.fill(new Vec(0, -64, -128), new Vec(128, 320, 128))
@@ -214,6 +203,27 @@ public class AreaTest {
 
         assertContains(area, 0, 0, 0);
         assertEquals(200 * 200 * 200, area.size());
+    }
+
+    @Test
+    public void chunkRadiusTest() {
+        int radius = 8;
+        Area area = Area.chunkRange(DimensionType.OVERWORLD, 0, 0, radius);
+        int side = radius * 2 + 1; // +1 for the center chunks
+        int sideBlocks = side * Instance.SECTION_SIZE;
+        int yBlocks = area.max().blockY() - area.min().blockY();
+
+        int minX = -radius * Instance.SECTION_SIZE;
+        int maxX = (radius + 1) * Instance.SECTION_SIZE;
+        int minZ = -radius * Instance.SECTION_SIZE;
+        int maxZ = (radius + 1) * Instance.SECTION_SIZE;
+
+        assertEquals(minX, area.min().blockX());
+        assertEquals(maxX, area.max().blockX());
+        assertEquals(minZ, area.min().blockZ());
+        assertEquals(maxZ, area.max().blockZ());
+
+        assertEquals((long) sideBlocks * yBlocks * sideBlocks, area.size());
     }
 
     private void assertContains(Area area, double x, double y, double z) {
