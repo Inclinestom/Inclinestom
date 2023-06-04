@@ -11,7 +11,7 @@ public class LegacyCommand extends net.minestom.server.command.builder.SimpleCom
     }
 
     @Override
-    public boolean process(CommandSender sender, String command, String[] args) {
+    public boolean process(@NotNull CommandSender sender, @NotNull String command, @NotNull String[] args) {
         if (!(sender instanceof Player)) return false;
 
         System.gc();
@@ -20,7 +20,7 @@ public class LegacyCommand extends net.minestom.server.command.builder.SimpleCom
     }
 
     @Override
-    public boolean hasAccess(CommandSender sender, @Nullable String commandString) {
+    public boolean hasAccess(@NotNull CommandSender sender, @Nullable String commandString) {
         return true;
     }
 }

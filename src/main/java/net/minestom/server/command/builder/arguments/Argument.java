@@ -56,7 +56,7 @@ public abstract class Argument<T> {
      * @param allowSpace   true if the argument can/should have spaces in it
      * @param useRemaining true if the argument will always take the rest of the command arguments
      */
-    public Argument(String id, boolean allowSpace, boolean useRemaining) {
+    public Argument(@NotNull String id, boolean allowSpace, boolean useRemaining) {
         this.id = id;
         this.allowSpace = allowSpace;
         this.useRemaining = useRemaining;
@@ -68,7 +68,7 @@ public abstract class Argument<T> {
      * @param id         the id of the argument, used to retrieve the parsed value
      * @param allowSpace true if the argument can/should have spaces in it
      */
-    public Argument(String id, boolean allowSpace) {
+    public Argument(@NotNull String id, boolean allowSpace) {
         this(id, allowSpace, false);
     }
 
@@ -77,7 +77,7 @@ public abstract class Argument<T> {
      *
      * @param id the id of the argument, used to retrieve the parsed value
      */
-    public Argument(String id) {
+    public Argument(@NotNull String id) {
         this(id, false, false);
     }
 
@@ -90,7 +90,7 @@ public abstract class Argument<T> {
      * @throws ArgumentSyntaxException if the argument cannot be parsed due to a fault input (argument id)
      */
     @ApiStatus.Experimental
-    public static <T> T parse(Argument<T> argument) throws ArgumentSyntaxException {
+    public static <T> @NotNull T parse(@NotNull Argument<T> argument) throws ArgumentSyntaxException {
         return argument.parse(argument.getId());
     }
 
@@ -102,7 +102,7 @@ public abstract class Argument<T> {
      * @return the parsed argument
      * @throws ArgumentSyntaxException if {@code value} is not valid
      */
-    public abstract T parse(String input) throws ArgumentSyntaxException;
+    public abstract @NotNull T parse(@NotNull String input) throws ArgumentSyntaxException;
 
     public abstract String parser();
 
@@ -213,7 +213,7 @@ public abstract class Argument<T> {
      * @return 'this' for chaining
      */
     @NotNull
-    public Argument<T> setDefaultValue(T defaultValue) {
+    public Argument<T> setDefaultValue(@NotNull T defaultValue) {
         this.defaultValue = () -> defaultValue;
         return this;
     }
@@ -237,7 +237,7 @@ public abstract class Argument<T> {
      * @param suggestionCallback The suggestion callback to set.
      * @return 'this' for chaining
      */
-    public Argument<T> setSuggestionCallback(SuggestionCallback suggestionCallback) {
+    public Argument<T> setSuggestionCallback(@NotNull SuggestionCallback suggestionCallback) {
         this.suggestionCallback = suggestionCallback;
         this.suggestionType = SuggestionType.ASK_SERVER;
         return this;
@@ -260,7 +260,7 @@ public abstract class Argument<T> {
      * @return A new ArgumentMap that can get this complex object type.
      */
     @ApiStatus.Experimental
-    public <O> Argument<O> map(Function<T, O> mapper) {
+    public <O> @NotNull Argument<O> map(@NotNull Function<T, O> mapper) {
         return new ArgumentMap<>(this, mapper);
     }
 
@@ -271,7 +271,7 @@ public abstract class Argument<T> {
      * @return A new ArgumentMap that filters using this filterer.
      */
     @ApiStatus.Experimental
-    public Argument<T> filter(Predicate<T> predicate) {
+    public @NotNull Argument<T> filter(@NotNull Predicate<T> predicate) {
         return new ArgumentFilter<>(this, predicate);
     }
 
@@ -295,7 +295,7 @@ public abstract class Argument<T> {
         final Argument<I> argument;
         final Function<I, O> mapper;
 
-        private ArgumentMap(Argument<I> argument, Function<I, O> mapper) {
+        private ArgumentMap(@NotNull Argument<I> argument, @NotNull Function<I, O> mapper) {
             super(argument.getId(), argument.allowSpace(), argument.useRemaining());
             if (argument.getSuggestionCallback() != null)
                 this.setSuggestionCallback(argument.getSuggestionCallback());
@@ -306,7 +306,7 @@ public abstract class Argument<T> {
         }
 
         @Override
-        public O parse(String input) throws ArgumentSyntaxException {
+        public @NotNull O parse(@NotNull String input) throws ArgumentSyntaxException {
             final I value = argument.parse(input);
             final O mappedValue = mapper.apply(value);
             if (mappedValue == null)
@@ -330,7 +330,7 @@ public abstract class Argument<T> {
         final Argument<T> argument;
         final Predicate<T> predicate;
 
-        private ArgumentFilter(Argument<T> argument, Predicate<T> predicate) {
+        private ArgumentFilter(@NotNull Argument<T> argument, @NotNull Predicate<T> predicate) {
             super(argument.getId(), argument.allowSpace(), argument.useRemaining());
             if (argument.getSuggestionCallback() != null)
                 this.setSuggestionCallback(argument.getSuggestionCallback());
@@ -341,7 +341,7 @@ public abstract class Argument<T> {
         }
 
         @Override
-        public T parse(String input) throws ArgumentSyntaxException {
+        public @NotNull T parse(@NotNull String input) throws ArgumentSyntaxException {
             final T result = argument.parse(input);
             if (!predicate.test(result))
                 throw new ArgumentSyntaxException("Predicate failed", input, INVALID_FILTER);

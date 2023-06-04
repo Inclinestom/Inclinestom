@@ -506,16 +506,16 @@ final class NetworkBufferTypes {
                 return Entity.Pose.values()[ordinal];
             });
 
-    record TypeImpl<T>(Class<T> type,
-                       TypeWriter<T> writer,
-                       TypeReader<T> reader) implements NetworkBuffer.Type<T> {
+    record TypeImpl<T>(@NotNull Class<T> type,
+                       @NotNull TypeWriter<T> writer,
+                       @NotNull TypeReader<T> reader) implements NetworkBuffer.Type<T> {
     }
 
     interface TypeWriter<T> {
-        long write(NetworkBuffer buffer, @UnknownNullability T value);
+        long write(@NotNull NetworkBuffer buffer, @UnknownNullability T value);
     }
 
     interface TypeReader<T> {
-        @UnknownNullability T read(NetworkBuffer buffer);
+        @UnknownNullability T read(@NotNull NetworkBuffer buffer);
     }
 }

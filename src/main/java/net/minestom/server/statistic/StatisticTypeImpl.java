@@ -10,11 +10,11 @@ record StatisticTypeImpl(NamespaceID namespace, int id) implements StatisticType
     private static final Registry.Container<StatisticType> CONTAINER = Registry.createContainer(Registry.Resource.STATISTICS,
             (namespace, properties) -> new StatisticTypeImpl(NamespaceID.from(namespace), properties.getInt("id")));
 
-    static StatisticType get(String namespace) {
+    static StatisticType get(@NotNull String namespace) {
         return CONTAINER.get(namespace);
     }
 
-    static StatisticType getSafe(String namespace) {
+    static StatisticType getSafe(@NotNull String namespace) {
         return CONTAINER.getSafe(namespace);
     }
 

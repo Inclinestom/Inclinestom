@@ -22,7 +22,7 @@ public final class AttributeGenerator extends MinestomCodeGenerator {
     private final InputStream attributesFile;
     private final File outputFolder;
 
-    public AttributeGenerator(@Nullable InputStream attributesFile, File outputFolder) {
+    public AttributeGenerator(@Nullable InputStream attributesFile, @NotNull File outputFolder) {
         this.attributesFile = attributesFile;
         this.outputFolder = outputFolder;
     }

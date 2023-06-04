@@ -13,7 +13,7 @@ public class ArrowMeta extends AbstractArrowMeta implements ObjectDataProvider, 
 
     private Entity shooter;
 
-    public ArrowMeta(Entity entity, Metadata metadata) {
+    public ArrowMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
         super(entity, metadata);
     }
 

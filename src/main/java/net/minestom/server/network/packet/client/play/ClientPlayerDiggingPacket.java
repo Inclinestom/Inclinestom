@@ -8,15 +8,15 @@ import org.jetbrains.annotations.NotNull;
 
 import static net.minestom.server.network.NetworkBuffer.*;
 
-public record ClientPlayerDiggingPacket(Status status, Point blockPosition,
-                                        BlockFace blockFace, int sequence) implements ClientPacket {
-    public ClientPlayerDiggingPacket(NetworkBuffer reader) {
+public record ClientPlayerDiggingPacket(@NotNull Status status, @NotNull Point blockPosition,
+                                        @NotNull BlockFace blockFace, int sequence) implements ClientPacket {
+    public ClientPlayerDiggingPacket(@NotNull NetworkBuffer reader) {
         this(reader.readEnum(Status.class), reader.read(BLOCK_POSITION),
                 BlockFace.values()[reader.read(BYTE)], reader.read(VAR_INT));
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.writeEnum(Status.class, status);
         writer.write(BLOCK_POSITION, blockPosition);
         writer.write(BYTE, (byte) blockFace.ordinal());

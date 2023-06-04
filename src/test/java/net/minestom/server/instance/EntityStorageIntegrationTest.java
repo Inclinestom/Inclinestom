@@ -106,12 +106,12 @@ public class EntityStorageIntegrationTest {
     private Player createTestPlayer() {
         return new Player(UUID.randomUUID(), "TestPlayer", new PlayerConnection() {
             @Override
-            public void sendPacket(SendablePacket packet) {
+            public void sendPacket(@NotNull SendablePacket packet) {
                 // nothing
             }
 
             @Override
-            public SocketAddress getRemoteAddress() {
+            public @NotNull SocketAddress getRemoteAddress() {
                 return null;
             }
         });

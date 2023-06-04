@@ -11,7 +11,7 @@ public class EndCrystalMeta extends EntityMeta {
     public static final byte OFFSET = EntityMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 2;
 
-    public EndCrystalMeta(Entity entity, Metadata metadata) {
+    public EndCrystalMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
         super(entity, metadata);
     }
 

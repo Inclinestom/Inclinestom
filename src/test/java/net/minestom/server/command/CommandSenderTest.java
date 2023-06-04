@@ -59,17 +59,17 @@ public class CommandSenderTest {
         private Component mostRecentMessage = null;
 
         @Override
-        public Set<Permission> getAllPermissions() {
+        public @NotNull Set<Permission> getAllPermissions() {
             return permissions;
         }
 
         @Override
-        public TagHandler tagHandler() {
+        public @NotNull TagHandler tagHandler() {
             return handler;
         }
 
         @Override
-        public void sendMessage(Identity source, Component message, MessageType type) {
+        public void sendMessage(@NotNull Identity source, @NotNull Component message, @NotNull MessageType type) {
             mostRecentMessage = message;
         }
 
@@ -78,7 +78,7 @@ public class CommandSenderTest {
         }
 
         @Override
-        public Identity identity() {
+        public @NotNull Identity identity() {
             return Identity.nil();
         }
     }

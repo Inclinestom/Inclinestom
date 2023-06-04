@@ -9,14 +9,14 @@ import org.jetbrains.annotations.NotNull;
 import static net.minestom.server.network.NetworkBuffer.DOUBLE;
 import static net.minestom.server.network.NetworkBuffer.FLOAT;
 
-public record VehicleMovePacket(Pos position) implements ServerPacket {
-    public VehicleMovePacket(NetworkBuffer reader) {
+public record VehicleMovePacket(@NotNull Pos position) implements ServerPacket {
+    public VehicleMovePacket(@NotNull NetworkBuffer reader) {
         this(new Pos(reader.read(DOUBLE), reader.read(DOUBLE), reader.read(DOUBLE),
                 reader.read(FLOAT), reader.read(FLOAT)));
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.write(DOUBLE, position.x());
         writer.write(DOUBLE, position.y());
         writer.write(DOUBLE, position.z());

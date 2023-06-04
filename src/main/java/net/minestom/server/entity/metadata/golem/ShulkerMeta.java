@@ -10,7 +10,7 @@ public class ShulkerMeta extends AbstractGolemMeta {
     public static final byte OFFSET = AbstractGolemMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 4;
 
-    public ShulkerMeta(Entity entity, Metadata metadata) {
+    public ShulkerMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
         super(entity, metadata);
     }
 

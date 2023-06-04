@@ -28,12 +28,12 @@ public record EnchantedBookMeta(TagReadable readable) implements ItemMetaView<En
         return List.copyOf(entries);
     }).defaultValue(Map.of());
 
-    public Map<Enchantment, Short> getStoredEnchantmentMap() {
+    public @NotNull Map<Enchantment, Short> getStoredEnchantmentMap() {
         return getTag(ENCHANTMENTS);
     }
 
     @Override
-    public <T> @UnknownNullability T getTag(Tag<T> tag) {
+    public <T> @UnknownNullability T getTag(@NotNull Tag<T> tag) {
         return readable.getTag(tag);
     }
 
@@ -42,12 +42,12 @@ public record EnchantedBookMeta(TagReadable readable) implements ItemMetaView<En
             this(TagHandler.newHandler());
         }
 
-        public Builder enchantments(Map<Enchantment, Short> enchantments) {
+        public @NotNull Builder enchantments(@NotNull Map<Enchantment, Short> enchantments) {
             setTag(ENCHANTMENTS, Map.copyOf(enchantments));
             return this;
         }
 
-        public Builder enchantment(Enchantment enchantment, short level) {
+        public @NotNull Builder enchantment(@NotNull Enchantment enchantment, short level) {
             var enchantments = new HashMap<>(getTag(ENCHANTMENTS));
             enchantments.put(enchantment, level);
             return enchantments(enchantments);

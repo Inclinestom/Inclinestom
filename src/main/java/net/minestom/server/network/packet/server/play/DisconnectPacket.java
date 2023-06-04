@@ -13,13 +13,13 @@ import java.util.function.UnaryOperator;
 
 import static net.minestom.server.network.NetworkBuffer.COMPONENT;
 
-public record DisconnectPacket(Component message) implements ComponentHoldingServerPacket {
-    public DisconnectPacket(NetworkBuffer reader) {
+public record DisconnectPacket(@NotNull Component message) implements ComponentHoldingServerPacket {
+    public DisconnectPacket(@NotNull NetworkBuffer reader) {
         this(reader.read(COMPONENT));
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.write(COMPONENT, message);
     }
 
@@ -29,12 +29,12 @@ public record DisconnectPacket(Component message) implements ComponentHoldingSer
     }
 
     @Override
-    public Collection<Component> components() {
+    public @NotNull Collection<Component> components() {
         return List.of(message);
     }
 
     @Override
-    public ServerPacket copyWithOperator(UnaryOperator<Component> operator) {
+    public @NotNull ServerPacket copyWithOperator(@NotNull UnaryOperator<Component> operator) {
         return new DisconnectPacket(operator.apply(message));
     }
 }

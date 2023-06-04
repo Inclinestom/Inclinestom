@@ -15,19 +15,19 @@ import java.util.function.UnaryOperator;
 
 import static net.minestom.server.network.NetworkBuffer.*;
 
-public record WindowItemsPacket(byte windowId, int stateId, List<ItemStack> items,
-                                ItemStack carriedItem) implements ComponentHoldingServerPacket {
+public record WindowItemsPacket(byte windowId, int stateId, @NotNull List<ItemStack> items,
+                                @NotNull ItemStack carriedItem) implements ComponentHoldingServerPacket {
     public WindowItemsPacket {
         items = List.copyOf(items);
     }
 
-    public WindowItemsPacket(NetworkBuffer reader) {
+    public WindowItemsPacket(@NotNull NetworkBuffer reader) {
         this(reader.read(BYTE), reader.read(VAR_INT), reader.readCollection(ITEM),
                 reader.read(ITEM));
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.write(BYTE, windowId);
         writer.write(VAR_INT, stateId);
         writer.writeCollection(ITEM, items);
@@ -40,7 +40,7 @@ public record WindowItemsPacket(byte windowId, int stateId, List<ItemStack> item
     }
 
     @Override
-    public Collection<Component> components() {
+    public @NotNull Collection<Component> components() {
         final var list = new ArrayList<>(this.items);
         list.add(this.carriedItem);
 
@@ -59,7 +59,7 @@ public record WindowItemsPacket(byte windowId, int stateId, List<ItemStack> item
     }
 
     @Override
-    public ServerPacket copyWithOperator(UnaryOperator<Component> operator) {
+    public @NotNull ServerPacket copyWithOperator(@NotNull UnaryOperator<Component> operator) {
         return new WindowItemsPacket(
                 this.windowId,
                 this.stateId,

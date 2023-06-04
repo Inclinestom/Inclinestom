@@ -17,7 +17,7 @@ public class PlayerChangeHeldSlotEvent implements PlayerInstanceEvent, Cancellab
 
     private boolean cancelled;
 
-    public PlayerChangeHeldSlotEvent(Player player, byte slot) {
+    public PlayerChangeHeldSlotEvent(@NotNull Player player, byte slot) {
         this.player = player;
         this.slot = slot;
     }
@@ -53,7 +53,7 @@ public class PlayerChangeHeldSlotEvent implements PlayerInstanceEvent, Cancellab
     }
 
     @Override
-    public Player getPlayer() {
+    public @NotNull Player getPlayer() {
         return player;
     }
 }

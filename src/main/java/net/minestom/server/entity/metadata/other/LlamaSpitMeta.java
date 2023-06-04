@@ -10,7 +10,7 @@ public class LlamaSpitMeta extends EntityMeta implements ObjectDataProvider {
     public static final byte OFFSET = EntityMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 0;
 
-    public LlamaSpitMeta(Entity entity, Metadata metadata) {
+    public LlamaSpitMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
         super(entity, metadata);
     }
 

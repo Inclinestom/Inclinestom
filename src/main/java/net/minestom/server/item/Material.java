@@ -18,10 +18,10 @@ public sealed interface Material extends ProtocolObject, Materials permits Mater
      * @return the material registry
      */
     @Contract(pure = true)
-    Registry.MaterialEntry registry();
+    @NotNull Registry.MaterialEntry registry();
 
     @Override
-    default NamespaceID namespace() {
+    default @NotNull NamespaceID namespace() {
         return registry().namespace();
     }
 
@@ -58,15 +58,15 @@ public sealed interface Material extends ProtocolObject, Materials permits Mater
         }
     }
 
-    static Collection<Material> values() {
+    static @NotNull Collection<@NotNull Material> values() {
         return MaterialImpl.values();
     }
 
-    static @Nullable Material fromNamespaceId(String namespaceID) {
+    static @Nullable Material fromNamespaceId(@NotNull String namespaceID) {
         return MaterialImpl.getSafe(namespaceID);
     }
 
-    static @Nullable Material fromNamespaceId(NamespaceID namespaceID) {
+    static @Nullable Material fromNamespaceId(@NotNull NamespaceID namespaceID) {
         return fromNamespaceId(namespaceID.asString());
     }
 

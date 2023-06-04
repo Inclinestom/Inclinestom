@@ -11,14 +11,14 @@ public interface Generator {
      *
      * @param unit the unit to fill
      */
-    void generate(GenerationUnit unit);
+    void generate(@NotNull GenerationUnit unit);
 
     /**
      * Runs {@link #generate(GenerationUnit)} on each unit in the collection.
      *
      * @param units the list of units to fill
      */
-    default void generateAll(Collection<GenerationUnit> units) {
+    default void generateAll(@NotNull Collection<@NotNull GenerationUnit> units) {
         units.forEach(this::generate);
     }
 }

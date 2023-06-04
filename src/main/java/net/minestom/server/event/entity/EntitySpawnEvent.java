@@ -13,7 +13,7 @@ public class EntitySpawnEvent implements EntityInstanceEvent {
     private final Entity entity;
     private final Instance spawnInstance;
 
-    public EntitySpawnEvent(Entity entity, Instance spawnInstance) {
+    public EntitySpawnEvent(@NotNull Entity entity, @NotNull Instance spawnInstance) {
         this.entity = entity;
         this.spawnInstance = spawnInstance;
     }

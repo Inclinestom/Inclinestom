@@ -9,11 +9,11 @@ import org.jetbrains.annotations.NotNull;
 
 import static net.minestom.server.network.NetworkBuffer.*;
 
-public record ClientPlayerBlockPlacementPacket(Player.Hand hand, Point blockPosition,
-                                               BlockFace blockFace,
+public record ClientPlayerBlockPlacementPacket(@NotNull Player.Hand hand, @NotNull Point blockPosition,
+                                               @NotNull BlockFace blockFace,
                                                float cursorPositionX, float cursorPositionY, float cursorPositionZ,
                                                boolean insideBlock, int sequence) implements ClientPacket {
-    public ClientPlayerBlockPlacementPacket(NetworkBuffer reader) {
+    public ClientPlayerBlockPlacementPacket(@NotNull NetworkBuffer reader) {
         this(reader.readEnum(Player.Hand.class), reader.read(BLOCK_POSITION),
                 reader.readEnum(BlockFace.class),
                 reader.read(FLOAT), reader.read(FLOAT), reader.read(FLOAT),
@@ -21,7 +21,7 @@ public record ClientPlayerBlockPlacementPacket(Player.Hand hand, Point blockPosi
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.writeEnum(Player.Hand.class, hand);
         writer.write(BLOCK_POSITION, blockPosition);
         writer.writeEnum(BlockFace.class, blockFace);

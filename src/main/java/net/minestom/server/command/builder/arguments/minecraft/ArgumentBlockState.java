@@ -13,12 +13,12 @@ public class ArgumentBlockState extends Argument<Block> {
     public static final int INVALID_PROPERTY = 3;
     public static final int INVALID_PROPERTY_VALUE = 4;
 
-    public ArgumentBlockState(String id) {
+    public ArgumentBlockState(@NotNull String id) {
         super(id, true, false);
     }
 
     @Override
-    public Block parse(String input) throws ArgumentSyntaxException {
+    public @NotNull Block parse(@NotNull String input) throws ArgumentSyntaxException {
         return staticParse(input);
     }
 
@@ -31,7 +31,7 @@ public class ArgumentBlockState extends Argument<Block> {
      * @deprecated use {@link Argument#parse(Argument)}
      */
     @Deprecated
-    public static Block staticParse(String input) throws ArgumentSyntaxException {
+    public static Block staticParse(@NotNull String input) throws ArgumentSyntaxException {
         final int nbtIndex = input.indexOf("[");
         if (nbtIndex == 0)
             throw new ArgumentSyntaxException("No block type", input, NO_BLOCK);

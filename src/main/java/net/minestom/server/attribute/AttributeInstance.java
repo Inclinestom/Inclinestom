@@ -19,7 +19,7 @@ public final class AttributeInstance {
     private float baseValue;
     private float cachedValue = 0.0f;
 
-    public AttributeInstance(Attribute attribute, @Nullable Consumer<AttributeInstance> listener) {
+    public AttributeInstance(@NotNull Attribute attribute, @Nullable Consumer<AttributeInstance> listener) {
         this.attribute = attribute;
         this.propertyChangeListener = listener;
         this.baseValue = attribute.defaultValue();
@@ -31,7 +31,7 @@ public final class AttributeInstance {
      *
      * @return the associated attribute
      */
-    public Attribute getAttribute() {
+    public @NotNull Attribute getAttribute() {
         return attribute;
     }
 
@@ -63,7 +63,7 @@ public final class AttributeInstance {
      *
      * @param modifier the modifier to add
      */
-    public void addModifier(AttributeModifier modifier) {
+    public void addModifier(@NotNull AttributeModifier modifier) {
         if (modifiers.putIfAbsent(modifier.getId(), modifier) == null) {
             refreshCachedValue();
         }
@@ -74,7 +74,7 @@ public final class AttributeInstance {
      *
      * @param modifier the modifier to remove
      */
-    public void removeModifier(AttributeModifier modifier) {
+    public void removeModifier(@NotNull AttributeModifier modifier) {
         removeModifier(modifier.getId());
     }
 
@@ -83,7 +83,7 @@ public final class AttributeInstance {
      *
      * @param uuid The UUID of the modifier to remove
      */
-    public void removeModifier(UUID uuid) {
+    public void removeModifier(@NotNull UUID uuid) {
         if (modifiers.remove(uuid) != null) {
             refreshCachedValue();
         }

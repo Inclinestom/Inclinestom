@@ -18,7 +18,7 @@ public interface GenerationUnit {
      *
      * @return the modifier
      */
-    UnitModifier modifier();
+    @NotNull UnitModifier modifier();
 
     /**
      * The size of this unit in blocks.
@@ -27,21 +27,21 @@ public interface GenerationUnit {
      *
      * @return the size of this unit
      */
-    Point size();
+    @NotNull Point size();
 
     /**
      * The absolute start (min x, y, z) of this unit.
      *
      * @return the absolute start
      */
-    Point absoluteStart();
+    @NotNull Point absoluteStart();
 
     /**
      * The absolute end (max x, y, z) of this unit.
      *
      * @return the absolute end
      */
-    Point absoluteEnd();
+    @NotNull Point absoluteEnd();
 
     /**
      * Creates a fork of this unit, which will be applied to the instance whenever possible.
@@ -50,21 +50,21 @@ public interface GenerationUnit {
      * @param end   the end of the fork
      * @return the fork
      */
-    GenerationUnit fork(Point start, Point end);
+    @NotNull GenerationUnit fork(@NotNull Point start, @NotNull Point end);
 
     /**
      * Creates a fork of this unit depending on the blocks placed within the consumer.
      *
      * @param consumer the consumer
      */
-    void fork(Consumer<Block.Setter> consumer);
+    void fork(@NotNull Consumer<Block.@NotNull Setter> consumer);
 
     /**
      * Divides this unit into the smallest independent units.
      *
      * @return an immutable list of independent units
      */
-    default List<GenerationUnit> subdivide() {
+    default @NotNull List<GenerationUnit> subdivide() {
         return List.of(this);
     }
 }

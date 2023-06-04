@@ -12,7 +12,7 @@ import java.util.function.IntUnaryOperator;
  */
 public interface StackingRule {
 
-    static StackingRule get() {
+    static @NotNull StackingRule get() {
         return ItemStackImpl.DEFAULT_STACKING_RULE;
     }
 
@@ -24,7 +24,7 @@ public interface StackingRule {
      * @return true if both {@link ItemStack} can be stacked together
      * (without taking their amount in consideration)
      */
-    boolean canBeStacked(ItemStack item1, ItemStack item2);
+    boolean canBeStacked(@NotNull ItemStack item1, @NotNull ItemStack item2);
 
     /**
      * Used to know if an {@link ItemStack} can have the size {@code newAmount} applied.
@@ -33,7 +33,7 @@ public interface StackingRule {
      * @param amount the desired new amount
      * @return true if {@code item} can have its stack size set to newAmount
      */
-    boolean canApply(ItemStack item, int amount);
+    boolean canApply(@NotNull ItemStack item, int amount);
 
     /**
      * Changes the size of the {@link ItemStack} to {@code newAmount}.
@@ -44,10 +44,10 @@ public interface StackingRule {
      * @return a new {@link ItemStack item} with the specified amount
      */
     @Contract("_, _ -> new")
-    ItemStack apply(ItemStack item, int newAmount);
+    @NotNull ItemStack apply(@NotNull ItemStack item, int newAmount);
 
     @Contract("_, _ -> new")
-    default ItemStack apply(ItemStack item, IntUnaryOperator amountOperator) {
+    default @NotNull ItemStack apply(@NotNull ItemStack item, @NotNull IntUnaryOperator amountOperator) {
         return apply(item, amountOperator.applyAsInt(getAmount(item)));
     }
 
@@ -58,7 +58,7 @@ public interface StackingRule {
      * @param itemStack the {@link ItemStack} to check the size
      * @return the correct size of {@link ItemStack}
      */
-    int getAmount(ItemStack itemStack);
+    int getAmount(@NotNull ItemStack itemStack);
 
     /**
      * Gets the max size of a stack.
@@ -66,5 +66,5 @@ public interface StackingRule {
      * @param itemStack the item to get the max size from
      * @return the max size of a stack
      */
-    int getMaxSize(ItemStack itemStack);
+    int getMaxSize(@NotNull ItemStack itemStack);
 }

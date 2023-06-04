@@ -12,12 +12,12 @@ public class PlayerStatistic {
     private final StatisticCategory category;
     private final int statisticId;
 
-    public PlayerStatistic(StatisticCategory category, int statisticId) {
+    public PlayerStatistic(@NotNull StatisticCategory category, int statisticId) {
         this.category = category;
         this.statisticId = statisticId;
     }
 
-    public PlayerStatistic(StatisticType type) {
+    public PlayerStatistic(@NotNull StatisticType type) {
         this(StatisticCategory.CUSTOM, type.id());
     }
 

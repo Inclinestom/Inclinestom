@@ -8,7 +8,7 @@ public class PhantomMeta extends FlyingMeta {
     public static final byte OFFSET = FlyingMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 1;
 
-    public PhantomMeta(Entity entity, Metadata metadata) {
+    public PhantomMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
         super(entity, metadata);
     }
 

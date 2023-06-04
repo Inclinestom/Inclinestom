@@ -5,13 +5,13 @@ import net.minestom.server.network.NetworkBuffer;
 import net.minestom.server.network.packet.client.ClientPacket;
 import org.jetbrains.annotations.NotNull;
 
-public record ClientChatAckPacket(LastSeenMessages.Update update) implements ClientPacket {
-    public ClientChatAckPacket(NetworkBuffer reader) {
+public record ClientChatAckPacket(@NotNull LastSeenMessages.Update update) implements ClientPacket {
+    public ClientChatAckPacket(@NotNull NetworkBuffer reader) {
         this(new LastSeenMessages.Update(reader));
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.write(update);
     }
 }

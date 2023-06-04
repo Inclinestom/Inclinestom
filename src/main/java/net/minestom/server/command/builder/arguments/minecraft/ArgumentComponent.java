@@ -11,13 +11,13 @@ public class ArgumentComponent extends Argument<Component> {
 
     public static final int INVALID_JSON_ERROR = 1;
 
-    public ArgumentComponent(String id) {
+    public ArgumentComponent(@NotNull String id) {
         super(id, true);
     }
 
     @NotNull
     @Override
-    public Component parse(String input) throws ArgumentSyntaxException {
+    public Component parse(@NotNull String input) throws ArgumentSyntaxException {
         try {
             return GsonComponentSerializer.gson().deserialize(input);
         } catch (JsonParseException e) {

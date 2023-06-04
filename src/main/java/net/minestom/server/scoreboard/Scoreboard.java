@@ -37,7 +37,7 @@ public interface Scoreboard extends Viewable, PacketGroupingAudience {
      * @param type  The type for the objective
      * @return the creation objective packet
      */
-    default ScoreboardObjectivePacket getCreationObjectivePacket(Component value, ScoreboardObjectivePacket.Type type) {
+    default @NotNull ScoreboardObjectivePacket getCreationObjectivePacket(Component value, ScoreboardObjectivePacket.Type type) {
         return new ScoreboardObjectivePacket(getObjectiveName(), (byte) 0, value, type);
     }
 
@@ -46,7 +46,7 @@ public interface Scoreboard extends Viewable, PacketGroupingAudience {
      *
      * @return the destruction objective packet
      */
-    default ScoreboardObjectivePacket getDestructionObjectivePacket() {
+    default @NotNull ScoreboardObjectivePacket getDestructionObjectivePacket() {
         return new ScoreboardObjectivePacket(getObjectiveName(), (byte) 1, null, null);
     }
 
@@ -56,7 +56,7 @@ public interface Scoreboard extends Viewable, PacketGroupingAudience {
      * @param position The position of the scoreboard
      * @return the created display scoreboard packet
      */
-    default DisplayScoreboardPacket getDisplayScoreboardPacket(byte position) {
+    default @NotNull DisplayScoreboardPacket getDisplayScoreboardPacket(byte position) {
         return new DisplayScoreboardPacket(position, getObjectiveName());
     }
 
@@ -75,10 +75,10 @@ public interface Scoreboard extends Viewable, PacketGroupingAudience {
      *
      * @return the objective name
      */
-    String getObjectiveName();
+    @NotNull String getObjectiveName();
 
     @Override
-    default Collection<Player> getPlayers() {
+    default @NotNull Collection<Player> getPlayers() {
         return this.getViewers();
     }
 }

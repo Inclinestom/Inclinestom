@@ -21,7 +21,7 @@ public class PlayerPreEatEvent implements ItemEvent, PlayerInstanceEvent, Cancel
 
     private boolean cancelled;
 
-    public PlayerPreEatEvent(Player player, ItemStack foodItem, Player.Hand hand, long eatingTime) {
+    public PlayerPreEatEvent(@NotNull Player player, @NotNull ItemStack foodItem, @NotNull Player.Hand hand, long eatingTime) {
         this.player = player;
         this.foodItem = foodItem;
         this.hand = hand;
@@ -35,11 +35,11 @@ public class PlayerPreEatEvent implements ItemEvent, PlayerInstanceEvent, Cancel
      * @deprecated use getItemStack() for the eaten item
      */
     @Deprecated
-    public ItemStack getFoodItem() {
+    public @NotNull ItemStack getFoodItem() {
         return foodItem;
     }
 
-    public Player.Hand getHand() {
+    public @NotNull Player.Hand getHand() {
         return hand;
     }
 
@@ -74,7 +74,7 @@ public class PlayerPreEatEvent implements ItemEvent, PlayerInstanceEvent, Cancel
     }
 
     @Override
-    public Player getPlayer() {
+    public @NotNull Player getPlayer() {
         return player;
     }
 
@@ -84,5 +84,5 @@ public class PlayerPreEatEvent implements ItemEvent, PlayerInstanceEvent, Cancel
      * @return the food item
      */
     @Override
-    public ItemStack getItemStack() { return foodItem; }
+    public @NotNull ItemStack getItemStack() { return foodItem; }
 }

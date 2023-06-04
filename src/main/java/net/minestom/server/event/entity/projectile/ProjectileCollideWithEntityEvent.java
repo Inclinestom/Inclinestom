@@ -6,18 +6,18 @@ import org.jetbrains.annotations.NotNull;
 
 public final class ProjectileCollideWithEntityEvent extends ProjectileCollideEvent {
 
-    private final Entity target;
+    private final @NotNull Entity target;
 
     public ProjectileCollideWithEntityEvent(
-            Entity projectile,
-            Pos position,
-            Entity target
+            @NotNull Entity projectile,
+            @NotNull Pos position,
+            @NotNull Entity target
     ) {
         super(projectile, position);
         this.target = target;
     }
 
-    public Entity getTarget() {
+    public @NotNull Entity getTarget() {
         return target;
     }
 }

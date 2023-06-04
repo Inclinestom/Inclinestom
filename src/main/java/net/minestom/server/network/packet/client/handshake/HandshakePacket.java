@@ -26,7 +26,7 @@ import java.util.UUID;
 
 import static net.minestom.server.network.NetworkBuffer.*;
 
-public record HandshakePacket(int protocolVersion, String serverAddress,
+public record HandshakePacket(int protocolVersion, @NotNull String serverAddress,
                               int serverPort, int nextState) implements ClientPreplayPacket {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(HandshakePacket.class);
@@ -47,13 +47,13 @@ public record HandshakePacket(int protocolVersion, String serverAddress,
         }
     }
 
-    public HandshakePacket(NetworkBuffer reader) {
+    public HandshakePacket(@NotNull NetworkBuffer reader) {
         this(reader.read(VAR_INT), reader.read(STRING),
                 reader.read(UNSIGNED_SHORT), reader.read(VAR_INT));
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.write(VAR_INT, protocolVersion);
         int maxLength = getMaxHandshakeLength();
         if (serverAddress.length() > maxLength) {
@@ -65,7 +65,7 @@ public record HandshakePacket(int protocolVersion, String serverAddress,
     }
 
     @Override
-    public void process(PlayerConnection connection) {
+    public void process(@NotNull PlayerConnection connection) {
         String address = serverAddress;
         // Bungee support (IP forwarding)
         if (BungeeCordProxy.isEnabled() && connection instanceof PlayerSocketConnection socketConnection && nextState == 2) {
@@ -159,12 +159,12 @@ public record HandshakePacket(int protocolVersion, String serverAddress,
         return BungeeCordProxy.isEnabled() ? (BungeeCordProxy.isBungeeGuardEnabled() ? 2500 : Short.MAX_VALUE) : 255;
     }
 
-    private void disconnect(PlayerConnection connection, Component reason) {
+    private void disconnect(@NotNull PlayerConnection connection, @NotNull Component reason) {
         connection.sendPacket(new LoginDisconnectPacket(reason));
         connection.disconnect();
     }
 
-    private void bungeeDisconnect(PlayerConnection connection) {
+    private void bungeeDisconnect(@NotNull PlayerConnection connection) {
         LOGGER.warn("{} tried to log in without valid BungeeGuard forwarding information.", connection.getIdentifier());
         disconnect(connection, INVALID_BUNGEE_FORWARDING);
     }

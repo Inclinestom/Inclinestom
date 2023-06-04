@@ -6,12 +6,12 @@ import net.minestom.server.network.packet.server.ServerPacketIdentifier;
 import org.jetbrains.annotations.NotNull;
 
 public record EnterCombatEventPacket() implements ServerPacket {
-    public EnterCombatEventPacket(NetworkBuffer reader) {
+    public EnterCombatEventPacket(@NotNull NetworkBuffer reader) {
         this();
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         // Empty
     }
 

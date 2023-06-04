@@ -8,13 +8,13 @@ import org.jetbrains.annotations.NotNull;
 
 import static net.minestom.server.network.NetworkBuffer.BOOLEAN;
 
-public record ServerDifficultyPacket(Difficulty difficulty, boolean locked) implements ServerPacket {
-    public ServerDifficultyPacket(NetworkBuffer reader) {
+public record ServerDifficultyPacket(@NotNull Difficulty difficulty, boolean locked) implements ServerPacket {
+    public ServerDifficultyPacket(@NotNull NetworkBuffer reader) {
         this(reader.readEnum(Difficulty.class), reader.read(BOOLEAN));
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.writeEnum(Difficulty.class, difficulty);
         writer.write(BOOLEAN, locked);
     }

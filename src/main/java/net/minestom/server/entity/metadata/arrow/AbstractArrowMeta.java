@@ -12,7 +12,7 @@ public class AbstractArrowMeta extends EntityMeta {
     private final static byte CRITICAL_BIT = 0x01;
     private final static byte NO_CLIP_BIT = 0x02;
 
-    protected AbstractArrowMeta(Entity entity, Metadata metadata) {
+    protected AbstractArrowMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
         super(entity, metadata);
     }
 

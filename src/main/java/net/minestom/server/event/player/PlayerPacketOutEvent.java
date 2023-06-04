@@ -24,11 +24,11 @@ public class PlayerPacketOutEvent implements PlayerEvent, CancellableEvent {
     }
 
     @Override
-    public Player getPlayer() {
+    public @NotNull Player getPlayer() {
         return player;
     }
 
-    public ServerPacket getPacket() {
+    public @NotNull ServerPacket getPacket() {
         return packet;
     }
 

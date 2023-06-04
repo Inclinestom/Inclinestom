@@ -11,7 +11,7 @@ import java.util.function.Function;
  */
 public class ArgumentRelativeBlockPosition extends ArgumentRelativeVec {
 
-    public ArgumentRelativeBlockPosition(String id) {
+    public ArgumentRelativeBlockPosition(@NotNull String id) {
         super(id, 3);
     }
 

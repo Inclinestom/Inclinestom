@@ -8,7 +8,7 @@ public class SpawnerMinecartMeta extends AbstractMinecartMeta {
     public static final byte OFFSET = AbstractMinecartMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 0;
 
-    public SpawnerMinecartMeta(Entity entity, Metadata metadata) {
+    public SpawnerMinecartMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
         super(entity, metadata);
     }
 

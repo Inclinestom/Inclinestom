@@ -20,7 +20,7 @@ public interface TagSerializer<T> {
      * @param reader the reader
      * @return the deserialized value, null if invalid
      */
-    @Nullable T read(TagReadable reader);
+    @Nullable T read(@NotNull TagReadable reader);
 
     /**
      * Writes the custom tag to a {@link TagWritable}.
@@ -28,14 +28,14 @@ public interface TagSerializer<T> {
      * @param writer the writer
      * @param value  the value to serialize
      */
-    void write(TagWritable writer, T value);
+    void write(@NotNull TagWritable writer, @NotNull T value);
 
     @ApiStatus.Experimental
     TagSerializer<NBTCompound> COMPOUND = TagSerializerImpl.COMPOUND;
 
     @ApiStatus.Experimental
-    static <T> TagSerializer<T> fromCompound(Function<NBTCompound, T> reader,
-                                             Function<T, NBTCompound> writer) {
+    static <T> TagSerializer<T> fromCompound(@NotNull Function<NBTCompound, T> reader,
+                                             @NotNull Function<T, NBTCompound> writer) {
         return TagSerializerImpl.fromCompound(reader, writer);
     }
 }

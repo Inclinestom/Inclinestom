@@ -8,12 +8,12 @@ public class PlayerStopFlyingWithElytraEvent implements PlayerInstanceEvent {
 
     private final Player player;
 
-    public PlayerStopFlyingWithElytraEvent(Player player) {
+    public PlayerStopFlyingWithElytraEvent(@NotNull Player player) {
         this.player = player;
     }
 
     @Override
-    public Player getPlayer() {
+    public @NotNull Player getPlayer() {
         return player;
     }
 }

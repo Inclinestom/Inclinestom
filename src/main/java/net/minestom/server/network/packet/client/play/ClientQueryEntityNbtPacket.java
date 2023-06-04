@@ -7,12 +7,12 @@ import org.jetbrains.annotations.NotNull;
 import static net.minestom.server.network.NetworkBuffer.VAR_INT;
 
 public record ClientQueryEntityNbtPacket(int transactionId, int entityId) implements ClientPacket {
-    public ClientQueryEntityNbtPacket(NetworkBuffer reader) {
+    public ClientQueryEntityNbtPacket(@NotNull NetworkBuffer reader) {
         this(reader.read(VAR_INT), reader.read(VAR_INT));
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.write(VAR_INT, transactionId);
         writer.write(VAR_INT, entityId);
     }

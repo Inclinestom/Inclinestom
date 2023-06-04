@@ -40,7 +40,7 @@ public record Attribute(String key, float defaultValue, float maxValue) {
      * @see #fromKey(String)
      * @see #values()
      */
-    public Attribute register() {
+    public @NotNull Attribute register() {
         ATTRIBUTES.put(key, this);
         return this;
     }
@@ -51,7 +51,7 @@ public record Attribute(String key, float defaultValue, float maxValue) {
      * @param key the key of the attribute
      * @return the attribute for the key or null if not any
      */
-    public static @Nullable Attribute fromKey(String key) {
+    public static @Nullable Attribute fromKey(@NotNull String key) {
         return ATTRIBUTES.get(key);
     }
 
@@ -60,7 +60,7 @@ public record Attribute(String key, float defaultValue, float maxValue) {
      *
      * @return an array containing all registered attributes
      */
-    public static Collection<Attribute> values() {
+    public static @NotNull Collection<@NotNull Attribute> values() {
         return ATTRIBUTES.values();
     }
 }

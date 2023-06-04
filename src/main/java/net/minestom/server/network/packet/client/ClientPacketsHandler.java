@@ -24,11 +24,11 @@ public sealed class ClientPacketsHandler permits ClientPacketsHandler.Status, Cl
     private ClientPacketsHandler() {
     }
 
-    public void register(int id, Function<NetworkBuffer, ClientPacket> packetSupplier) {
+    public void register(int id, @NotNull Function<@NotNull NetworkBuffer, @NotNull ClientPacket> packetSupplier) {
         this.suppliers.set(id, packetSupplier);
     }
 
-    public @UnknownNullability ClientPacket create(int packetId, NetworkBuffer reader) {
+    public @UnknownNullability ClientPacket create(int packetId, @NotNull NetworkBuffer reader) {
         final Function<NetworkBuffer, ClientPacket> supplier = suppliers.get(packetId);
         if (supplier == null)
             throw new IllegalStateException("Packet id 0x" + Integer.toHexString(packetId) + " isn't registered!");

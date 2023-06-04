@@ -7,15 +7,15 @@ import org.jetbrains.annotations.NotNull;
 
 import static net.minestom.server.network.NetworkBuffer.*;
 
-public record ClientUpdateCommandBlockPacket(Point blockPosition, String command,
-                                             Mode mode, byte flags) implements ClientPacket {
-    public ClientUpdateCommandBlockPacket(NetworkBuffer reader) {
+public record ClientUpdateCommandBlockPacket(@NotNull Point blockPosition, @NotNull String command,
+                                             @NotNull Mode mode, byte flags) implements ClientPacket {
+    public ClientUpdateCommandBlockPacket(@NotNull NetworkBuffer reader) {
         this(reader.read(BLOCK_POSITION), reader.read(STRING),
                 Mode.values()[reader.read(VAR_INT)], reader.read(BYTE));
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.write(BLOCK_POSITION, blockPosition);
         writer.write(STRING, command);
         writer.write(VAR_INT, mode.ordinal());

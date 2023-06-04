@@ -12,8 +12,8 @@ import java.nio.ByteBuffer;
  * The {@link ByteBuffer} will ultimately become a MemorySegment once out of incubation.
  */
 @ApiStatus.Internal
-public record FramedPacket(ServerPacket packet,
-                           ByteBuffer body) implements SendablePacket {
+public record FramedPacket(@NotNull ServerPacket packet,
+                           @NotNull ByteBuffer body) implements SendablePacket {
     public FramedPacket {
         body = body.position(0).asReadOnlyBuffer();
     }

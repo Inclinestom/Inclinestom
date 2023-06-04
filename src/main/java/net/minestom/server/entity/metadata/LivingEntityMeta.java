@@ -15,7 +15,7 @@ public class LivingEntityMeta extends EntityMeta {
     private final static byte ACTIVE_HAND_BIT = 0x02;
     private final static byte IS_IN_SPIN_ATTACK_BIT = 0x04;
 
-    protected LivingEntityMeta(Entity entity, Metadata metadata) {
+    protected LivingEntityMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
         super(entity, metadata);
     }
 
@@ -32,7 +32,7 @@ public class LivingEntityMeta extends EntityMeta {
         return getMaskBit(OFFSET, ACTIVE_HAND_BIT) ? Player.Hand.OFF : Player.Hand.MAIN;
     }
 
-    public void setActiveHand(Player.Hand hand) {
+    public void setActiveHand(@NotNull Player.Hand hand) {
         setMaskBit(OFFSET, ACTIVE_HAND_BIT, hand == Player.Hand.OFF);
     }
 

@@ -17,13 +17,13 @@ public class TagViewTest {
         private static final Tag<String> VALUE_TAG = Tag.String("value");
 
         @Override
-        public @Nullable Entry read(TagReadable reader) {
+        public @Nullable Entry read(@NotNull TagReadable reader) {
             final String value = reader.getTag(VALUE_TAG);
             return value != null ? new Entry(value) : null;
         }
 
         @Override
-        public void write(TagWritable writer, Entry value) {
+        public void write(@NotNull TagWritable writer, @NotNull Entry value) {
             writer.setTag(VALUE_TAG, value.value);
         }
     });
@@ -86,13 +86,13 @@ public class TagViewTest {
         var handler = TagHandler.newHandler();
         var tag = Tag.View(new TagSerializer<Entry>() {
             @Override
-            public @Nullable Entry read(TagReadable reader) {
+            public @Nullable Entry read(@NotNull TagReadable reader) {
                 // Empty
                 return null;
             }
 
             @Override
-            public void write(TagWritable writer, Entry value) {
+            public void write(@NotNull TagWritable writer, @NotNull Entry value) {
                 // Empty
             }
         });

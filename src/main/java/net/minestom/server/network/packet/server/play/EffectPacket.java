@@ -10,12 +10,12 @@ import static net.minestom.server.network.NetworkBuffer.*;
 
 public record EffectPacket(int effectId, Point position, int data,
                            boolean disableRelativeVolume) implements ServerPacket {
-    public EffectPacket(NetworkBuffer reader) {
+    public EffectPacket(@NotNull NetworkBuffer reader) {
         this(reader.read(INT), reader.read(BLOCK_POSITION), reader.read(INT), reader.read(BOOLEAN));
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.write(INT, effectId);
         writer.write(BLOCK_POSITION, position);
         writer.write(INT, data);

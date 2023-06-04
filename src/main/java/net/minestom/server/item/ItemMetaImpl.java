@@ -17,29 +17,29 @@ record ItemMetaImpl(TagHandler tagHandler) implements ItemMeta {
     static final ItemMetaImpl EMPTY = new ItemMetaImpl(TagHandler.newHandler());
 
     @Override
-    public <T> @UnknownNullability T getTag(Tag<T> tag) {
+    public <T> @UnknownNullability T getTag(@NotNull Tag<T> tag) {
         return tagHandler.getTag(tag);
     }
 
     @Override
-    public ItemMeta with(Consumer<ItemMeta.Builder> builderConsumer) {
+    public @NotNull ItemMeta with(@NotNull Consumer<ItemMeta.@NotNull Builder> builderConsumer) {
         Builder builder = new Builder(tagHandler.copy());
         builderConsumer.accept(builder);
         return builder.build();
     }
 
     @Override
-    public NBTCompound toNBT() {
+    public @NotNull NBTCompound toNBT() {
         return tagHandler.asCompound();
     }
 
     @Override
-    public String toSNBT() {
+    public @NotNull String toSNBT() {
         return toNBT().toSNBT();
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         final NBTCompound nbt = toNBT();
         if (nbt.isEmpty()) {
             writer.write(BYTE, (byte) 0);
@@ -67,7 +67,7 @@ record ItemMetaImpl(TagHandler tagHandler) implements ItemMeta {
 
     record Builder(TagHandler tagHandler) implements ItemMeta.Builder {
         @Override
-        public ItemMetaImpl build() {
+        public @NotNull ItemMetaImpl build() {
             return new ItemMetaImpl(tagHandler.copy());
         }
     }

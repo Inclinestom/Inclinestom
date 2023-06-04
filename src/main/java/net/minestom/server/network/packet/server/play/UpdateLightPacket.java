@@ -9,13 +9,13 @@ import org.jetbrains.annotations.NotNull;
 import static net.minestom.server.network.NetworkBuffer.VAR_INT;
 
 public record UpdateLightPacket(int chunkX, int chunkZ,
-                                LightData lightData) implements ServerPacket {
-    public UpdateLightPacket(NetworkBuffer reader) {
+                                @NotNull LightData lightData) implements ServerPacket {
+    public UpdateLightPacket(@NotNull NetworkBuffer reader) {
         this(reader.read(VAR_INT), reader.read(VAR_INT), new LightData(reader));
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.write(VAR_INT, chunkX);
         writer.write(VAR_INT, chunkZ);
         writer.write(lightData);

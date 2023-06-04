@@ -9,16 +9,16 @@ import org.jetbrains.annotations.NotNull;
 import static net.minestom.server.network.NetworkBuffer.VAR_INT;
 
 public record CameraPacket(int cameraId) implements ServerPacket {
-    public CameraPacket(NetworkBuffer reader) {
+    public CameraPacket(@NotNull NetworkBuffer reader) {
         this(reader.read(VAR_INT));
     }
 
-    public CameraPacket(Entity camera) {
+    public CameraPacket(@NotNull Entity camera) {
         this(camera.getEntityId());
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.write(VAR_INT, cameraId);
     }
 

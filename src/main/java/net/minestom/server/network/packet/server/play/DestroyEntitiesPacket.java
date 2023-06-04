@@ -9,7 +9,7 @@ import java.util.List;
 
 import static net.minestom.server.network.NetworkBuffer.VAR_INT;
 
-public record DestroyEntitiesPacket(List<Integer> entityIds) implements ServerPacket {
+public record DestroyEntitiesPacket(@NotNull List<Integer> entityIds) implements ServerPacket {
     public DestroyEntitiesPacket {
         entityIds = List.copyOf(entityIds);
     }
@@ -18,12 +18,12 @@ public record DestroyEntitiesPacket(List<Integer> entityIds) implements ServerPa
         this(List.of(entityId));
     }
 
-    public DestroyEntitiesPacket(NetworkBuffer reader) {
+    public DestroyEntitiesPacket(@NotNull NetworkBuffer reader) {
         this(reader.readCollection(VAR_INT));
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.writeCollection(VAR_INT, entityIds);
     }
 

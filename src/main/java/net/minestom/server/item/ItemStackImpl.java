@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 record ItemStackImpl(Material material, int amount, ItemMetaImpl meta) implements ItemStack {
-    static final StackingRule DEFAULT_STACKING_RULE;
+    static final @NotNull StackingRule DEFAULT_STACKING_RULE;
 
     static {
         final String stackingRuleProperty = System.getProperty("minestom.stacking-rule");
@@ -41,55 +41,55 @@ record ItemStackImpl(Material material, int amount, ItemMetaImpl meta) implement
     }
 
     @Override
-    public <T extends ItemMetaView<?>> T meta(Class<T> metaClass) {
+    public <T extends ItemMetaView<?>> @NotNull T meta(@NotNull Class<T> metaClass) {
         return ItemMetaViewImpl.construct(metaClass, meta);
     }
 
     @Override
-    public ItemStack with(Consumer<ItemStack.Builder> consumer) {
+    public @NotNull ItemStack with(@NotNull Consumer<ItemStack.@NotNull Builder> consumer) {
         ItemStack.Builder builder = builder();
         consumer.accept(builder);
         return builder.build();
     }
 
     @Override
-    public <V extends ItemMetaView.Builder, T extends ItemMetaView<V>> ItemStack withMeta(Class<T> metaType,
-                                                                                                   Consumer<V> consumer) {
+    public @NotNull <V extends ItemMetaView.Builder, T extends ItemMetaView<V>> ItemStack withMeta(@NotNull Class<T> metaType,
+                                                                                                   @NotNull Consumer<V> consumer) {
         return builder().meta(metaType, consumer).build();
     }
 
     @Override
-    public ItemStack withMeta(Consumer<ItemMeta.Builder> consumer) {
+    public @NotNull ItemStack withMeta(@NotNull Consumer<ItemMeta.@NotNull Builder> consumer) {
         return builder().meta(consumer).build();
     }
 
     @Override
-    public ItemStack withMaterial(Material material) {
+    public @NotNull ItemStack withMaterial(@NotNull Material material) {
         return new ItemStackImpl(material, amount, meta);
     }
 
     @Override
-    public ItemStack withAmount(int amount) {
+    public @NotNull ItemStack withAmount(int amount) {
         return create(material, amount, meta);
     }
 
     @Override
-    public ItemStack consume(int amount) {
+    public @NotNull ItemStack consume(int amount) {
         return DEFAULT_STACKING_RULE.apply(this, currentAmount -> currentAmount - amount);
     }
 
     @Override
-    public ItemStack withMeta(ItemMeta meta) {
+    public @NotNull ItemStack withMeta(@NotNull ItemMeta meta) {
         return new ItemStackImpl(material, amount, (ItemMetaImpl) meta);
     }
 
     @Override
-    public boolean isSimilar(ItemStack itemStack) {
+    public boolean isSimilar(@NotNull ItemStack itemStack) {
         return material == itemStack.material() && meta.equals(itemStack.meta());
     }
 
     @Override
-    public NBTCompound toItemNBT() {
+    public @NotNull NBTCompound toItemNBT() {
         final NBTString material = NBT.String(material().name());
         final NBTByte amount = NBT.Byte(amount());
         final NBTCompound nbt = meta().toNBT();
@@ -98,7 +98,7 @@ record ItemStackImpl(Material material, int amount, ItemMetaImpl meta) implement
     }
 
     @Contract(value = "-> new", pure = true)
-    private ItemStack.Builder builder() {
+    private @NotNull ItemStack.Builder builder() {
         return new Builder(material, amount, new ItemMetaImpl.Builder(meta.tagHandler().copy()));
     }
 
@@ -118,52 +118,52 @@ record ItemStackImpl(Material material, int amount, ItemMetaImpl meta) implement
         }
 
         @Override
-        public ItemStack.Builder amount(int amount) {
+        public ItemStack.@NotNull Builder amount(int amount) {
             this.amount = amount;
             return this;
         }
 
         @Override
-        public ItemStack.Builder meta(TagHandler tagHandler) {
+        public ItemStack.@NotNull Builder meta(@NotNull TagHandler tagHandler) {
             return metaBuilder(new ItemMetaImpl.Builder(tagHandler.copy()));
         }
 
         @Override
-        public ItemStack.Builder meta(NBTCompound compound) {
+        public ItemStack.@NotNull Builder meta(@NotNull NBTCompound compound) {
             return metaBuilder(new ItemMetaImpl.Builder(TagHandler.fromCompound(compound)));
         }
 
         @Override
-        public ItemStack.Builder meta(ItemMeta itemMeta) {
+        public ItemStack.@NotNull Builder meta(@NotNull ItemMeta itemMeta) {
             final TagHandler tagHandler = ((ItemMetaImpl) itemMeta).tagHandler();
             return metaBuilder(new ItemMetaImpl.Builder(tagHandler.copy()));
         }
 
         @Override
-        public ItemStack.Builder meta(Consumer<ItemMeta.Builder> consumer) {
+        public ItemStack.@NotNull Builder meta(@NotNull Consumer<ItemMeta.Builder> consumer) {
             consumer.accept(metaBuilder);
             return this;
         }
 
         @Override
-        public <V extends ItemMetaView.Builder, T extends ItemMetaView<V>> ItemStack.Builder meta(Class<T> metaType,
-                                                                                                           Consumer<V> itemMetaConsumer) {
+        public <V extends ItemMetaView.Builder, T extends ItemMetaView<V>> ItemStack.@NotNull Builder meta(@NotNull Class<T> metaType,
+                                                                                                           @NotNull Consumer<@NotNull V> itemMetaConsumer) {
             V view = ItemMetaViewImpl.constructBuilder(metaType, metaBuilder.tagHandler());
             itemMetaConsumer.accept(view);
             return this;
         }
 
         @Override
-        public <T> void setTag(Tag<T> tag, @Nullable T value) {
+        public <T> void setTag(@NotNull Tag<T> tag, @Nullable T value) {
             this.metaBuilder.setTag(tag, value);
         }
 
         @Override
-        public ItemStack build() {
+        public @NotNull ItemStack build() {
             return ItemStackImpl.create(material, amount, metaBuilder.build());
         }
 
-        private ItemStack.Builder metaBuilder(ItemMetaImpl.Builder builder) {
+        private ItemStack.@NotNull Builder metaBuilder(@NotNull ItemMetaImpl.Builder builder) {
             this.metaBuilder = builder;
             return this;
         }

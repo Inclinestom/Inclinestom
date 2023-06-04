@@ -14,7 +14,7 @@ public class PlayerRespawnEvent implements PlayerEvent {
     private final Player player;
     private Pos respawnPosition;
 
-    public PlayerRespawnEvent(Player player) {
+    public PlayerRespawnEvent(@NotNull Player player) {
         this.player = player;
         this.respawnPosition = player.getRespawnPoint();
     }
@@ -26,7 +26,7 @@ public class PlayerRespawnEvent implements PlayerEvent {
      *
      * @return the respawn position
      */
-    public Pos getRespawnPosition() {
+    public @NotNull Pos getRespawnPosition() {
         return respawnPosition;
     }
 
@@ -35,12 +35,12 @@ public class PlayerRespawnEvent implements PlayerEvent {
      *
      * @param respawnPosition the new respawn position
      */
-    public void setRespawnPosition(Pos respawnPosition) {
+    public void setRespawnPosition(@NotNull Pos respawnPosition) {
         this.respawnPosition = respawnPosition;
     }
 
     @Override
-    public Player getPlayer() {
+    public @NotNull Player getPlayer() {
         return player;
     }
 }

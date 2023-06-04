@@ -16,7 +16,7 @@ public class InventoryCloseEvent implements InventoryEvent, PlayerInstanceEvent 
     private final Player player;
     private Inventory newInventory;
 
-    public InventoryCloseEvent(@Nullable Inventory inventory, Player player) {
+    public InventoryCloseEvent(@Nullable Inventory inventory, @NotNull Player player) {
         this.inventory = inventory;
         this.player = player;
     }

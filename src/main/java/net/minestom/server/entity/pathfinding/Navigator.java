@@ -16,6 +16,7 @@ import net.minestom.server.instance.WorldBorder;
 import net.minestom.server.utils.chunk.ChunkUtils;
 import net.minestom.server.utils.position.PositionUtils;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 // TODO all pathfinding requests could be processed in another thread
@@ -30,7 +31,7 @@ public final class Navigator {
 
     private final Entity entity;
 
-    public Navigator(Entity entity) {
+    public Navigator(@NotNull Entity entity) {
         this.entity = entity;
         this.pathingEntity = new PFPathingEntity(this);
     }
@@ -43,7 +44,7 @@ public final class Navigator {
      * @param direction the targeted position
      * @param speed     define how far the entity will move
      */
-    public PhysicsResult moveTowards(Point direction, double speed) {
+    public PhysicsResult moveTowards(@NotNull Point direction, double speed) {
         final Pos position = entity.getPosition();
         final double dx = direction.x() - position.x();
         final double dy = direction.y() - position.y();
@@ -151,12 +152,12 @@ public final class Navigator {
         return pathPosition;
     }
 
-    public Entity getEntity() {
+    public @NotNull Entity getEntity() {
         return entity;
     }
 
     @ApiStatus.Internal
-    public PFPathingEntity getPathingEntity() {
+    public @NotNull PFPathingEntity getPathingEntity() {
         return pathingEntity;
     }
 

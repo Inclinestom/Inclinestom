@@ -17,6 +17,6 @@ public interface CommandCallback {
      * @param sender  the command sender
      * @param command the complete command string
      */
-    void apply(CommandSender sender, String command);
+    void apply(@NotNull CommandSender sender, @NotNull String command);
 
 }

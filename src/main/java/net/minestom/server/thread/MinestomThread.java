@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 @ApiStatus.Internal
 @ApiStatus.NonExtendable
 public class MinestomThread extends Thread {
-    public MinestomThread(String name) {
+    public MinestomThread(@NotNull String name) {
         super(name);
     }
 }

@@ -8,7 +8,7 @@ public class HorseMeta extends AbstractHorseMeta {
     public static final byte OFFSET = AbstractHorseMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 1;
 
-    public HorseMeta(Entity entity, Metadata metadata) {
+    public HorseMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
         super(entity, metadata);
     }
 
@@ -20,7 +20,7 @@ public class HorseMeta extends AbstractHorseMeta {
         super.metadata.setIndex(OFFSET, Metadata.VarInt(getVariantID(variant.marking, variant.color)));
     }
 
-    public static int getVariantID(Marking marking, Color color) {
+    public static int getVariantID(@NotNull Marking marking, @NotNull Color color) {
         return (marking.ordinal() << 8) + color.ordinal();
     }
 
@@ -36,7 +36,7 @@ public class HorseMeta extends AbstractHorseMeta {
         private Marking marking;
         private Color color;
 
-        public Variant(Marking marking, Color color) {
+        public Variant(@NotNull Marking marking, @NotNull Color color) {
             this.marking = marking;
             this.color = color;
         }
@@ -46,7 +46,7 @@ public class HorseMeta extends AbstractHorseMeta {
             return this.marking;
         }
 
-        public void setMarking(Marking marking) {
+        public void setMarking(@NotNull Marking marking) {
             this.marking = marking;
         }
 
@@ -55,7 +55,7 @@ public class HorseMeta extends AbstractHorseMeta {
             return this.color;
         }
 
-        public void setColor(Color color) {
+        public void setColor(@NotNull Color color) {
             this.color = color;
         }
 

@@ -91,12 +91,12 @@ public class LivingEntity extends Entity implements EquipmentHandler {
     /**
      * Constructor which allows to specify an UUID. Only use if you know what you are doing!
      */
-    public LivingEntity(EntityType entityType, UUID uuid) {
+    public LivingEntity(@NotNull EntityType entityType, @NotNull UUID uuid) {
         super(entityType, uuid);
         initEquipments();
     }
 
-    public LivingEntity(EntityType entityType) {
+    public LivingEntity(@NotNull EntityType entityType) {
         this(entityType, UUID.randomUUID());
     }
 
@@ -117,7 +117,7 @@ public class LivingEntity extends Entity implements EquipmentHandler {
     }
 
     @Override
-    public void setItemInMainHand(ItemStack itemStack) {
+    public void setItemInMainHand(@NotNull ItemStack itemStack) {
         this.mainHandItem = getEquipmentItem(itemStack, EquipmentSlot.MAIN_HAND);
         syncEquipment(EquipmentSlot.MAIN_HAND);
     }
@@ -129,7 +129,7 @@ public class LivingEntity extends Entity implements EquipmentHandler {
     }
 
     @Override
-    public void setItemInOffHand(ItemStack itemStack) {
+    public void setItemInOffHand(@NotNull ItemStack itemStack) {
         this.offHandItem = getEquipmentItem(itemStack, EquipmentSlot.OFF_HAND);
         syncEquipment(EquipmentSlot.OFF_HAND);
     }
@@ -141,7 +141,7 @@ public class LivingEntity extends Entity implements EquipmentHandler {
     }
 
     @Override
-    public void setHelmet(ItemStack itemStack) {
+    public void setHelmet(@NotNull ItemStack itemStack) {
         this.helmet = getEquipmentItem(itemStack, EquipmentSlot.HELMET);
         syncEquipment(EquipmentSlot.HELMET);
     }
@@ -153,7 +153,7 @@ public class LivingEntity extends Entity implements EquipmentHandler {
     }
 
     @Override
-    public void setChestplate(ItemStack itemStack) {
+    public void setChestplate(@NotNull ItemStack itemStack) {
         this.chestplate = getEquipmentItem(itemStack, EquipmentSlot.CHESTPLATE);
         syncEquipment(EquipmentSlot.CHESTPLATE);
     }
@@ -165,7 +165,7 @@ public class LivingEntity extends Entity implements EquipmentHandler {
     }
 
     @Override
-    public void setLeggings(ItemStack itemStack) {
+    public void setLeggings(@NotNull ItemStack itemStack) {
         this.leggings = getEquipmentItem(itemStack, EquipmentSlot.LEGGINGS);
         syncEquipment(EquipmentSlot.LEGGINGS);
     }
@@ -177,12 +177,12 @@ public class LivingEntity extends Entity implements EquipmentHandler {
     }
 
     @Override
-    public void setBoots(ItemStack itemStack) {
+    public void setBoots(@NotNull ItemStack itemStack) {
         this.boots = getEquipmentItem(itemStack, EquipmentSlot.BOOTS);
         syncEquipment(EquipmentSlot.BOOTS);
     }
 
-    private ItemStack getEquipmentItem(ItemStack itemStack, EquipmentSlot slot) {
+    private ItemStack getEquipmentItem(@NotNull ItemStack itemStack, @NotNull EquipmentSlot slot) {
         EntityEquipEvent entityEquipEvent = new EntityEquipEvent(this, itemStack, slot);
         EventDispatcher.call(entityEquipEvent);
         return entityEquipEvent.getEquippedItem();
@@ -331,7 +331,7 @@ public class LivingEntity extends Entity implements EquipmentHandler {
      * @param value the amount of damage
      * @return true if damage has been applied, false if it didn't
      */
-    public boolean damage(DamageType type, float value) {
+    public boolean damage(@NotNull DamageType type, float value) {
         if (isDead())
             return false;
         if (isInvulnerable() || isImmune(type)) {
@@ -390,7 +390,7 @@ public class LivingEntity extends Entity implements EquipmentHandler {
      * @param type the type of damage
      * @return true if this entity is immune to the given type of damage
      */
-    public boolean isImmune(DamageType type) {
+    public boolean isImmune(@NotNull DamageType type) {
         return false;
     }
 
@@ -452,7 +452,7 @@ public class LivingEntity extends Entity implements EquipmentHandler {
      * @param attribute the attribute instance to get
      * @return the attribute instance
      */
-    public AttributeInstance getAttribute(Attribute attribute) {
+    public @NotNull AttributeInstance getAttribute(@NotNull Attribute attribute) {
         return attributeModifiers.computeIfAbsent(attribute.key(),
                 s -> new AttributeInstance(attribute, this::onAttributeChanged));
     }
@@ -462,7 +462,7 @@ public class LivingEntity extends Entity implements EquipmentHandler {
      *
      * @param attributeInstance the modified attribute instance
      */
-    protected void onAttributeChanged(AttributeInstance attributeInstance) {
+    protected void onAttributeChanged(@NotNull AttributeInstance attributeInstance) {
         boolean self = false;
         if (this instanceof Player player) {
             PlayerConnection playerConnection = player.playerConnection;
@@ -483,7 +483,7 @@ public class LivingEntity extends Entity implements EquipmentHandler {
      * @param attribute the attribute value to get
      * @return the attribute value
      */
-    public float getAttributeValue(Attribute attribute) {
+    public float getAttributeValue(@NotNull Attribute attribute) {
         AttributeInstance instance = attributeModifiers.get(attribute.key());
         return (instance != null) ? instance.getValue() : attribute.defaultValue();
     }
@@ -516,7 +516,7 @@ public class LivingEntity extends Entity implements EquipmentHandler {
     }
 
     @Override
-    public void updateNewViewer(Player player) {
+    public void updateNewViewer(@NotNull Player player) {
         super.updateNewViewer(player);
         player.sendPacket(new LazyPacket(this::getEquipmentsPacket));
         player.sendPacket(new LazyPacket(this::getPropertiesPacket));
@@ -581,7 +581,7 @@ public class LivingEntity extends Entity implements EquipmentHandler {
      *
      * @return an {@link EntityPropertiesPacket} linked to this entity
      */
-    protected EntityPropertiesPacket getPropertiesPacket() {
+    protected @NotNull EntityPropertiesPacket getPropertiesPacket() {
         return new EntityPropertiesPacket(getEntityId(), List.copyOf(attributeModifiers.values()));
     }
 
@@ -609,7 +609,7 @@ public class LivingEntity extends Entity implements EquipmentHandler {
      * @param fireDamagePeriod the delay
      * @param temporalUnit     the time unit
      */
-    public void setFireDamagePeriod(long fireDamagePeriod, TemporalUnit temporalUnit) {
+    public void setFireDamagePeriod(long fireDamagePeriod, @NotNull TemporalUnit temporalUnit) {
         setFireDamagePeriod(Duration.of(fireDamagePeriod, temporalUnit));
     }
 

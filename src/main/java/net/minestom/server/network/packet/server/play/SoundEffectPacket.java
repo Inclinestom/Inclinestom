@@ -11,23 +11,23 @@ import org.jetbrains.annotations.NotNull;
 
 import static net.minestom.server.network.NetworkBuffer.*;
 
-public record SoundEffectPacket(int soundId, Source source,
+public record SoundEffectPacket(int soundId, @NotNull Source source,
                                 int x, int y, int z,
                                 float volume, float pitch, long seed) implements ServerPacket {
-    public SoundEffectPacket(NetworkBuffer reader) {
+    public SoundEffectPacket(@NotNull NetworkBuffer reader) {
         this(reader.read(VAR_INT), reader.readEnum(Source.class),
                 reader.read(INT) * 8, reader.read(INT) * 8, reader.read(INT) * 8,
                 reader.read(FLOAT), reader.read(FLOAT), reader.read(LONG));
     }
 
-    public SoundEffectPacket(SoundEvent sound, Source source,
-                             Point position, float volume, float pitch) {
+    public SoundEffectPacket(@NotNull SoundEvent sound, @NotNull Source source,
+                             @NotNull Point position, float volume, float pitch) {
         this(sound.id(), source, (int) position.x(), (int) position.y(), (int) position.z(),
                 volume, pitch, 0);
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.write(VAR_INT, soundId);
         writer.write(VAR_INT, AdventurePacketConvertor.getSoundSourceValue(source));
         writer.write(INT, x * 8);

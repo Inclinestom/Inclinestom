@@ -23,7 +23,7 @@ class NamedAndIdentifiedImpl implements NamedAndIdentified {
      * @param uuid the uuid
      * @see NamedAndIdentified#of(String, UUID)
      */
-    NamedAndIdentifiedImpl(String name, UUID uuid) {
+    NamedAndIdentifiedImpl(@NotNull String name, @NotNull UUID uuid) {
         this(Component.text(name), uuid);
     }
 
@@ -34,18 +34,18 @@ class NamedAndIdentifiedImpl implements NamedAndIdentified {
      * @param uuid the uuid
      * @see NamedAndIdentified#of(Component, UUID)
      */
-    NamedAndIdentifiedImpl(Component name, UUID uuid) {
+    NamedAndIdentifiedImpl(@NotNull Component name, @NotNull UUID uuid) {
         this.name = Objects.requireNonNull(name, "name cannot be null");
         this.uuid = Objects.requireNonNull(uuid, "uuid cannot be null");
     }
 
     @Override
-    public Component getName() {
+    public @NotNull Component getName() {
         return this.name;
     }
 
     @Override
-    public UUID getUuid() {
+    public @NotNull UUID getUuid() {
         return this.uuid;
     }
 

@@ -10,7 +10,7 @@ public class EntityDamage extends DamageType {
 
     private final Entity source;
 
-    public EntityDamage(Entity source) {
+    public EntityDamage(@NotNull Entity source) {
         super("entity_source");
         this.source = source;
     }

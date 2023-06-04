@@ -7,12 +7,12 @@ import org.jetbrains.annotations.NotNull;
 import static net.minestom.server.network.NetworkBuffer.LONG;
 
 public record ClientKeepAlivePacket(long id) implements ClientPacket {
-    public ClientKeepAlivePacket(NetworkBuffer reader) {
+    public ClientKeepAlivePacket(@NotNull NetworkBuffer reader) {
         this(reader.read(LONG));
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.write(LONG, id);
     }
 }

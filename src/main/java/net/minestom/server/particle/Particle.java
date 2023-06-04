@@ -9,15 +9,15 @@ import java.util.Collection;
 
 public sealed interface Particle extends ProtocolObject, Particles permits ParticleImpl {
 
-    static Collection<Particle> values() {
+    static @NotNull Collection<@NotNull Particle> values() {
         return ParticleImpl.values();
     }
 
-    static @Nullable Particle fromNamespaceId(String namespaceID) {
+    static @Nullable Particle fromNamespaceId(@NotNull String namespaceID) {
         return ParticleImpl.getSafe(namespaceID);
     }
 
-    static @Nullable Particle fromNamespaceId(NamespaceID namespaceID) {
+    static @Nullable Particle fromNamespaceId(@NotNull NamespaceID namespaceID) {
         return fromNamespaceId(namespaceID.asString());
     }
 

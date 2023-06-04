@@ -16,7 +16,7 @@ public class BasicQueryEvent extends QueryEvent<BasicQueryResponse> {
      * @param sessionID the session ID
      * @param sender the sender
      */
-    public BasicQueryEvent(SocketAddress sender, int sessionID) {
+    public BasicQueryEvent(@NotNull SocketAddress sender, int sessionID) {
         super(sender, sessionID, new BasicQueryResponse());
     }
 }

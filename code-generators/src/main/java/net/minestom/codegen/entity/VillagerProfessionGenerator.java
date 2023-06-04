@@ -22,7 +22,7 @@ public final class VillagerProfessionGenerator extends MinestomCodeGenerator {
     private final File outputFolder;
 
 
-    public VillagerProfessionGenerator(@Nullable InputStream villagerProfessionsFile, File outputFolder) {
+    public VillagerProfessionGenerator(@Nullable InputStream villagerProfessionsFile, @NotNull File outputFolder) {
         this.villagerProfessionsFile = villagerProfessionsFile;
         this.outputFolder = outputFolder;
     }

@@ -9,7 +9,7 @@ public class TropicalFishMeta extends AbstractFishMeta implements ObjectDataProv
     public static final byte OFFSET = AbstractFishMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 1;
 
-    public TropicalFishMeta(Entity entity, Metadata metadata) {
+    public TropicalFishMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
         super(entity, metadata);
     }
 
@@ -62,7 +62,7 @@ public class TropicalFishMeta extends AbstractFishMeta implements ObjectDataProv
         private byte bodyColor;
         private byte patternColor;
 
-        public Variant(Type type, Pattern pattern, byte bodyColor, byte patternColor) {
+        public Variant(@NotNull Type type, @NotNull Pattern pattern, byte bodyColor, byte patternColor) {
             this.type = type;
             this.pattern = pattern;
             this.bodyColor = bodyColor;
@@ -74,7 +74,7 @@ public class TropicalFishMeta extends AbstractFishMeta implements ObjectDataProv
             return this.type;
         }
 
-        public void setType(Type type) {
+        public void setType(@NotNull Type type) {
             this.type = type;
         }
 
@@ -83,7 +83,7 @@ public class TropicalFishMeta extends AbstractFishMeta implements ObjectDataProv
             return this.pattern;
         }
 
-        public void setPattern(Pattern pattern) {
+        public void setPattern(@NotNull Pattern pattern) {
             this.pattern = pattern;
         }
 

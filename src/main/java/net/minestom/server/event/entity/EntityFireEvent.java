@@ -47,7 +47,7 @@ public class EntityFireEvent implements EntityInstanceEvent, CancellableEvent {
     }
 
     @Override
-    public Entity getEntity() {
+    public @NotNull Entity getEntity() {
         return entity;
     }
 }

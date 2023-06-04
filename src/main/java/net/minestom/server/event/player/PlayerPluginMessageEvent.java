@@ -13,7 +13,7 @@ public class PlayerPluginMessageEvent implements PlayerInstanceEvent {
     private final String identifier;
     private final byte[] message;
 
-    public PlayerPluginMessageEvent(Player player, String identifier, byte[] message) {
+    public PlayerPluginMessageEvent(@NotNull Player player, @NotNull String identifier, @NotNull byte[] message) {
         this.player = player;
         this.identifier = identifier;
         this.message = message;
@@ -50,7 +50,7 @@ public class PlayerPluginMessageEvent implements PlayerInstanceEvent {
     }
 
     @Override
-    public Player getPlayer() {
+    public @NotNull Player getPlayer() {
         return player;
     }
 }

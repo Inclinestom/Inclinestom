@@ -76,7 +76,7 @@ public final class PacketUtils {
      * @param packet   the packet
      */
     @SuppressWarnings("OverrideOnly") // we need to access the audiences inside ForwardingAudience
-    public static void sendPacket(Audience audience, ServerPacket packet) {
+    public static void sendPacket(@NotNull Audience audience, @NotNull ServerPacket packet) {
         if (audience instanceof Player player) {
             player.sendPacket(packet);
         } else if (audience instanceof PacketGroupingAudience groupingAudience) {
@@ -99,9 +99,8 @@ public final class PacketUtils {
      * @param packet    the packet to send to the players
      * @param predicate predicate to ignore specific players
      */
-    public static void sendGroupedPacket(Collection<Player> players, ServerPacket packet,
-                                         Predicate<Player> predicate) {
-        if (players.isEmpty()) return;
+    public static void sendGroupedPacket(@NotNull Collection<Player> players, @NotNull ServerPacket packet,
+                                         @NotNull Predicate<Player> predicate) {
         final var sendablePacket = shouldUseCachePacket(packet) ? new CachedPacket(packet) : packet;
 
         players.forEach(player -> {
@@ -116,13 +115,13 @@ public final class PacketUtils {
      * @see CachedPacket#body()
      * @see PlayerSocketConnection#writePacketSync(SendablePacket, boolean)
      */
-    static boolean shouldUseCachePacket(final ServerPacket packet) {
+    static boolean shouldUseCachePacket(final @NotNull ServerPacket packet) {
         if (!MinestomAdventure.AUTOMATIC_COMPONENT_TRANSLATION) return GROUPED_PACKET;
         if (!(packet instanceof ComponentHoldingServerPacket holder)) return GROUPED_PACKET;
         return !containsTranslatableComponents(holder);
     }
 
-    private static boolean containsTranslatableComponents(final ComponentHolder<?> holder) {
+    private static boolean containsTranslatableComponents(final @NotNull ComponentHolder<?> holder) {
         for (final Component component : holder.components()) {
             if (isTranslatable(component)) return true;
         }
@@ -130,7 +129,7 @@ public final class PacketUtils {
         return false;
     }
 
-    private static boolean isTranslatable(final Component component) {
+    private static boolean isTranslatable(final @NotNull Component component) {
         if (component instanceof TranslatableComponent) return true;
 
         final var children = component.children();
@@ -149,16 +148,16 @@ public final class PacketUtils {
      *
      * @see #sendGroupedPacket(Collection, ServerPacket, Predicate)
      */
-    public static void sendGroupedPacket(Collection<Player> players, ServerPacket packet) {
+    public static void sendGroupedPacket(@NotNull Collection<Player> players, @NotNull ServerPacket packet) {
         sendGroupedPacket(players, packet, player -> true);
     }
 
-    public static void broadcastPacket(ServerPacket packet) {
+    public static void broadcastPacket(@NotNull ServerPacket packet) {
         sendGroupedPacket(MinecraftServer.getConnectionManager().getOnlinePlayers(), packet);
     }
 
     @ApiStatus.Experimental
-    public static void prepareViewablePacket(Viewable viewable, ServerPacket serverPacket,
+    public static void prepareViewablePacket(@NotNull Viewable viewable, @NotNull ServerPacket serverPacket,
                                              @Nullable Entity entity) {
         if (entity != null && !entity.hasPredictableViewers()) {
             // Operation cannot be optimized
@@ -175,7 +174,7 @@ public final class PacketUtils {
     }
 
     @ApiStatus.Experimental
-    public static void prepareViewablePacket(Viewable viewable, ServerPacket serverPacket) {
+    public static void prepareViewablePacket(@NotNull Viewable viewable, @NotNull ServerPacket serverPacket) {
         prepareViewablePacket(viewable, serverPacket, null);
     }
 
@@ -188,7 +187,7 @@ public final class PacketUtils {
     }
 
     @ApiStatus.Internal
-    public static @Nullable BinaryBuffer readPackets(BinaryBuffer readBuffer, boolean compressed,
+    public static @Nullable BinaryBuffer readPackets(@NotNull BinaryBuffer readBuffer, boolean compressed,
                                                      BiConsumer<Integer, ByteBuffer> payloadConsumer) throws DataFormatException {
         BinaryBuffer remaining = null;
         ByteBuffer pool = ObjectPool.PACKET_POOL.get();
@@ -244,16 +243,16 @@ public final class PacketUtils {
         return remaining;
     }
 
-    public static void writeFramedPacket(ByteBuffer buffer,
-                                         ServerPacket packet,
+    public static void writeFramedPacket(@NotNull ByteBuffer buffer,
+                                         @NotNull ServerPacket packet,
                                          boolean compression) {
         writeFramedPacket(buffer, packet.getId(), packet,
                 compression ? MinecraftServer.getCompressionThreshold() : 0);
     }
 
-    public static void writeFramedPacket(ByteBuffer buffer,
+    public static void writeFramedPacket(@NotNull ByteBuffer buffer,
                                          int id,
-                                         NetworkBuffer.Writer writer,
+                                         @NotNull NetworkBuffer.Writer writer,
                                          int compressionThreshold) {
         NetworkBuffer networkBuffer = new NetworkBuffer(buffer, false);
         if (compressionThreshold <= 0) {
@@ -296,18 +295,18 @@ public final class PacketUtils {
     }
 
     @ApiStatus.Internal
-    public static ByteBuffer createFramedPacket(ByteBuffer buffer, ServerPacket packet, boolean compression) {
+    public static ByteBuffer createFramedPacket(@NotNull ByteBuffer buffer, @NotNull ServerPacket packet, boolean compression) {
         writeFramedPacket(buffer, packet, compression);
         return buffer.flip();
     }
 
     @ApiStatus.Internal
-    public static ByteBuffer createFramedPacket(ByteBuffer buffer, ServerPacket packet) {
+    public static ByteBuffer createFramedPacket(@NotNull ByteBuffer buffer, @NotNull ServerPacket packet) {
         return createFramedPacket(buffer, packet, MinecraftServer.getCompressionThreshold() > 0);
     }
 
     @ApiStatus.Internal
-    public static FramedPacket allocateTrimmedPacket(ServerPacket packet) {
+    public static FramedPacket allocateTrimmedPacket(@NotNull ServerPacket packet) {
         try (var hold = ObjectPool.PACKET_POOL.hold()) {
             final ByteBuffer temp = PacketUtils.createFramedPacket(hold.get(), packet);
             final int size = temp.remaining();

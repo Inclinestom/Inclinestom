@@ -15,9 +15,9 @@ public interface TagWritable {
      * @param value the tag value, null to remove
      * @param <T>   the tag type
      */
-    <T> void setTag(Tag<T> tag, @Nullable T value);
+    <T> void setTag(@NotNull Tag<T> tag, @Nullable T value);
 
-    default void removeTag(Tag<?> tag) {
+    default void removeTag(@NotNull Tag<?> tag) {
         setTag(tag, null);
     }
 }

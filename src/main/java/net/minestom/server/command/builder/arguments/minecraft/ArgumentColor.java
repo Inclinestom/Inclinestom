@@ -22,7 +22,7 @@ public class ArgumentColor extends Argument<Style> {
 
     @NotNull
     @Override
-    public Style parse(String input) throws ArgumentSyntaxException {
+    public Style parse(@NotNull String input) throws ArgumentSyntaxException {
 
         // check for colour
         NamedTextColor color = NamedTextColor.NAMES.value(input);

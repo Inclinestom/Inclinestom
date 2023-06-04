@@ -17,7 +17,7 @@ public class PlayerSwapItemEvent implements PlayerInstanceEvent, CancellableEven
 
     private boolean cancelled;
 
-    public PlayerSwapItemEvent(Player player, ItemStack mainHandItem, ItemStack offHandItem) {
+    public PlayerSwapItemEvent(@NotNull Player player, @NotNull ItemStack mainHandItem, @NotNull ItemStack offHandItem) {
         this.player = player;
         this.mainHandItem = mainHandItem;
         this.offHandItem = offHandItem;
@@ -38,7 +38,7 @@ public class PlayerSwapItemEvent implements PlayerInstanceEvent, CancellableEven
      *
      * @param mainHandItem the main hand item
      */
-    public void setMainHandItem(ItemStack mainHandItem) {
+    public void setMainHandItem(@NotNull ItemStack mainHandItem) {
         this.mainHandItem = mainHandItem;
     }
 
@@ -57,7 +57,7 @@ public class PlayerSwapItemEvent implements PlayerInstanceEvent, CancellableEven
      *
      * @param offHandItem the off hand item
      */
-    public void setOffHandItem(ItemStack offHandItem) {
+    public void setOffHandItem(@NotNull ItemStack offHandItem) {
         this.offHandItem = offHandItem;
     }
 
@@ -72,7 +72,7 @@ public class PlayerSwapItemEvent implements PlayerInstanceEvent, CancellableEven
     }
 
     @Override
-    public Player getPlayer() {
+    public @NotNull Player getPlayer() {
         return player;
     }
 }

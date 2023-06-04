@@ -13,19 +13,19 @@ import org.jetbrains.annotations.UnknownNullability;
 @ApiStatus.Internal
 public sealed interface ObjectArray<T>
         permits ObjectArrayImpl.SingleThread, ObjectArrayImpl.Concurrent {
-    static <T> ObjectArray<T> singleThread(int initialSize) {
+    static <T> @NotNull ObjectArray<T> singleThread(int initialSize) {
         return new ObjectArrayImpl.SingleThread<>(initialSize);
     }
 
-    static <T> ObjectArray<T> singleThread() {
+    static <T> @NotNull ObjectArray<T> singleThread() {
         return singleThread(0);
     }
 
-    static <T> ObjectArray<T> concurrent(int initialSize) {
+    static <T> @NotNull ObjectArray<T> concurrent(int initialSize) {
         return new ObjectArrayImpl.Concurrent<>(initialSize);
     }
 
-    static <T> ObjectArray<T> concurrent() {
+    static <T> @NotNull ObjectArray<T> concurrent() {
         return concurrent(0);
     }
 
@@ -39,5 +39,5 @@ public sealed interface ObjectArray<T>
 
     void trim();
 
-    @UnknownNullability T [] arrayCopy(Class<T> type);
+    @UnknownNullability T @NotNull [] arrayCopy(@NotNull Class<T> type);
 }

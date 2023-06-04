@@ -35,19 +35,19 @@ public record Color(int red, int green, int blue) implements RGBLike {
      *
      * @param rgbLike the color
      */
-    public Color(RGBLike rgbLike) {
+    public Color(@NotNull RGBLike rgbLike) {
         this(rgbLike.red(), rgbLike.green(), rgbLike.blue());
     }
 
-    public Color withRed(int red) {
+    public @NotNull Color withRed(int red) {
         return new Color(red, green, blue);
     }
 
-    public Color withGreen(int green) {
+    public @NotNull Color withGreen(int green) {
         return new Color(red, green, blue);
     }
 
-    public Color withBlue(int blue) {
+    public @NotNull Color withBlue(int blue) {
         return new Color(red, green, blue);
     }
 
@@ -71,7 +71,7 @@ public record Color(int red, int green, int blue) implements RGBLike {
      *
      * @param colors the colors
      */
-    public Color mixWith(RGBLike... colors) {
+    public @NotNull Color mixWith(@NotNull RGBLike... colors) {
         int r = red, g = green, b = blue;
 
         // store the current highest component

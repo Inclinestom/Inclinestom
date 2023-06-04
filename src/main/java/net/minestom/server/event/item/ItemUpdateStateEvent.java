@@ -13,7 +13,7 @@ public class ItemUpdateStateEvent implements PlayerInstanceEvent, ItemEvent {
     private final ItemStack itemStack;
     private boolean handAnimation;
 
-    public ItemUpdateStateEvent(Player player, Player.Hand hand, ItemStack itemStack) {
+    public ItemUpdateStateEvent(@NotNull Player player, @NotNull Player.Hand hand, @NotNull ItemStack itemStack) {
         this.player = player;
         this.hand = hand;
         this.itemStack = itemStack;
@@ -33,12 +33,12 @@ public class ItemUpdateStateEvent implements PlayerInstanceEvent, ItemEvent {
     }
 
     @Override
-    public ItemStack getItemStack() {
+    public @NotNull ItemStack getItemStack() {
         return itemStack;
     }
 
     @Override
-    public Player getPlayer() {
+    public @NotNull Player getPlayer() {
         return player;
     }
 }

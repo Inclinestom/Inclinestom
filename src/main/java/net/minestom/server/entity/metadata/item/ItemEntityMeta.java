@@ -10,7 +10,7 @@ public class ItemEntityMeta extends ItemContainingMeta implements ObjectDataProv
     public static final byte OFFSET = ItemContainingMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 0;
 
-    public ItemEntityMeta(Entity entity, Metadata metadata) {
+    public ItemEntityMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
         super(entity, metadata, Material.AIR);
     }
 

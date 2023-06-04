@@ -18,7 +18,7 @@ public class RedstonePlacementRule extends BlockPlacementRule {
     }
 
     @Override
-    public Block blockUpdate(Instance instance, Point blockPosition, Block block) {
+    public @NotNull Block blockUpdate(@NotNull Instance instance, @NotNull Point blockPosition, @NotNull Block block) {
         BlockUtils blockUtils = new BlockUtils(instance, blockPosition);
 
         String east = "none";
@@ -97,9 +97,9 @@ public class RedstonePlacementRule extends BlockPlacementRule {
     }
 
     @Override
-    public Block blockPlace(Instance instance,
-                            Block block, BlockFace blockFace, Point blockPosition,
-                            Player pl) {
+    public Block blockPlace(@NotNull Instance instance,
+                            @NotNull Block block, @NotNull BlockFace blockFace, @NotNull Point blockPosition,
+                            @NotNull Player pl) {
         final Block belowBlock = instance.getBlock(blockPosition.sub(0, 1, 0));
         return belowBlock.isSolid() ? block : null;
     }

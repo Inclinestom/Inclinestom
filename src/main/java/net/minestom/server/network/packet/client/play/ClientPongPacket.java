@@ -7,12 +7,12 @@ import org.jetbrains.annotations.NotNull;
 import static net.minestom.server.network.NetworkBuffer.INT;
 
 public record ClientPongPacket(int id) implements ClientPacket {
-    public ClientPongPacket(NetworkBuffer reader) {
+    public ClientPongPacket(@NotNull NetworkBuffer reader) {
         this(reader.read(INT));
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.write(INT, id);
     }
 }

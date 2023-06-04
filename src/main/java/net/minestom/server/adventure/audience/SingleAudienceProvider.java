@@ -26,62 +26,62 @@ class SingleAudienceProvider implements AudienceProvider<Audience> {
      *
      * @return the instance
      */
-    public IterableAudienceProvider iterable() {
+    public @NotNull IterableAudienceProvider iterable() {
         return this.collection;
     }
 
     @Override
-    public Audience all() {
+    public @NotNull Audience all() {
         return Audience.audience(this.server, this.customs());
     }
 
     @Override
-    public Audience players() {
+    public @NotNull Audience players() {
         return this.players;
     }
 
     @Override
-    public Audience players(Predicate<Player> filter) {
+    public @NotNull Audience players(@NotNull Predicate<Player> filter) {
         return PacketGroupingAudience.of(MinecraftServer.getConnectionManager().getOnlinePlayers().stream().filter(filter).toList());
     }
 
     @Override
-    public Audience console() {
+    public @NotNull Audience console() {
         return MinecraftServer.getCommandManager().getConsoleSender();
     }
 
     @Override
-    public Audience server() {
+    public @NotNull Audience server() {
         return this.server;
     }
 
     @Override
-    public Audience customs() {
+    public @NotNull Audience customs() {
         return Audience.audience(this.iterable().customs());
     }
 
     @Override
-    public Audience custom(Key key) {
+    public @NotNull Audience custom(@NotNull Key key) {
         return Audience.audience(this.iterable().custom(key));
     }
 
     @Override
-    public Audience custom(Key key, Predicate<Audience> filter) {
+    public @NotNull Audience custom(@NotNull Key key, Predicate<Audience> filter) {
         return Audience.audience(this.iterable().custom(key, filter));
     }
 
     @Override
-    public Audience customs(Predicate<Audience> filter) {
+    public @NotNull Audience customs(@NotNull Predicate<Audience> filter) {
         return Audience.audience(this.iterable().customs(filter));
     }
 
     @Override
-    public Audience all(Predicate<Audience> filter) {
+    public @NotNull Audience all(@NotNull Predicate<Audience> filter) {
         return Audience.audience(this.iterable().all(filter));
     }
 
     @Override
-    public AudienceRegistry registry() {
+    public @NotNull AudienceRegistry registry() {
         return this.iterable().registry();
     }
 }

@@ -9,7 +9,7 @@ public class MarkerMeta extends EntityMeta {
     public static final byte OFFSET = EntityMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 0;
 
-    public MarkerMeta(Entity entity, Metadata metadata) {
+    public MarkerMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
         super(entity, metadata);
     }
 }

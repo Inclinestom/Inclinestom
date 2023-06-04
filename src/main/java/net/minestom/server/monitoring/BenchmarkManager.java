@@ -53,7 +53,7 @@ public final class BenchmarkManager {
     private volatile boolean stop = false;
     private long time;
 
-    public void enable(Duration duration) {
+    public void enable(@NotNull Duration duration) {
         Check.stateCondition(enabled, "A benchmark is already running, please disable it first.");
         try {
             THREAD_MX_BEAN.setThreadContentionMonitoringEnabled(true);
@@ -88,7 +88,7 @@ public final class BenchmarkManager {
         this.enabled = false;
     }
 
-    public void addThreadMonitor(String threadName) {
+    public void addThreadMonitor(@NotNull String threadName) {
         THREADS.add(threadName);
     }
 
@@ -101,11 +101,11 @@ public final class BenchmarkManager {
         return Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
     }
 
-    public Map<String, ThreadResult> getResultMap() {
+    public @NotNull Map<String, ThreadResult> getResultMap() {
         return Collections.unmodifiableMap(resultMap);
     }
 
-    public Component getCpuMonitoringMessage() {
+    public @NotNull Component getCpuMonitoringMessage() {
         if (!enabled) return Component.text("CPU monitoring is disabled");
         TextComponent.Builder benchmarkMessage = Component.text();
         for (var resultEntry : resultMap.entrySet()) {

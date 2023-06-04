@@ -59,7 +59,7 @@ public class Sidebar implements Scoreboard {
      * @deprecated Use {@link #Sidebar(Component)}
      */
     @Deprecated
-    public Sidebar(String title) {
+    public Sidebar(@NotNull String title) {
         this(Component.text(title));
     }
 
@@ -68,7 +68,7 @@ public class Sidebar implements Scoreboard {
      *
      * @param title The title of the sidebar
      */
-    public Sidebar(Component title) {
+    public Sidebar(@NotNull Component title) {
         this.title = title;
 
         this.objectiveName = SCOREBOARD_PREFIX + COUNTER.incrementAndGet();
@@ -86,7 +86,7 @@ public class Sidebar implements Scoreboard {
      * @deprecated Use {@link #setTitle(Component)}
      */
     @Deprecated
-    public void setTitle(String title) {
+    public void setTitle(@NotNull String title) {
         this.setTitle(Component.text(title));
     }
 
@@ -95,7 +95,7 @@ public class Sidebar implements Scoreboard {
      *
      * @param title The new sidebar title
      */
-    public void setTitle(Component title) {
+    public void setTitle(@NotNull Component title) {
         this.title = title;
         sendPacketToViewers(new ScoreboardObjectivePacket(objectiveName, (byte) 2, title,
                 ScoreboardObjectivePacket.Type.INTEGER));
@@ -109,7 +109,7 @@ public class Sidebar implements Scoreboard {
      * @throws IllegalArgumentException if the sidebar already contains the line {@code scoreboardLine}
      *                                  or has a line with the same id
      */
-    public void createLine(ScoreboardLine scoreboardLine) {
+    public void createLine(@NotNull ScoreboardLine scoreboardLine) {
         synchronized (lines) {
             Check.stateCondition(lines.size() >= MAX_LINES_COUNT, "You cannot have more than " + MAX_LINES_COUNT + "  lines");
             Check.argCondition(lines.contains(scoreboardLine), "You cannot add two times the same ScoreboardLine");
@@ -138,7 +138,7 @@ public class Sidebar implements Scoreboard {
      * @param id      The identifier of the {@link ScoreboardLine}
      * @param content The new content for the {@link ScoreboardLine}
      */
-    public void updateLineContent(String id, Component content) {
+    public void updateLineContent(@NotNull String id, @NotNull Component content) {
         final ScoreboardLine scoreboardLine = getLine(id);
         if (scoreboardLine != null) {
             scoreboardLine.refreshContent(content);
@@ -152,7 +152,7 @@ public class Sidebar implements Scoreboard {
      * @param id    The identifier of the team
      * @param score The new score for the {@link ScoreboardLine}
      */
-    public void updateLineScore(String id, int score) {
+    public void updateLineScore(@NotNull String id, int score) {
         final ScoreboardLine scoreboardLine = getLine(id);
         if (scoreboardLine != null) {
             scoreboardLine.line = score;
@@ -167,7 +167,7 @@ public class Sidebar implements Scoreboard {
      * @return a {@link ScoreboardLine} or {@code null}
      */
     @Nullable
-    public ScoreboardLine getLine(String id) {
+    public ScoreboardLine getLine(@NotNull String id) {
         for (ScoreboardLine line : lines) {
             if (line.id.equals(id))
                 return line;
@@ -190,7 +190,7 @@ public class Sidebar implements Scoreboard {
      *
      * @param id the identifier of the {@link ScoreboardLine}
      */
-    public void removeLine(String id) {
+    public void removeLine(@NotNull String id) {
         this.lines.removeIf(line -> {
             if (line.id.equals(id)) {
 
@@ -205,7 +205,7 @@ public class Sidebar implements Scoreboard {
     }
 
     @Override
-    public boolean addViewer(Player player) {
+    public boolean addViewer(@NotNull Player player) {
         final boolean result = this.viewers.add(player);
 
         ScoreboardObjectivePacket scoreboardObjectivePacket = this.getCreationObjectivePacket(this.title, ScoreboardObjectivePacket.Type.INTEGER);
@@ -221,7 +221,7 @@ public class Sidebar implements Scoreboard {
     }
 
     @Override
-    public boolean removeViewer(Player player) {
+    public boolean removeViewer(@NotNull Player player) {
         final boolean result = this.viewers.remove(player);
         ScoreboardObjectivePacket scoreboardObjectivePacket = this.getDestructionObjectivePacket();
         player.sendPacket(scoreboardObjectivePacket);
@@ -239,7 +239,7 @@ public class Sidebar implements Scoreboard {
     }
 
     @Override
-    public String getObjectiveName() {
+    public @NotNull String getObjectiveName() {
         return this.objectiveName;
     }
 
@@ -272,7 +272,7 @@ public class Sidebar implements Scoreboard {
          */
         private SidebarTeam sidebarTeam;
 
-        public ScoreboardLine(String id, Component content, int line) {
+        public ScoreboardLine(@NotNull String id, @NotNull Component content, int line) {
             this.id = id;
             this.content = content;
             this.line = line;
@@ -285,7 +285,7 @@ public class Sidebar implements Scoreboard {
          *
          * @return the line identifier
          */
-        public String getId() {
+        public @NotNull String getId() {
             return id;
         }
 
@@ -294,7 +294,7 @@ public class Sidebar implements Scoreboard {
          *
          * @return The line content
          */
-        public Component getContent() {
+        public @NotNull Component getContent() {
             return sidebarTeam == null ? content : sidebarTeam.getPrefix();
         }
 
@@ -456,7 +456,7 @@ public class Sidebar implements Scoreboard {
          *
          * @param prefix The refreshed prefix
          */
-        private void refreshPrefix(Component prefix) {
+        private void refreshPrefix(@NotNull Component prefix) {
             this.prefix = prefix;
         }
     }

@@ -16,10 +16,10 @@ public sealed interface EntityType extends ProtocolObject, EntityTypes permits E
      * @return the entity registry
      */
     @Contract(pure = true)
-    Registry.EntityEntry registry();
+    @NotNull Registry.EntityEntry registry();
 
     @Override
-    default NamespaceID namespace() {
+    default @NotNull NamespaceID namespace() {
         return registry().namespace();
     }
 
@@ -36,15 +36,15 @@ public sealed interface EntityType extends ProtocolObject, EntityTypes permits E
         return registry().height();
     }
 
-    static Collection<EntityType> values() {
+    static @NotNull Collection<@NotNull EntityType> values() {
         return EntityTypeImpl.values();
     }
 
-    static EntityType fromNamespaceId(String namespaceID) {
+    static EntityType fromNamespaceId(@NotNull String namespaceID) {
         return EntityTypeImpl.getSafe(namespaceID);
     }
 
-    static EntityType fromNamespaceId(NamespaceID namespaceID) {
+    static EntityType fromNamespaceId(@NotNull NamespaceID namespaceID) {
         return fromNamespaceId(namespaceID.asString());
     }
 

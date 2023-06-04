@@ -18,7 +18,7 @@ public class EntityItemMergeEvent implements EntityInstanceEvent, CancellableEve
 
     private boolean cancelled;
 
-    public EntityItemMergeEvent(ItemEntity source, ItemEntity merged, ItemStack result) {
+    public EntityItemMergeEvent(@NotNull ItemEntity source, @NotNull ItemEntity merged, @NotNull ItemStack result) {
         this.entity = source;
         this.merged = merged;
         this.result = result;
@@ -32,7 +32,7 @@ public class EntityItemMergeEvent implements EntityInstanceEvent, CancellableEve
      * @return the source ItemEntity
      */
     @Override
-    public ItemEntity getEntity() {
+    public @NotNull ItemEntity getEntity() {
         return (ItemEntity) entity;
     }
 
@@ -43,7 +43,7 @@ public class EntityItemMergeEvent implements EntityInstanceEvent, CancellableEve
      *
      * @return the merged ItemEntity
      */
-    public ItemEntity getMerged() {
+    public @NotNull ItemEntity getMerged() {
         return merged;
     }
 
@@ -52,7 +52,7 @@ public class EntityItemMergeEvent implements EntityInstanceEvent, CancellableEve
      *
      * @return the item stack
      */
-    public ItemStack getResult() {
+    public @NotNull ItemStack getResult() {
         return result;
     }
 
@@ -61,7 +61,7 @@ public class EntityItemMergeEvent implements EntityInstanceEvent, CancellableEve
      *
      * @param result the new item stack
      */
-    public void setResult(ItemStack result) {
+    public void setResult(@NotNull ItemStack result) {
         this.result = result;
     }
 

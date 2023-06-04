@@ -15,10 +15,10 @@ public abstract class ShapelessRecipe extends Recipe {
     private ItemStack result;
 
     protected ShapelessRecipe(
-            String recipeId,
-            String group,
+            @NotNull String recipeId,
+            @NotNull String group,
             @Nullable List<DeclareRecipesPacket.Ingredient> ingredients,
-            ItemStack result
+            @NotNull ItemStack result
     ) {
         super(Type.SHAPELESS, recipeId);
         this.group = group;
@@ -31,7 +31,7 @@ public abstract class ShapelessRecipe extends Recipe {
         return group;
     }
 
-    public void setGroup(String group) {
+    public void setGroup(@NotNull String group) {
         this.group = group;
     }
 
@@ -49,7 +49,7 @@ public abstract class ShapelessRecipe extends Recipe {
         return result;
     }
 
-    public void setResult(ItemStack result) {
+    public void setResult(@NotNull ItemStack result) {
         this.result = result;
     }
 }

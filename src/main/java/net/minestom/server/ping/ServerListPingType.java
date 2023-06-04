@@ -48,7 +48,7 @@ public enum ServerListPingType {
 
     private final Function<ResponseData, String> pingResponseCreator;
 
-    ServerListPingType(Function<ResponseData, String> pingResponseCreator) {
+    ServerListPingType(@NotNull Function<ResponseData, String> pingResponseCreator) {
         this.pingResponseCreator = pingResponseCreator;
     }
 
@@ -58,7 +58,7 @@ public enum ServerListPingType {
      * @param responseData the response data
      * @return the response
      */
-    public String getPingResponse(ResponseData responseData) {
+    public @NotNull String getPingResponse(@NotNull ResponseData responseData) {
         return this.pingResponseCreator.apply(responseData);
     }
 
@@ -74,7 +74,7 @@ public enum ServerListPingType {
      * @return the ping
      * @see OpenToLAN
      */
-    public static String getOpenToLANPing(ResponseData data) {
+    public static @NotNull String getOpenToLANPing(@NotNull ResponseData data) {
         return String.format(LAN_PING_FORMAT, SECTION.serialize(data.getDescription()), MinecraftServer.getServer().getPort());
     }
 
@@ -85,7 +85,7 @@ public enum ServerListPingType {
      * @param supportsVersions if the client supports recieving the versions of the server
      * @return the response
      */
-    public static String getLegacyPingResponse(ResponseData data, boolean supportsVersions) {
+    public static @NotNull String getLegacyPingResponse(@NotNull ResponseData data, boolean supportsVersions) {
         final String motd = SECTION.serialize(data.getDescription());
 
         if (supportsVersions) {
@@ -103,7 +103,7 @@ public enum ServerListPingType {
      * @param supportsFullRgb if the client supports full RGB
      * @return the response
      */
-    public static JsonObject getModernPingResponse(ResponseData data, boolean supportsFullRgb) {
+    public static @NotNull JsonObject getModernPingResponse(@NotNull ResponseData data, boolean supportsFullRgb) {
         // version
         final JsonObject versionObject = new JsonObject();
         versionObject.addProperty("name", data.getVersion());
@@ -150,7 +150,7 @@ public enum ServerListPingType {
      * @param version the protocol version
      * @return the corresponding server list ping version
      */
-    public static ServerListPingType fromModernProtocolVersion(int version) {
+    public static @NotNull ServerListPingType fromModernProtocolVersion(int version) {
         if (version >= 713) {
             return MODERN_FULL_RGB;
         } else {

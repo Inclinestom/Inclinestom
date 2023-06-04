@@ -8,7 +8,7 @@ public class HoglinMeta extends AnimalMeta {
     public static final byte OFFSET = AnimalMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 1;
 
-    public HoglinMeta(Entity entity, Metadata metadata) {
+    public HoglinMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
         super(entity, metadata);
     }
 

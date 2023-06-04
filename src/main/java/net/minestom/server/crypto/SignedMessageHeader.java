@@ -7,13 +7,13 @@ import org.jetbrains.annotations.Nullable;
 import java.util.UUID;
 
 public record SignedMessageHeader(@Nullable MessageSignature previousSignature,
-                                  UUID sender) implements NetworkBuffer.Writer {
-    public SignedMessageHeader(NetworkBuffer reader) {
+                                  @NotNull UUID sender) implements NetworkBuffer.Writer {
+    public SignedMessageHeader(@NotNull NetworkBuffer reader) {
         this(reader.readOptional(MessageSignature::new), reader.read(NetworkBuffer.UUID));
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.writeOptional(previousSignature);
         writer.write(NetworkBuffer.UUID, sender);
     }

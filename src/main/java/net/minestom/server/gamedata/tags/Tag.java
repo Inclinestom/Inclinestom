@@ -82,15 +82,15 @@ public final class Tag {
         private final Registry.Resource resource;
         private final Function<String, Integer> function;
 
-        BasicType(String identifier,
-                  Registry.Resource resource,
-                  Function<String, Integer> function) {
+        BasicType(@NotNull String identifier,
+                  @NotNull Registry.Resource resource,
+                  @NotNull Function<String, Integer> function) {
             this.identifier = identifier;
             this.resource = resource;
             this.function = function;
         }
 
-        public String getIdentifier() {
+        public @NotNull String getIdentifier() {
             return identifier;
         }
 
@@ -102,7 +102,7 @@ public final class Tag {
             return function;
         }
 
-        public static @Nullable Tag.BasicType fromIdentifer(String identifier) {
+        public static @Nullable Tag.BasicType fromIdentifer(@NotNull String identifier) {
             for (BasicType value : VALUES) {
                 if (value.identifier.equals(identifier)) {
                     return value;

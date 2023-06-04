@@ -19,17 +19,17 @@ final class TaskImpl implements Task {
     }
 
     private final int id;
-    private final Supplier<TaskSchedule> task;
-    private final ExecutionType executionType;
-    private final SchedulerImpl owner;
+    private final @NotNull Supplier<TaskSchedule> task;
+    private final @NotNull ExecutionType executionType;
+    private final @NotNull SchedulerImpl owner;
 
     volatile boolean alive;
     volatile boolean parked;
 
     TaskImpl(int id,
-             Supplier<TaskSchedule> task,
-             ExecutionType executionType,
-             SchedulerImpl owner) {
+             @NotNull Supplier<TaskSchedule> task,
+             @NotNull ExecutionType executionType,
+             @NotNull SchedulerImpl owner) {
         this.id = id;
         this.task = task;
         this.executionType = executionType;
@@ -65,15 +65,15 @@ final class TaskImpl implements Task {
         return id;
     }
 
-    public Supplier<TaskSchedule> task() {
+    public @NotNull Supplier<TaskSchedule> task() {
         return task;
     }
 
-    public ExecutionType executionType() {
+    public @NotNull ExecutionType executionType() {
         return executionType;
     }
 
-    public SchedulerImpl owner() {
+    public @NotNull SchedulerImpl owner() {
         return owner;
     }
 

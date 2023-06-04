@@ -30,12 +30,12 @@ public class ConsoleSender implements CommandSender {
             .build();
 
     @Override
-    public void sendMessage(String message) {
+    public void sendMessage(@NotNull String message) {
         LOGGER.info(message);
     }
 
     @Override
-    public void sendMessage(Identity source, Component message, MessageType type) {
+    public void sendMessage(@NotNull Identity source, @NotNull Component message, @NotNull MessageType type) {
         LOGGER.info(message);
     }
 
@@ -56,17 +56,17 @@ public class ConsoleSender implements CommandSender {
     }
 
     @Override
-    public TagHandler tagHandler() {
+    public @NotNull TagHandler tagHandler() {
         return tagHandler;
     }
 
     @Override
-    public Identity identity() {
+    public @NotNull Identity identity() {
         return this.identity;
     }
 
     @Override
-    public Pointers pointers() {
+    public @NotNull Pointers pointers() {
         return this.pointers;
     }
 }

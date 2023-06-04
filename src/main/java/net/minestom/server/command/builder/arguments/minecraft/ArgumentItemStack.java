@@ -30,7 +30,7 @@ public class ArgumentItemStack extends Argument<ItemStack> {
 
     @NotNull
     @Override
-    public ItemStack parse(String input) throws ArgumentSyntaxException {
+    public ItemStack parse(@NotNull String input) throws ArgumentSyntaxException {
         return staticParse(input);
     }
 
@@ -43,7 +43,7 @@ public class ArgumentItemStack extends Argument<ItemStack> {
      * @deprecated use {@link Argument#parse(Argument)}
      */
     @Deprecated
-    public static ItemStack staticParse(String input) throws ArgumentSyntaxException {
+    public static ItemStack staticParse(@NotNull String input) throws ArgumentSyntaxException {
         final int nbtIndex = input.indexOf("{");
 
         if (nbtIndex == 0)

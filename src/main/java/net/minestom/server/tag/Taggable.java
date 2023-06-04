@@ -6,25 +6,25 @@ import org.jetbrains.annotations.UnknownNullability;
 
 public interface Taggable extends TagReadable, TagWritable {
 
-    TagHandler tagHandler();
+    @NotNull TagHandler tagHandler();
 
     @Override
-    default <T> @UnknownNullability T getTag(Tag<T> tag) {
+    default <T> @UnknownNullability T getTag(@NotNull Tag<T> tag) {
         return tagHandler().getTag(tag);
     }
 
     @Override
-    default boolean hasTag(Tag<?> tag) {
+    default boolean hasTag(@NotNull Tag<?> tag) {
         return tagHandler().hasTag(tag);
     }
 
     @Override
-    default <T> void setTag(Tag<T> tag, @Nullable T value) {
+    default <T> void setTag(@NotNull Tag<T> tag, @Nullable T value) {
         tagHandler().setTag(tag, value);
     }
 
     @Override
-    default void removeTag(Tag<?> tag) {
+    default void removeTag(@NotNull Tag<?> tag) {
         tagHandler().removeTag(tag);
     }
 }

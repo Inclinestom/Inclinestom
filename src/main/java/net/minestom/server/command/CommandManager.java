@@ -42,7 +42,7 @@ public final class CommandManager {
      * @param command the command to register
      * @throws IllegalStateException if a command with the same name already exists
      */
-    public synchronized void register(Command command) {
+    public synchronized void register(@NotNull Command command) {
         Check.stateCondition(commandExists(command.getName()),
                 "A command with the name " + command.getName() + " is already registered!");
         if (command.getAliases() != null) {
@@ -63,7 +63,7 @@ public final class CommandManager {
      *
      * @param command the command to remove
      */
-    public void unregister(Command command) {
+    public void unregister(@NotNull Command command) {
         commands.remove(command);
         for (String name : command.getNames()) {
             commandMap.remove(name);
@@ -76,7 +76,7 @@ public final class CommandManager {
      * @param commandName the command name
      * @return the command associated with the name, null if not any
      */
-    public @Nullable Command getCommand(String commandName) {
+    public @Nullable Command getCommand(@NotNull String commandName) {
         return commandMap.get(commandName.toLowerCase(Locale.ROOT));
     }
 
@@ -86,7 +86,7 @@ public final class CommandManager {
      * @param commandName the command name to check
      * @return true if the command does exist
      */
-    public boolean commandExists(String commandName) {
+    public boolean commandExists(@NotNull String commandName) {
         return getCommand(commandName) != null;
     }
 
@@ -97,7 +97,7 @@ public final class CommandManager {
      * @param command the raw command string (without the command prefix)
      * @return the execution result
      */
-    public CommandResult execute(CommandSender sender, String command) {
+    public @NotNull CommandResult execute(@NotNull CommandSender sender, @NotNull String command) {
         command = command.trim();
         // Command event
         if (sender instanceof Player player) {
@@ -126,11 +126,11 @@ public final class CommandManager {
      *
      * @see #execute(CommandSender, String)
      */
-    public CommandResult executeServerCommand(String command) {
+    public @NotNull CommandResult executeServerCommand(@NotNull String command) {
         return execute(serverSender, command);
     }
 
-    public CommandDispatcher getDispatcher() {
+    public @NotNull CommandDispatcher getDispatcher() {
         return dispatcher;
     }
 
@@ -158,7 +158,7 @@ public final class CommandManager {
      *
      * @return the {@link ConsoleSender}
      */
-    public ConsoleSender getConsoleSender() {
+    public @NotNull ConsoleSender getConsoleSender() {
         return consoleSender;
     }
 
@@ -170,11 +170,11 @@ public final class CommandManager {
      * @param player the player to get the commands packet
      * @return the {@link DeclareCommandsPacket} for {@code player}
      */
-    public DeclareCommandsPacket createDeclareCommandsPacket(Player player) {
+    public @NotNull DeclareCommandsPacket createDeclareCommandsPacket(@NotNull Player player) {
         return GraphConverter.createPacket(getGraph(), player);
     }
 
-    public Set<Command> getCommands() {
+    public @NotNull Set<@NotNull Command> getCommands() {
         return Collections.unmodifiableSet(commands);
     }
 

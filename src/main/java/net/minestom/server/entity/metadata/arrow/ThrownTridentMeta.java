@@ -8,7 +8,7 @@ public class ThrownTridentMeta extends AbstractArrowMeta {
     public static final byte OFFSET = AbstractArrowMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 2;
 
-    public ThrownTridentMeta(Entity entity, Metadata metadata) {
+    public ThrownTridentMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
         super(entity, metadata);
     }
 

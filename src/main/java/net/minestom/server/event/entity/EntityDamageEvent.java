@@ -22,7 +22,7 @@ public class EntityDamageEvent implements EntityInstanceEvent, CancellableEvent 
 
     private boolean cancelled;
 
-    public EntityDamageEvent(LivingEntity entity, DamageType damageType,
+    public EntityDamageEvent(@NotNull LivingEntity entity, @NotNull DamageType damageType,
                              float damage, @Nullable SoundEvent sound) {
         this.entity = entity;
         this.damageType = damageType;

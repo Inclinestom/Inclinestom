@@ -9,7 +9,7 @@ public class BoatMeta extends EntityMeta {
     public static final byte OFFSET = EntityMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 7;
 
-    public BoatMeta(Entity entity, Metadata metadata) {
+    public BoatMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
         super(entity, metadata);
     }
 
@@ -42,7 +42,7 @@ public class BoatMeta extends EntityMeta {
         return Type.VALUES[super.metadata.getIndex(OFFSET + 3, 0)];
     }
 
-    public void setType(Type value) {
+    public void setType(@NotNull Type value) {
         super.metadata.setIndex(OFFSET + 3, Metadata.VarInt(value.ordinal()));
     }
 

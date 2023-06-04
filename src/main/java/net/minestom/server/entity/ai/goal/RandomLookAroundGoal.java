@@ -43,8 +43,8 @@ public class RandomLookAroundGoal extends GoalSelector {
     public RandomLookAroundGoal(
             EntityCreature entityCreature,
             int chancePerTick,
-            Supplier<Integer> minimalLookTimeSupplier,
-            Function<EntityCreature, Vec> randomDirectionFunction) {
+            @NotNull Supplier<Integer> minimalLookTimeSupplier,
+            @NotNull Function<EntityCreature, Vec> randomDirectionFunction) {
         super(entityCreature);
         this.chancePerTick = chancePerTick;
         this.minimalLookTimeSupplier = minimalLookTimeSupplier;

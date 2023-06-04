@@ -11,7 +11,7 @@ public class PlayerSettingsChangeEvent implements PlayerEvent {
 
     private final Player player;
 
-    public PlayerSettingsChangeEvent(Player player) {
+    public PlayerSettingsChangeEvent(@NotNull Player player) {
         this.player = player;
     }
 

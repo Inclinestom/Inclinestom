@@ -101,24 +101,24 @@ public interface TransactionType {
         return Pair.of(itemStack, itemChangesMap);
     };
 
-    Pair<ItemStack, Map<Integer, ItemStack>> process(AbstractInventory inventory,
-                                                              ItemStack itemStack,
-                                                              SlotPredicate slotPredicate,
+    @NotNull Pair<ItemStack, Map<Integer, ItemStack>> process(@NotNull AbstractInventory inventory,
+                                                              @NotNull ItemStack itemStack,
+                                                              @NotNull SlotPredicate slotPredicate,
                                                               int start, int end, int step);
 
-    default Pair<ItemStack, Map<Integer, ItemStack>> process(AbstractInventory inventory,
-                                                                      ItemStack itemStack,
-                                                                      SlotPredicate slotPredicate) {
+    default @NotNull Pair<ItemStack, Map<Integer, ItemStack>> process(@NotNull AbstractInventory inventory,
+                                                                      @NotNull ItemStack itemStack,
+                                                                      @NotNull SlotPredicate slotPredicate) {
         return process(inventory, itemStack, slotPredicate, 0, inventory.getInnerSize(), 1);
     }
 
-    default Pair<ItemStack, Map<Integer, ItemStack>> process(AbstractInventory inventory,
-                                                                      ItemStack itemStack) {
+    default @NotNull Pair<ItemStack, Map<Integer, ItemStack>> process(@NotNull AbstractInventory inventory,
+                                                                      @NotNull ItemStack itemStack) {
         return process(inventory, itemStack, (slot, itemStack1) -> true);
     }
 
     @FunctionalInterface
     interface SlotPredicate {
-        boolean test(int slot, ItemStack itemStack);
+        boolean test(int slot, @NotNull ItemStack itemStack);
     }
 }

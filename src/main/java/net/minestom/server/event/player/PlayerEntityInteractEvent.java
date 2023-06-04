@@ -16,8 +16,8 @@ public class PlayerEntityInteractEvent implements PlayerInstanceEvent {
     private final Player.Hand hand;
     private final Point interactPosition;
 
-    public PlayerEntityInteractEvent(Player player, Entity entityTarget, Player.Hand hand,
-                                     Point interactPosition) {
+    public PlayerEntityInteractEvent(@NotNull Player player, @NotNull Entity entityTarget, @NotNull Player.Hand hand,
+                                     @NotNull Point interactPosition) {
         this.player = player;
         this.entityTarget = entityTarget;
         this.hand = hand;
@@ -25,7 +25,7 @@ public class PlayerEntityInteractEvent implements PlayerInstanceEvent {
     }
 
     @Override
-    public Player getPlayer() {
+    public @NotNull Player getPlayer() {
         return player;
     }
 

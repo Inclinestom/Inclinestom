@@ -8,7 +8,7 @@ public class CodMeta extends AbstractFishMeta {
     public static final byte OFFSET = AbstractFishMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 0;
 
-    public CodMeta(Entity entity, Metadata metadata) {
+    public CodMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
         super(entity, metadata);
     }
 

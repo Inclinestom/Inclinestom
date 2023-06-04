@@ -94,7 +94,7 @@ public final class PlayerDiggingListener {
         return breakBlock(instance, player, blockPosition, block, blockFace);
     }
 
-    private static boolean shouldPreventBreaking(Player player, Block block) {
+    private static boolean shouldPreventBreaking(@NotNull Player player, Block block) {
         if (player.getGameMode() == GameMode.SPECTATOR) {
             // Spectators can't break blocks
             return true;
@@ -174,8 +174,8 @@ public final class PlayerDiggingListener {
         return new DiggingResult(updatedBlock, success);
     }
 
-    private static void dropItem(Player player,
-                                 ItemStack droppedItem, ItemStack handItem) {
+    private static void dropItem(@NotNull Player player,
+                                 @NotNull ItemStack droppedItem, @NotNull ItemStack handItem) {
         final PlayerInventory playerInventory = player.getInventory();
         if (player.dropItem(droppedItem)) {
             playerInventory.setItemInMainHand(handItem);

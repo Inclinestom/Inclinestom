@@ -15,11 +15,11 @@ public final class LazyPacket implements SendablePacket {
     private final Supplier<ServerPacket> packetSupplier;
     private volatile ServerPacket packet;
 
-    public LazyPacket(Supplier<ServerPacket> packetSupplier) {
+    public LazyPacket(@NotNull Supplier<@NotNull ServerPacket> packetSupplier) {
         this.packetSupplier = packetSupplier;
     }
 
-    public ServerPacket packet() {
+    public @NotNull ServerPacket packet() {
         ServerPacket packet = this.packet;
         if (packet == null) {
             synchronized (this) {

@@ -17,7 +17,7 @@ public class PlayerItemAnimationEvent implements PlayerInstanceEvent, Cancellabl
     private final Player.Hand hand;
     private boolean cancelled;
 
-    public PlayerItemAnimationEvent(Player player, ItemAnimationType itemAnimationType, Player.Hand hand) {
+    public PlayerItemAnimationEvent(@NotNull Player player, @NotNull ItemAnimationType itemAnimationType, @NotNull Player.Hand hand) {
         this.player = player;
         this.itemAnimationType = itemAnimationType;
         this.hand = hand;
@@ -28,7 +28,7 @@ public class PlayerItemAnimationEvent implements PlayerInstanceEvent, Cancellabl
      *
      * @return the animation
      */
-    public ItemAnimationType getItemAnimationType() {
+    public @NotNull ItemAnimationType getItemAnimationType() {
         return itemAnimationType;
     }
 
@@ -37,12 +37,12 @@ public class PlayerItemAnimationEvent implements PlayerInstanceEvent, Cancellabl
      *
      * @return the hand
      */
-    public Player.Hand getHand() {
+    public @NotNull Player.Hand getHand() {
         return hand;
     }
 
     @Override
-    public Player getPlayer() {
+    public @NotNull Player getPlayer() {
         return player;
     }
 

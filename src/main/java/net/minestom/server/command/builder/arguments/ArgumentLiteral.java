@@ -7,13 +7,13 @@ public class ArgumentLiteral extends Argument<String> {
 
     public static final int INVALID_VALUE_ERROR = 1;
 
-    public ArgumentLiteral(String id) {
+    public ArgumentLiteral(@NotNull String id) {
         super(id);
     }
 
     @NotNull
     @Override
-    public String parse(String input) throws ArgumentSyntaxException {
+    public String parse(@NotNull String input) throws ArgumentSyntaxException {
         if (!input.equals(getId()))
             throw new ArgumentSyntaxException("Invalid literal value", input, INVALID_VALUE_ERROR);
 

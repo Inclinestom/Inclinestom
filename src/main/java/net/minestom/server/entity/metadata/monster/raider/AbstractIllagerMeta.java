@@ -8,7 +8,7 @@ public class AbstractIllagerMeta extends RaiderMeta {
     public static final byte OFFSET = RaiderMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 0;
 
-    protected AbstractIllagerMeta(Entity entity, Metadata metadata) {
+    protected AbstractIllagerMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
         super(entity, metadata);
     }
 

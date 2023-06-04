@@ -14,7 +14,7 @@ public record CrossbowMeta(TagReadable readable) implements ItemMetaView<Crossbo
     private static final Tag<List<ItemStack>> PROJECTILES = Tag.ItemStack("ChargedProjectiles").list().defaultValue(List.of());
     private static final Tag<Boolean> CHARGED = Tag.Boolean("Charged").defaultValue(false);
 
-    public List<ItemStack> getProjectiles() {
+    public @NotNull List<ItemStack> getProjectiles() {
         return getTag(PROJECTILES);
     }
 
@@ -23,7 +23,7 @@ public record CrossbowMeta(TagReadable readable) implements ItemMetaView<Crossbo
     }
 
     @Override
-    public <T> @UnknownNullability T getTag(Tag<T> tag) {
+    public <T> @UnknownNullability T getTag(@NotNull Tag<T> tag) {
         return readable.getTag(tag);
     }
 
@@ -32,12 +32,12 @@ public record CrossbowMeta(TagReadable readable) implements ItemMetaView<Crossbo
             this(TagHandler.newHandler());
         }
 
-        public Builder projectile(ItemStack projectile) {
+        public Builder projectile(@NotNull ItemStack projectile) {
             setTag(PROJECTILES, List.of(projectile));
             return this;
         }
 
-        public Builder projectiles(ItemStack projectile1, ItemStack projectile2, ItemStack projectile3) {
+        public Builder projectiles(@NotNull ItemStack projectile1, @NotNull ItemStack projectile2, @NotNull ItemStack projectile3) {
             setTag(PROJECTILES, List.of(projectile1, projectile2, projectile3));
             return this;
         }

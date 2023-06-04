@@ -11,7 +11,7 @@ public class SheepMeta extends AnimalMeta {
     private final static byte COLOR_BITS = 0x0F;
     private final static byte SHEARED_BIT = 0x10;
 
-    public SheepMeta(Entity entity, Metadata metadata) {
+    public SheepMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
         super(entity, metadata);
     }
 

@@ -10,16 +10,16 @@ public class SuggestionEntry {
     private final String entry;
     private final Component tooltip;
 
-    public SuggestionEntry(String entry, @Nullable Component tooltip) {
+    public SuggestionEntry(@NotNull String entry, @Nullable Component tooltip) {
         this.entry = entry;
         this.tooltip = tooltip;
     }
 
-    public SuggestionEntry(String entry) {
+    public SuggestionEntry(@NotNull String entry) {
         this(entry, null);
     }
 
-    public String getEntry() {
+    public @NotNull String getEntry() {
         return entry;
     }
 

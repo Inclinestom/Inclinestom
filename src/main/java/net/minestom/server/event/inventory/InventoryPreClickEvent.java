@@ -25,9 +25,9 @@ public class InventoryPreClickEvent implements InventoryEvent, PlayerInstanceEve
     private boolean cancelled;
 
     public InventoryPreClickEvent(@Nullable Inventory inventory,
-                                  Player player,
-                                  int slot, ClickType clickType,
-                                  ItemStack clicked, ItemStack cursor) {
+                                  @NotNull Player player,
+                                  int slot, @NotNull ClickType clickType,
+                                  @NotNull ItemStack clicked, @NotNull ItemStack cursor) {
         this.inventory = inventory;
         this.player = player;
         this.slot = slot;
@@ -80,7 +80,7 @@ public class InventoryPreClickEvent implements InventoryEvent, PlayerInstanceEve
      *
      * @param clickedItem the clicked item
      */
-    public void setClickedItem(ItemStack clickedItem) {
+    public void setClickedItem(@NotNull ItemStack clickedItem) {
         this.clickedItem = clickedItem;
     }
 
@@ -99,7 +99,7 @@ public class InventoryPreClickEvent implements InventoryEvent, PlayerInstanceEve
      *
      * @param cursorItem the cursor item
      */
-    public void setCursorItem(ItemStack cursorItem) {
+    public void setCursorItem(@NotNull ItemStack cursorItem) {
         this.cursorItem = cursorItem;
     }
 

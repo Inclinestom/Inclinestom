@@ -27,7 +27,7 @@ abstract class ArgumentRelativeVec extends Argument<RelativeVec> {
 
     private final int numberCount;
 
-    public ArgumentRelativeVec(String id, int numberCount) {
+    public ArgumentRelativeVec(@NotNull String id, int numberCount) {
         super(id, true);
         this.numberCount = numberCount;
     }
@@ -38,7 +38,7 @@ abstract class ArgumentRelativeVec extends Argument<RelativeVec> {
 
     @NotNull
     @Override
-    public RelativeVec parse(String input) throws ArgumentSyntaxException {
+    public RelativeVec parse(@NotNull String input) throws ArgumentSyntaxException {
         final String[] split = input.split(StringUtils.SPACE);
         if (split.length != getNumberCount()) {
             throw new ArgumentSyntaxException("Invalid number of values", input, INVALID_NUMBER_COUNT_ERROR);

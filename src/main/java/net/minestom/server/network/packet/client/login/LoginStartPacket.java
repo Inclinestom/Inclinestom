@@ -25,17 +25,17 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import static net.minestom.server.network.NetworkBuffer.*;
 
-public record LoginStartPacket(String username,
+public record LoginStartPacket(@NotNull String username,
                                @Nullable PlayerPublicKey publicKey,
                                @Nullable UUID profileId) implements ClientPreplayPacket {
     private static final Component ALREADY_CONNECTED = Component.text("You are already on this server", NamedTextColor.RED);
 
-    public LoginStartPacket(NetworkBuffer reader) {
+    public LoginStartPacket(@NotNull NetworkBuffer reader) {
         this(reader.read(STRING), reader.readOptional(PlayerPublicKey::new), reader.readOptional(UUID));
     }
 
     @Override
-    public void process(PlayerConnection connection) {
+    public void process(@NotNull PlayerConnection connection) {
         // TODO use uuid
         // TODO configurable check & messages
         if (publicKey != null) {
@@ -100,7 +100,7 @@ public record LoginStartPacket(String username,
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         if (username.length() > 16)
             throw new IllegalArgumentException("Username is not allowed to be longer than 16 characters");
         writer.write(STRING, username);

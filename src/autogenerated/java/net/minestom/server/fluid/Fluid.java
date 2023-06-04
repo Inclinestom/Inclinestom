@@ -26,7 +26,7 @@ public enum Fluid implements Keyed {
     @NotNull
     private final NamespaceID id;
 
-    Fluid(NamespaceID id) {
+    Fluid(@NotNull NamespaceID id) {
         this.id = id;
         Registries.fluids.put(id, this);
     }

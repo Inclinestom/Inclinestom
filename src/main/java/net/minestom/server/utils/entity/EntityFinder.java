@@ -50,22 +50,22 @@ public class EntityFinder {
     private final ToggleableMap<GameMode> gameModes = new ToggleableMap<>();
     private IntRange level;
 
-    public EntityFinder setTargetSelector(TargetSelector targetSelector) {
+    public EntityFinder setTargetSelector(@NotNull TargetSelector targetSelector) {
         this.targetSelector = targetSelector;
         return this;
     }
 
-    public EntityFinder setEntitySort(EntitySort entitySort) {
+    public EntityFinder setEntitySort(@NotNull EntitySort entitySort) {
         this.entitySort = entitySort;
         return this;
     }
 
-    public EntityFinder setStartPosition(Point startPosition) {
+    public EntityFinder setStartPosition(@NotNull Point startPosition) {
         this.startPosition = startPosition;
         return this;
     }
 
-    public EntityFinder setDistance(IntRange distance) {
+    public EntityFinder setDistance(@NotNull IntRange distance) {
         this.distance = distance;
         return this;
     }
@@ -75,37 +75,37 @@ public class EntityFinder {
         return this;
     }
 
-    public EntityFinder setLevel(IntRange level) {
+    public EntityFinder setLevel(@NotNull IntRange level) {
         this.level = level;
         return this;
     }
 
-    public EntityFinder setEntity(EntityType entityType, ToggleableType toggleableType) {
+    public EntityFinder setEntity(@NotNull EntityType entityType, @NotNull ToggleableType toggleableType) {
         this.entityTypes.put(entityType, toggleableType.getValue());
         return this;
     }
 
-    public EntityFinder setConstantName(String constantName) {
+    public EntityFinder setConstantName(@NotNull String constantName) {
         this.constantName = constantName;
         return this;
     }
 
-    public EntityFinder setConstantUuid(UUID constantUuid) {
+    public EntityFinder setConstantUuid(@NotNull UUID constantUuid) {
         this.constantUuid = constantUuid;
         return this;
     }
 
-    public EntityFinder setName(String name, ToggleableType toggleableType) {
+    public EntityFinder setName(@NotNull String name, @NotNull ToggleableType toggleableType) {
         this.names.put(name, toggleableType.getValue());
         return this;
     }
 
-    public EntityFinder setUuid(UUID uuid, ToggleableType toggleableType) {
+    public EntityFinder setUuid(@NotNull UUID uuid, @NotNull ToggleableType toggleableType) {
         this.uuids.put(uuid, toggleableType.getValue());
         return this;
     }
 
-    public EntityFinder setGameMode(GameMode gameMode, ToggleableType toggleableType) {
+    public EntityFinder setGameMode(@NotNull GameMode gameMode, @NotNull ToggleableType toggleableType) {
         this.gameModes.put(gameMode, toggleableType.getValue());
         return this;
     }
@@ -125,7 +125,7 @@ public class EntityFinder {
      * @param self     the source of the query, null if not any
      * @return all entities validating the conditions, can be empty
      */
-    public List<Entity> find(@Nullable Instance instance, @Nullable Entity self) {
+    public @NotNull List<@NotNull Entity> find(@Nullable Instance instance, @Nullable Entity self) {
         if (targetSelector == TargetSelector.MINESTOM_USERNAME) {
             Check.notNull(constantName, "The player name should not be null when searching for it");
             final Player player = MinecraftServer.getConnectionManager().getPlayer(constantName);
@@ -241,7 +241,7 @@ public class EntityFinder {
         return result;
     }
 
-    public List<Entity> find(CommandSender sender) {
+    public @NotNull List<@NotNull Entity> find(@NotNull CommandSender sender) {
         return sender instanceof Player player ?
                 find(player.getInstance(), player) : find(null, null);
     }
@@ -263,7 +263,7 @@ public class EntityFinder {
         return null;
     }
 
-    public @Nullable Player findFirstPlayer(CommandSender sender) {
+    public @Nullable Player findFirstPlayer(@NotNull CommandSender sender) {
         return sender instanceof Player player ?
                 findFirstPlayer(player.getInstance(), player) :
                 findFirstPlayer(null, null);
@@ -274,7 +274,7 @@ public class EntityFinder {
         return entities.isEmpty() ? null : entities.get(0);
     }
 
-    public @Nullable Entity findFirstEntity(CommandSender sender) {
+    public @Nullable Entity findFirstEntity(@NotNull CommandSender sender) {
         return sender instanceof Player player ?
                 findFirstEntity(player.getInstance(), player) : findFirstEntity(null, null);
     }
@@ -304,9 +304,9 @@ public class EntityFinder {
     private static class ToggleableMap<T> extends Object2BooleanOpenHashMap<T> {
     }
 
-    private static List<Entity> findTarget(@Nullable Instance instance,
-                                                             TargetSelector targetSelector,
-                                                             Point startPosition, @Nullable Entity self) {
+    private static @NotNull List<@NotNull Entity> findTarget(@Nullable Instance instance,
+                                                             @NotNull TargetSelector targetSelector,
+                                                             @NotNull Point startPosition, @Nullable Entity self) {
         final var players = instance != null ?
                 instance.getPlayers() : MinecraftServer.getConnectionManager().getOnlinePlayers();
         if (targetSelector == TargetSelector.NEAREST_PLAYER) {
@@ -336,7 +336,7 @@ public class EntityFinder {
         throw new IllegalStateException("Weird thing happened: " + targetSelector);
     }
 
-    private static <T> boolean filterToggleableMap(T value, ToggleableMap<T> map) {
+    private static <T> boolean filterToggleableMap(@NotNull T value, @NotNull ToggleableMap<T> map) {
         for (var entry : Object2BooleanMaps.fastIterable(map)) {
             if (entry.getBooleanValue() != Objects.equals(value, entry.getKey())) {
                 return false;

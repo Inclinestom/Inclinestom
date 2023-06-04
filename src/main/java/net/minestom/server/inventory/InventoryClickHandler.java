@@ -22,7 +22,7 @@ public sealed interface InventoryClickHandler permits AbstractInventory {
      * @param slot   the slot number
      * @return true if the click hasn't been cancelled, false otherwise
      */
-    boolean leftClick(Player player, int slot);
+    boolean leftClick(@NotNull Player player, int slot);
 
     /**
      * Called when a {@link Player} right click in the inventory. Can also be to drop the cursor item
@@ -31,7 +31,7 @@ public sealed interface InventoryClickHandler permits AbstractInventory {
      * @param slot   the slot number
      * @return true if the click hasn't been cancelled, false otherwise
      */
-    boolean rightClick(Player player, int slot);
+    boolean rightClick(@NotNull Player player, int slot);
 
     /**
      * Called when a {@link Player} shift click in the inventory
@@ -40,7 +40,7 @@ public sealed interface InventoryClickHandler permits AbstractInventory {
      * @param slot   the slot number
      * @return true if the click hasn't been cancelled, false otherwise
      */
-    boolean shiftClick(Player player, int slot); // shift + left/right click have the same behavior
+    boolean shiftClick(@NotNull Player player, int slot); // shift + left/right click have the same behavior
 
     /**
      * Called when a {@link Player} held click in the inventory
@@ -50,9 +50,9 @@ public sealed interface InventoryClickHandler permits AbstractInventory {
      * @param key    the held slot (0-8) pressed
      * @return true if the click hasn't been cancelled, false otherwise
      */
-    boolean changeHeld(Player player, int slot, int key);
+    boolean changeHeld(@NotNull Player player, int slot, int key);
 
-    boolean middleClick(Player player, int slot);
+    boolean middleClick(@NotNull Player player, int slot);
 
     /**
      * Called when a {@link Player} press the drop button
@@ -63,9 +63,9 @@ public sealed interface InventoryClickHandler permits AbstractInventory {
      * @param button -999 if clicking outside, normal if he is not
      * @return true if the drop hasn't been cancelled, false otherwise
      */
-    boolean drop(Player player, boolean all, int slot, int button);
+    boolean drop(@NotNull Player player, boolean all, int slot, int button);
 
-    boolean dragging(Player player, int slot, int button);
+    boolean dragging(@NotNull Player player, int slot, int button);
 
     /**
      * Called when a {@link Player} double click in the inventory
@@ -74,10 +74,10 @@ public sealed interface InventoryClickHandler permits AbstractInventory {
      * @param slot   the slot number
      * @return true if the click hasn't been cancelled, false otherwise
      */
-    boolean doubleClick(Player player, int slot);
+    boolean doubleClick(@NotNull Player player, int slot);
 
-    default void callClickEvent(Player player, Inventory inventory, int slot,
-                                ClickType clickType, ItemStack clicked, ItemStack cursor) {
+    default void callClickEvent(@NotNull Player player, Inventory inventory, int slot,
+                                @NotNull ClickType clickType, @NotNull ItemStack clicked, @NotNull ItemStack cursor) {
         EventDispatcher.call(new InventoryClickEvent(inventory, player, slot, clickType, clicked, cursor));
     }
 }

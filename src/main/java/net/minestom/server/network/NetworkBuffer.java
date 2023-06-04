@@ -66,7 +66,7 @@ public final class NetworkBuffer {
     NBTWriter nbtWriter;
     NBTReader nbtReader;
 
-    public NetworkBuffer(ByteBuffer buffer, boolean resizable) {
+    public NetworkBuffer(@NotNull ByteBuffer buffer, boolean resizable) {
         this.nioBuffer = buffer.order(ByteOrder.BIG_ENDIAN);
         this.resizable = resizable;
 
@@ -74,7 +74,7 @@ public final class NetworkBuffer {
         this.readIndex = buffer.position();
     }
 
-    public NetworkBuffer(ByteBuffer buffer) {
+    public NetworkBuffer(@NotNull ByteBuffer buffer) {
         this(buffer, true);
     }
 
@@ -86,22 +86,22 @@ public final class NetworkBuffer {
         this(1024);
     }
 
-    public <T> void write(Type<T> type, T value) {
+    public <T> void write(@NotNull Type<T> type, @NotNull T value) {
         var impl = (NetworkBufferTypes.TypeImpl<T>) type;
         final long length = impl.writer().write(this, value);
         if (length != -1) this.writeIndex += length;
     }
 
-    public <T> void write(Writer writer) {
+    public <T> void write(@NotNull Writer writer) {
         writer.write(this);
     }
 
-    public <T> T read(Type<T> type) {
+    public <T> @NotNull T read(@NotNull Type<T> type) {
         var impl = (NetworkBufferTypes.TypeImpl<T>) type;
         return impl.reader().read(this);
     }
 
-    public <T> void writeOptional(Type<T> type, @Nullable T value) {
+    public <T> void writeOptional(@NotNull Type<T> type, @Nullable T value) {
         write(BOOLEAN, value != null);
         if (value != null) write(type, value);
     }
@@ -111,15 +111,15 @@ public final class NetworkBuffer {
         if (writer != null) write(writer);
     }
 
-    public <T> @Nullable T readOptional(Type<T> type) {
+    public <T> @Nullable T readOptional(@NotNull Type<T> type) {
         return read(BOOLEAN) ? read(type) : null;
     }
 
-    public <T> @Nullable T readOptional(Function<NetworkBuffer, T> function) {
+    public <T> @Nullable T readOptional(@NotNull Function<@NotNull NetworkBuffer, @NotNull T> function) {
         return read(BOOLEAN) ? function.apply(this) : null;
     }
 
-    public <T> void writeCollection(Type<T> type, @Nullable Collection<T> values) {
+    public <T> void writeCollection(@NotNull Type<T> type, @Nullable Collection<@NotNull T> values) {
         if (values == null) {
             write(BYTE, (byte) 0);
             return;
@@ -131,11 +131,11 @@ public final class NetworkBuffer {
     }
 
     @SafeVarargs
-    public final <T> void writeCollection(Type<T> type, T @Nullable ... values) {
+    public final <T> void writeCollection(@NotNull Type<T> type, @NotNull T @Nullable ... values) {
         writeCollection(type, values == null ? null : List.of(values));
     }
 
-    public <T extends Writer> void writeCollection(@Nullable Collection<T> values) {
+    public <T extends Writer> void writeCollection(@Nullable Collection<@NotNull T> values) {
         if (values == null) {
             write(BYTE, (byte) 0);
             return;
@@ -146,8 +146,8 @@ public final class NetworkBuffer {
         }
     }
 
-    public <T> void writeCollection(@Nullable Collection<T> values,
-                                    BiConsumer<NetworkBuffer, T> consumer) {
+    public <T> void writeCollection(@Nullable Collection<@NotNull T> values,
+                                    @NotNull BiConsumer<@NotNull NetworkBuffer, @NotNull T> consumer) {
         if (values == null) {
             write(BYTE, (byte) 0);
             return;
@@ -158,7 +158,7 @@ public final class NetworkBuffer {
         }
     }
 
-    public <T> List<T> readCollection(Type<T> type) {
+    public <T> @NotNull List<@NotNull T> readCollection(@NotNull Type<T> type) {
         final int size = read(VAR_INT);
         final List<T> values = new java.util.ArrayList<>(size);
         for (int i = 0; i < size; i++) {
@@ -167,7 +167,7 @@ public final class NetworkBuffer {
         return values;
     }
 
-    public <T> List<T> readCollection(Function<NetworkBuffer, T> function) {
+    public <T> @NotNull List<@NotNull T> readCollection(@NotNull Function<@NotNull NetworkBuffer, @NotNull T> function) {
         final int size = read(VAR_INT);
         final List<T> values = new java.util.ArrayList<>(size);
         for (int i = 0; i < size; i++) {
@@ -186,7 +186,7 @@ public final class NetworkBuffer {
         }
     }
 
-    public <L, R> Either<L, R> readEither(Function<NetworkBuffer, L> leftReader, Function<NetworkBuffer, R> rightReader) {
+    public <L, R> @NotNull Either<L, R> readEither(@NotNull Function<NetworkBuffer, L> leftReader, Function<NetworkBuffer, R> rightReader) {
         if (read(BOOLEAN)) {
             return Either.left(leftReader.apply(this));
         } else {
@@ -194,11 +194,11 @@ public final class NetworkBuffer {
         }
     }
 
-    public <E extends Enum<?>> void writeEnum(Class<E> enumClass, E value) {
+    public <E extends Enum<?>> void writeEnum(@NotNull Class<E> enumClass, @NotNull E value) {
         write(VAR_INT, value.ordinal());
     }
 
-    public <E extends Enum<?>> E readEnum(Class<E> enumClass) {
+    public <E extends Enum<?>> @NotNull E readEnum(@NotNull Class<@NotNull E> enumClass) {
         return enumClass.getEnumConstants()[read(VAR_INT)];
     }
 
@@ -209,11 +209,11 @@ public final class NetworkBuffer {
         return bytes;
     }
 
-    public void copyTo(int srcOffset, byte [] dest, int destOffset, int length) {
+    public void copyTo(int srcOffset, byte @NotNull [] dest, int destOffset, int length) {
         this.nioBuffer.get(srcOffset, dest, destOffset, length);
     }
 
-    public byte [] extractBytes(Consumer<NetworkBuffer> extractor) {
+    public byte @NotNull [] extractBytes(@NotNull Consumer<@NotNull NetworkBuffer> extractor) {
         final int startingPosition = readIndex();
         extractor.accept(this);
         final int endingPosition = readIndex();
@@ -270,10 +270,10 @@ public final class NetworkBuffer {
 
     @FunctionalInterface
     public interface Writer {
-        void write(NetworkBuffer writer);
+        void write(@NotNull NetworkBuffer writer);
     }
 
-    public static byte[] makeArray(Consumer<NetworkBuffer> writing) {
+    public static byte[] makeArray(@NotNull Consumer<@NotNull NetworkBuffer> writing) {
         NetworkBuffer writer = new NetworkBuffer();
         writing.accept(writer);
         byte[] bytes = new byte[writer.writeIndex];

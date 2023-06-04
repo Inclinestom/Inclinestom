@@ -16,14 +16,14 @@ public class ArgumentGroup extends Argument<CommandContext> {
 
     private final Argument<?>[] group;
 
-    public ArgumentGroup(String id, Argument<?>... group) {
+    public ArgumentGroup(@NotNull String id, @NotNull Argument<?>... group) {
         super(id, true, false);
         this.group = group;
     }
 
     @NotNull
     @Override
-    public CommandContext parse(String input) throws ArgumentSyntaxException {
+    public CommandContext parse(@NotNull String input) throws ArgumentSyntaxException {
         List<ValidSyntaxHolder> validSyntaxes = new ArrayList<>();
         CommandParser.parse(null, group, input.split(StringUtils.SPACE), input, validSyntaxes, null);
 

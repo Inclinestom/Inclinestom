@@ -12,11 +12,11 @@ public abstract class ArgumentRegistry<T> extends Argument<T> {
         super(id);
     }
 
-    public abstract T getRegistry(String value);
+    public abstract T getRegistry(@NotNull String value);
 
     @NotNull
     @Override
-    public T parse(String input) throws ArgumentSyntaxException {
+    public T parse(@NotNull String input) throws ArgumentSyntaxException {
         final T registryValue = getRegistry(input);
         if (registryValue == null)
             throw new ArgumentSyntaxException("Registry value is invalid", input, INVALID_NAME);

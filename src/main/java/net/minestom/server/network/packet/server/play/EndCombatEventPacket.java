@@ -9,12 +9,12 @@ import static net.minestom.server.network.NetworkBuffer.INT;
 import static net.minestom.server.network.NetworkBuffer.VAR_INT;
 
 public record EndCombatEventPacket(int duration, int entityId) implements ServerPacket {
-    public EndCombatEventPacket(NetworkBuffer reader) {
+    public EndCombatEventPacket(@NotNull NetworkBuffer reader) {
         this(reader.read(VAR_INT), reader.read(INT));
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.write(VAR_INT, duration);
         writer.write(INT, entityId);
     }

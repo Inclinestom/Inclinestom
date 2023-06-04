@@ -69,7 +69,7 @@ public class CodeGenerator {
                 outputFolder);
     }
 
-    private void writeFiles(List<JavaFile> fileList, File outputFolder) {
+    private void writeFiles(@NotNull List<JavaFile> fileList, File outputFolder) {
         for (JavaFile javaFile : fileList) {
             try {
                 javaFile.writeTo(outputFolder);

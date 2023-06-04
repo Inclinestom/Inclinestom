@@ -25,7 +25,7 @@ public class ServerListPingEvent implements CancellableEvent {
      *
      * @param type the ping type to respond with
      */
-    public ServerListPingEvent(ServerListPingType type) {
+    public ServerListPingEvent(@NotNull ServerListPingType type) {
         this(null, type);
     }
 
@@ -35,7 +35,7 @@ public class ServerListPingEvent implements CancellableEvent {
      * @param connection the player connection, if the ping type is modern
      * @param type       the ping type to respond with
      */
-    public ServerListPingEvent(@Nullable PlayerConnection connection, ServerListPingType type) {
+    public ServerListPingEvent(@Nullable PlayerConnection connection, @NotNull ServerListPingType type) {
         this.responseData = new ResponseData();
         this.connection = connection;
         this.type = type;
@@ -47,7 +47,7 @@ public class ServerListPingEvent implements CancellableEvent {
      *
      * @return the response data being returned
      */
-    public ResponseData getResponseData() {
+    public @NotNull ResponseData getResponseData() {
         return responseData;
     }
 
@@ -56,7 +56,7 @@ public class ServerListPingEvent implements CancellableEvent {
      *
      * @param responseData the new data
      */
-    public void setResponseData(ResponseData responseData) {
+    public void setResponseData(@NotNull ResponseData responseData) {
         this.responseData = Objects.requireNonNull(responseData);
     }
 
@@ -75,7 +75,7 @@ public class ServerListPingEvent implements CancellableEvent {
      *
      * @return the ping type
      */
-    public ServerListPingType getPingType() {
+    public @NotNull ServerListPingType getPingType() {
         return type;
     }
 

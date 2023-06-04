@@ -19,13 +19,13 @@ public class PlayerInventoryItemChangeEvent extends InventoryItemChangeEvent imp
 
     private final Player player;
 
-    public PlayerInventoryItemChangeEvent(Player player, int slot, ItemStack previousItem, ItemStack newItem) {
+    public PlayerInventoryItemChangeEvent(@NotNull Player player, int slot, @NotNull ItemStack previousItem, @NotNull ItemStack newItem) {
         super(null, slot, previousItem, newItem);
         this.player = player;
     }
 
     @Override
-    public Player getPlayer() {
+    public @NotNull Player getPlayer() {
         return player;
     }
 }

@@ -19,12 +19,12 @@ import java.util.function.Predicate;
  */
 public interface EventListener<T extends Event> {
 
-    Class<T> eventType();
+    @NotNull Class<T> eventType();
 
-    Result run(T event);
+    @NotNull Result run(@NotNull T event);
 
     @Contract(pure = true)
-    static <T extends Event> EventListener.Builder<T> builder(Class<T> eventType) {
+    static <T extends Event> EventListener.@NotNull Builder<T> builder(@NotNull Class<T> eventType) {
         return new EventListener.Builder<>(eventType);
     }
 
@@ -38,7 +38,7 @@ public interface EventListener<T extends Event> {
      * @return An event listener with the given properties
      */
     @Contract(pure = true)
-    static <T extends Event> EventListener<T> of(Class<T> eventType, Consumer<T> listener) {
+    static <T extends Event> @NotNull EventListener<T> of(@NotNull Class<T> eventType, @NotNull Consumer<@NotNull T> listener) {
         return builder(eventType).handler(listener).build();
     }
 
@@ -59,7 +59,7 @@ public interface EventListener<T extends Event> {
          * be called if this condition passes on the given event.
          */
         @Contract(value = "_ -> this")
-        public EventListener.Builder<T> filter(Predicate<T> filter) {
+        public @NotNull EventListener.Builder<T> filter(Predicate<T> filter) {
             this.filters.add(filter);
             return this;
         }
@@ -72,7 +72,7 @@ public interface EventListener<T extends Event> {
          * @param ignoreCancelled True to stop processing the event when cancelled
          */
         @Contract(value = "_ -> this")
-        public EventListener.Builder<T> ignoreCancelled(boolean ignoreCancelled) {
+        public @NotNull EventListener.Builder<T> ignoreCancelled(boolean ignoreCancelled) {
             this.ignoreCancelled = ignoreCancelled;
             return this;
         }
@@ -83,7 +83,7 @@ public interface EventListener<T extends Event> {
          * @param expireCount The number of times to execute
          */
         @Contract(value = "_ -> this")
-        public EventListener.Builder<T> expireCount(int expireCount) {
+        public @NotNull EventListener.Builder<T> expireCount(int expireCount) {
             this.expireCount = expireCount;
             return this;
         }
@@ -95,7 +95,7 @@ public interface EventListener<T extends Event> {
          * @param expireWhen The condition to test
          */
         @Contract(value = "_ -> this")
-        public EventListener.Builder<T> expireWhen(Predicate<T> expireWhen) {
+        public @NotNull EventListener.Builder<T> expireWhen(Predicate<T> expireWhen) {
             this.expireWhen = expireWhen;
             return this;
         }
@@ -105,13 +105,13 @@ public interface EventListener<T extends Event> {
          * all conditions.
          */
         @Contract(value = "_ -> this")
-        public EventListener.Builder<T> handler(Consumer<T> handler) {
+        public @NotNull EventListener.Builder<T> handler(Consumer<T> handler) {
             this.handler = handler;
             return this;
         }
 
         @Contract(value = "-> new", pure = true)
-        public EventListener<T> build() {
+        public @NotNull EventListener<T> build() {
             final boolean ignoreCancelled = this.ignoreCancelled;
             AtomicInteger expirationCount = new AtomicInteger(this.expireCount);
             final boolean hasExpirationCount = expirationCount.get() > 0;
@@ -122,12 +122,12 @@ public interface EventListener<T extends Event> {
             final var handler = this.handler;
             return new EventListener<>() {
                 @Override
-                public Class<T> eventType() {
+                public @NotNull Class<T> eventType() {
                     return eventType;
                 }
 
                 @Override
-                public Result run(T event) {
+                public @NotNull Result run(@NotNull T event) {
                     // Event cancellation
                     if (ignoreCancelled && event instanceof CancellableEvent &&
                             ((CancellableEvent) event).isCancelled()) {

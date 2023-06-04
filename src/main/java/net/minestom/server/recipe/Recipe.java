@@ -7,12 +7,12 @@ public abstract class Recipe {
     protected final Type recipeType;
     protected final String recipeId;
 
-    protected Recipe(Type recipeType, String recipeId) {
+    protected Recipe(@NotNull Type recipeType, @NotNull String recipeId) {
         this.recipeType = recipeType;
         this.recipeId = recipeId;
     }
 
-    public abstract boolean shouldShow(Player player);
+    public abstract boolean shouldShow(@NotNull Player player);
 
     @NotNull
     public Type getRecipeType() {

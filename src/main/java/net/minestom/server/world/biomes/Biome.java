@@ -58,7 +58,7 @@ public final class Biome {
         return new Builder();
     }
 
-    public NBTCompound toNbt() {
+    public @NotNull NBTCompound toNbt() {
         Check.notNull(name, "The biome namespace cannot be null");
         Check.notNull(effects, "The biome effects cannot be null");
 
@@ -200,17 +200,17 @@ public final class Biome {
     }
 
     public interface Setter {
-        void setBiome(int x, int y, int z, Biome biome);
+        void setBiome(int x, int y, int z, @NotNull Biome biome);
 
-        default void setBiome(Point blockPosition, Biome biome) {
+        default void setBiome(@NotNull Point blockPosition, @NotNull Biome biome) {
             setBiome(blockPosition.blockX(), blockPosition.blockY(), blockPosition.blockZ(), biome);
         }
     }
 
     public interface Getter {
-        Biome getBiome(int x, int y, int z);
+        @NotNull Biome getBiome(int x, int y, int z);
 
-        default Biome getBiome(Point point) {
+        default @NotNull Biome getBiome(@NotNull Point point) {
             return getBiome(point.blockX(), point.blockY(), point.blockZ());
         }
     }

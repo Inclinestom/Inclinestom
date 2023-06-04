@@ -14,7 +14,7 @@ public class ItemFrameMeta extends EntityMeta implements ObjectDataProvider {
 
     private Orientation orientation;
 
-    public ItemFrameMeta(Entity entity, Metadata metadata) {
+    public ItemFrameMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
         super(entity, metadata);
         this.orientation = Orientation.DOWN;
     }
@@ -24,7 +24,7 @@ public class ItemFrameMeta extends EntityMeta implements ObjectDataProvider {
         return super.metadata.getIndex(OFFSET, ItemStack.AIR);
     }
 
-    public void setItem(ItemStack value) {
+    public void setItem(@NotNull ItemStack value) {
         super.metadata.setIndex(OFFSET, Metadata.Slot(value));
     }
 
@@ -33,7 +33,7 @@ public class ItemFrameMeta extends EntityMeta implements ObjectDataProvider {
         return Rotation.values()[super.metadata.getIndex(OFFSET + 1, 0)];
     }
 
-    public void setRotation(Rotation value) {
+    public void setRotation(@NotNull Rotation value) {
         super.metadata.setIndex(OFFSET + 1, Metadata.VarInt(value.ordinal()));
     }
 
@@ -48,7 +48,7 @@ public class ItemFrameMeta extends EntityMeta implements ObjectDataProvider {
      *
      * @param orientation the orientation of the item frame.
      */
-    public void setOrientation(Orientation orientation) {
+    public void setOrientation(@NotNull Orientation orientation) {
         this.orientation = orientation;
     }
 

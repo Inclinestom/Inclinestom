@@ -26,9 +26,9 @@ public class CommandSyntax {
     private final boolean suggestion;
 
     protected CommandSyntax(@Nullable CommandCondition commandCondition,
-                            CommandExecutor commandExecutor,
+                            @NotNull CommandExecutor commandExecutor,
                             @Nullable Map<String, Supplier<Object>> defaultValuesMap,
-                            Argument<?>... args) {
+                            @NotNull Argument<?>... args) {
         this.commandCondition = commandCondition;
         this.executor = commandExecutor;
 
@@ -39,8 +39,8 @@ public class CommandSyntax {
     }
 
     protected CommandSyntax(@Nullable CommandCondition commandCondition,
-                            CommandExecutor commandExecutor,
-                            Argument<?>... args) {
+                            @NotNull CommandExecutor commandExecutor,
+                            @NotNull Argument<?>... args) {
         this(commandCondition, commandExecutor, null, args);
     }
 
@@ -82,7 +82,7 @@ public class CommandSyntax {
      *
      * @param executor the new executor
      */
-    public void setExecutor(CommandExecutor executor) {
+    public void setExecutor(@NotNull CommandExecutor executor) {
         this.executor = executor;
     }
 
@@ -105,7 +105,7 @@ public class CommandSyntax {
         return suggestion;
     }
 
-    public String getSyntaxString() {
+    public @NotNull String getSyntaxString() {
         StringBuilder builder = new StringBuilder();
         for (Argument<?> argument : args) {
             builder.append(argument.toString())

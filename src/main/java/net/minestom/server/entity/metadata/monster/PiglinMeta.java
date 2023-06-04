@@ -9,7 +9,7 @@ public class PiglinMeta extends BasePiglinMeta {
     public static final byte OFFSET = BasePiglinMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 3;
 
-    public PiglinMeta(Entity entity, Metadata metadata) {
+    public PiglinMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
         super(entity, metadata);
     }
 

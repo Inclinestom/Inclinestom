@@ -9,15 +9,15 @@ import java.util.Collection;
 
 public sealed interface PotionType extends ProtocolObject, PotionTypes permits PotionTypeImpl {
 
-    static Collection<PotionType> values() {
+    static @NotNull Collection<@NotNull PotionType> values() {
         return PotionTypeImpl.values();
     }
 
-    static @Nullable PotionType fromNamespaceId(String namespaceID) {
+    static @Nullable PotionType fromNamespaceId(@NotNull String namespaceID) {
         return PotionTypeImpl.getSafe(namespaceID);
     }
 
-    static @Nullable PotionType fromNamespaceId(NamespaceID namespaceID) {
+    static @Nullable PotionType fromNamespaceId(@NotNull NamespaceID namespaceID) {
         return fromNamespaceId(namespaceID.asString());
     }
 

@@ -8,7 +8,7 @@ public class BasePiglinMeta extends MonsterMeta {
     public static final byte OFFSET = MonsterMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 1;
 
-    protected BasePiglinMeta(Entity entity, Metadata metadata) {
+    protected BasePiglinMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
         super(entity, metadata);
     }
 

@@ -9,9 +9,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 public interface Collector<T> {
-    List<T> collect();
+    @NotNull List<@NotNull T> collect();
 
-    default <P extends T> void assertSingle(Class<P> type, Consumer<P> consumer) {
+    default <P extends T> void assertSingle(@NotNull Class<P> type, @NotNull Consumer<P> consumer) {
         List<T> elements = collect();
         assertEquals(1, elements.size(), "Expected 1 element, got " + elements);
         var element = elements.get(0);
@@ -19,7 +19,7 @@ public interface Collector<T> {
         consumer.accept((P) element);
     }
 
-    default void assertSingle(Consumer<T> consumer) {
+    default void assertSingle(@NotNull Consumer<T> consumer) {
         List<T> elements = collect();
         assertEquals(1, elements.size(), "Expected 1 element, got " + elements);
         consumer.accept(elements.get(0));

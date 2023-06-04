@@ -28,11 +28,11 @@ public enum QueryKey {
     private final String key;
     private final Supplier<String> value;
 
-    QueryKey(Supplier<String> value) {
+    QueryKey(@NotNull Supplier<String> value) {
         this(null, value);
     }
 
-    QueryKey(@Nullable String key, Supplier<String> value) {
+    QueryKey(@Nullable String key, @NotNull Supplier<String> value) {
         this.key = Objects.requireNonNullElse(key, this.name().toLowerCase(Locale.ROOT).replace('_', ' '));
         this.value = value;
     }
@@ -42,7 +42,7 @@ public enum QueryKey {
      *
      * @return the key
      */
-    public String getKey() {
+    public @NotNull String getKey() {
         return this.key;
     }
 
@@ -51,7 +51,7 @@ public enum QueryKey {
      *
      * @return the value
      */
-    public String getValue() {
+    public @NotNull String getValue() {
         return this.value.get();
     }
 }

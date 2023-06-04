@@ -9,15 +9,15 @@ import org.jetbrains.annotations.NotNull;
 import static net.minestom.server.network.NetworkBuffer.BOOLEAN;
 import static net.minestom.server.network.NetworkBuffer.DOUBLE;
 
-public record ClientPlayerPositionPacket(Point position,
+public record ClientPlayerPositionPacket(@NotNull Point position,
                                          boolean onGround) implements ClientPacket {
-    public ClientPlayerPositionPacket(NetworkBuffer reader) {
+    public ClientPlayerPositionPacket(@NotNull NetworkBuffer reader) {
         this(new Vec(reader.read(DOUBLE), reader.read(DOUBLE), reader.read(DOUBLE)),
                 reader.read(BOOLEAN));
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.write(DOUBLE, position.x());
         writer.write(DOUBLE, position.y());
         writer.write(DOUBLE, position.z());

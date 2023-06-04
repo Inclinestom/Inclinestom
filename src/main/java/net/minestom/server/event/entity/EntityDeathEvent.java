@@ -9,12 +9,12 @@ public class EntityDeathEvent implements EntityInstanceEvent {
     // TODO cause
     private final Entity entity;
 
-    public EntityDeathEvent(Entity entity) {
+    public EntityDeathEvent(@NotNull Entity entity) {
         this.entity = entity;
     }
 
     @Override
-    public Entity getEntity() {
+    public @NotNull Entity getEntity() {
         return entity;
     }
 }

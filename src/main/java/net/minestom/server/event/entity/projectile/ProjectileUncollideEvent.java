@@ -6,14 +6,14 @@ import org.jetbrains.annotations.NotNull;
 
 public final class ProjectileUncollideEvent implements EntityInstanceEvent {
 
-    private final Entity projectile;
+    private final @NotNull Entity projectile;
 
-    public ProjectileUncollideEvent(Entity projectile) {
+    public ProjectileUncollideEvent(@NotNull Entity projectile) {
         this.projectile = projectile;
     }
 
     @Override
-    public Entity getEntity() {
+    public @NotNull Entity getEntity() {
         return projectile;
     }
 

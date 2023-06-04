@@ -62,12 +62,12 @@ final class FlexiblePalette implements SpecializedPalette, Cloneable {
     }
 
     @Override
-    public void getAll(EntryConsumer consumer) {
+    public void getAll(@NotNull EntryConsumer consumer) {
         retrieveAll(consumer, true);
     }
 
     @Override
-    public void getAllPresent(EntryConsumer consumer) {
+    public void getAllPresent(@NotNull EntryConsumer consumer) {
         retrieveAll(consumer, false);
     }
 
@@ -110,7 +110,7 @@ final class FlexiblePalette implements SpecializedPalette, Cloneable {
     }
 
     @Override
-    public void setAll(EntrySupplier supplier) {
+    public void setAll(@NotNull EntrySupplier supplier) {
         int[] cache = WRITE_CACHE.get();
         final int dimension = dimension();
         // Fill cache with values
@@ -149,14 +149,14 @@ final class FlexiblePalette implements SpecializedPalette, Cloneable {
     }
 
     @Override
-    public void replace(int x, int y, int z, IntUnaryOperator operator) {
+    public void replace(int x, int y, int z, @NotNull IntUnaryOperator operator) {
         final int oldValue = get(x, y, z);
         final int newValue = operator.applyAsInt(oldValue);
         if (oldValue != newValue) set(x, y, z, newValue);
     }
 
     @Override
-    public void replaceAll(EntryFunction function) {
+    public void replaceAll(@NotNull EntryFunction function) {
         int[] cache = WRITE_CACHE.get();
         AtomicInteger arrayIndex = new AtomicInteger();
         AtomicInteger count = new AtomicInteger();
@@ -194,7 +194,7 @@ final class FlexiblePalette implements SpecializedPalette, Cloneable {
     }
 
     @Override
-    public SpecializedPalette clone() {
+    public @NotNull SpecializedPalette clone() {
         try {
             FlexiblePalette palette = (FlexiblePalette) super.clone();
             palette.values = values != null ? values.clone() : null;
@@ -209,7 +209,7 @@ final class FlexiblePalette implements SpecializedPalette, Cloneable {
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.write(BYTE, bitsPerEntry);
         if (bitsPerEntry <= maxBitsPerEntry()) { // Palette index
             writer.writeCollection(VAR_INT, paletteToValueList);
@@ -217,7 +217,7 @@ final class FlexiblePalette implements SpecializedPalette, Cloneable {
         writer.write(LONG_ARRAY, values);
     }
 
-    private void retrieveAll(EntryConsumer consumer, boolean consumeEmpty) {
+    private void retrieveAll(@NotNull EntryConsumer consumer, boolean consumeEmpty) {
         if (!consumeEmpty && count == 0) return;
         final long[] values = this.values;
         final int dimension = this.dimension();

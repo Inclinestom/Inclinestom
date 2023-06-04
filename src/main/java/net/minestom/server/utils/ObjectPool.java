@@ -35,7 +35,7 @@ public final class ObjectPool<T> {
         this.sanitizer = sanitizer;
     }
 
-    public T get() {
+    public @NotNull T get() {
         T result;
         SoftReference<T> ref;
         while ((ref = pool.poll()) != null) {
@@ -44,13 +44,13 @@ public final class ObjectPool<T> {
         return supplier.get();
     }
 
-    public T getAndRegister(Object ref) {
+    public @NotNull T getAndRegister(@NotNull Object ref) {
         T result = get();
         register(ref, result);
         return result;
     }
 
-    public void add(T object) {
+    public void add(@NotNull T object) {
         object = sanitizer.apply(object);
         this.pool.offer(new SoftReference<>(object));
     }
@@ -63,23 +63,23 @@ public final class ObjectPool<T> {
         return pool.size();
     }
 
-    public void register(Object ref, AtomicReference<T> objectRef) {
+    public void register(@NotNull Object ref, @NotNull AtomicReference<T> objectRef) {
         this.cleaner.register(ref, new BufferRefCleaner<>(this, objectRef));
     }
 
-    public void register(Object ref, T object) {
+    public void register(@NotNull Object ref, @NotNull T object) {
         this.cleaner.register(ref, new BufferCleaner<>(this, object));
     }
 
-    public void register(Object ref, Collection<T> objects) {
+    public void register(@NotNull Object ref, @NotNull Collection<T> objects) {
         this.cleaner.register(ref, new BuffersCleaner<>(this, objects));
     }
 
-    public Holder hold() {
+    public @NotNull Holder hold() {
         return new Holder(get());
     }
 
-    public <R> R use(Function<T, R> function) {
+    public <R> R use(@NotNull Function<@NotNull T, R> function) {
         T object = get();
         try {
             return function.apply(object);
@@ -119,7 +119,7 @@ public final class ObjectPool<T> {
             this.object = object;
         }
 
-        public T get() {
+        public @NotNull T get() {
             if (closed) throw new IllegalStateException("Holder is closed");
             return object;
         }

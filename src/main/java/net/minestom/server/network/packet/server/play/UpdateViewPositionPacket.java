@@ -8,12 +8,12 @@ import org.jetbrains.annotations.NotNull;
 import static net.minestom.server.network.NetworkBuffer.VAR_INT;
 
 public record UpdateViewPositionPacket(int chunkX, int chunkZ) implements ServerPacket {
-    public UpdateViewPositionPacket(NetworkBuffer reader) {
+    public UpdateViewPositionPacket(@NotNull NetworkBuffer reader) {
         this(reader.read(VAR_INT), reader.read(VAR_INT));
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.write(VAR_INT, chunkX);
         writer.write(VAR_INT, chunkZ);
     }

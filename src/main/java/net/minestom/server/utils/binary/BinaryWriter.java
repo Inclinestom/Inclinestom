@@ -27,7 +27,7 @@ import static net.minestom.server.network.NetworkBuffer.*;
 public class BinaryWriter extends OutputStream {
     private final NetworkBuffer buffer;
 
-    public BinaryWriter(NetworkBuffer buffer) {
+    public BinaryWriter(@NotNull NetworkBuffer buffer) {
         this.buffer = buffer;
     }
 
@@ -35,7 +35,7 @@ public class BinaryWriter extends OutputStream {
         this.buffer = new NetworkBuffer(buffer, resizable);
     }
 
-    public BinaryWriter(ByteBuffer buffer) {
+    public BinaryWriter(@NotNull ByteBuffer buffer) {
         this.buffer = new NetworkBuffer(buffer);
     }
 
@@ -52,7 +52,7 @@ public class BinaryWriter extends OutputStream {
         return new BinaryWriter(buffer, false);
     }
 
-    public void writeComponent(Component component) {
+    public void writeComponent(@NotNull Component component) {
         this.buffer.write(COMPONENT, component);
     }
 
@@ -92,11 +92,11 @@ public class BinaryWriter extends OutputStream {
         this.buffer.write(VAR_LONG, l);
     }
 
-    public void writeSizedString(String string) {
+    public void writeSizedString(@NotNull String string) {
         this.buffer.write(STRING, string);
     }
 
-    public void writeNullTerminatedString(String string, Charset charset) {
+    public void writeNullTerminatedString(@NotNull String string, @NotNull Charset charset) {
         final var bytes = (string + '\0').getBytes(charset);
         writeBytes(bytes);
     }
@@ -143,19 +143,19 @@ public class BinaryWriter extends OutputStream {
         writeBytes(array);
     }
 
-    public void writeBytes(byte [] bytes) {
+    public void writeBytes(byte @NotNull [] bytes) {
         this.buffer.write(RAW_BYTES, bytes);
     }
 
-    public void writeStringArray(String[] array) {
+    public void writeStringArray(@NotNull String[] array) {
         this.buffer.writeCollection(STRING, array);
     }
 
-    public void writeUuid(UUID uuid) {
+    public void writeUuid(@NotNull UUID uuid) {
         this.buffer.write(UUID, uuid);
     }
 
-    public void writeBlockPosition(Point point) {
+    public void writeBlockPosition(@NotNull Point point) {
         writeBlockPosition(point.blockX(), point.blockY(), point.blockZ());
     }
 
@@ -163,11 +163,11 @@ public class BinaryWriter extends OutputStream {
         this.buffer.write(BLOCK_POSITION, new Vec(x, y, z));
     }
 
-    public void writeItemStack(ItemStack itemStack) {
+    public void writeItemStack(@NotNull ItemStack itemStack) {
         this.buffer.write(ITEM, itemStack);
     }
 
-    public void writeNBT(String name, NBT tag) {
+    public void writeNBT(@NotNull String name, @NotNull NBT tag) {
         this.buffer.write(NBT, tag);
     }
 
@@ -186,17 +186,17 @@ public class BinaryWriter extends OutputStream {
      *
      * @param writeable the object to write
      */
-    public void write(Writeable writeable) {
+    public void write(@NotNull Writeable writeable) {
         writeable.write(this);
     }
 
-    public void write(ByteBuffer buffer) {
+    public void write(@NotNull ByteBuffer buffer) {
         byte[] remaining = new byte[buffer.remaining()];
         buffer.get(remaining);
         writeBytes(remaining);
     }
 
-    public void write(BinaryWriter writer) {
+    public void write(@NotNull BinaryWriter writer) {
         writeBytes(writer.toByteArray());
     }
 
@@ -206,24 +206,24 @@ public class BinaryWriter extends OutputStream {
      *
      * @param writeables the array of writeables to write
      */
-    public void writeArray(Writeable[] writeables) {
+    public void writeArray(@NotNull Writeable[] writeables) {
         writeVarInt(writeables.length);
         for (Writeable w : writeables) {
             write(w);
         }
     }
 
-    public <T> void writeVarIntList(Collection<T> list, BiConsumer<BinaryWriter, T> consumer) {
+    public <T> void writeVarIntList(Collection<T> list, @NotNull BiConsumer<BinaryWriter, T> consumer) {
         writeVarInt(list.size());
         writeList(list, consumer);
     }
 
-    public <T> void writeByteList(Collection<T> list, BiConsumer<BinaryWriter, T> consumer) {
+    public <T> void writeByteList(Collection<T> list, @NotNull BiConsumer<BinaryWriter, T> consumer) {
         writeByte((byte) list.size());
         writeList(list, consumer);
     }
 
-    private <T> void writeList(Collection<T> list, BiConsumer<BinaryWriter, T> consumer) {
+    private <T> void writeList(Collection<T> list, @NotNull BiConsumer<BinaryWriter, T> consumer) {
         for (T t : list) consumer.accept(this, t);
     }
 
@@ -250,7 +250,7 @@ public class BinaryWriter extends OutputStream {
     /**
      * Returns a byte[] with the contents written via BinaryWriter
      */
-    public static byte[] makeArray(Consumer<BinaryWriter> writing) {
+    public static byte[] makeArray(@NotNull Consumer<@NotNull BinaryWriter> writing) {
         BinaryWriter writer = new BinaryWriter();
         writing.accept(writer);
         return writer.toByteArray();

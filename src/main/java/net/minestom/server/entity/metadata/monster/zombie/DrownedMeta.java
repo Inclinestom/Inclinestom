@@ -8,7 +8,7 @@ public class DrownedMeta extends ZombieMeta {
     public static final byte OFFSET = ZombieMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 0;
 
-    public DrownedMeta(Entity entity, Metadata metadata) {
+    public DrownedMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
         super(entity, metadata);
     }
 

@@ -13,7 +13,7 @@ public abstract class TargetSelector {
 
     protected final EntityCreature entityCreature;
 
-    public TargetSelector(EntityCreature entityCreature) {
+    public TargetSelector(@NotNull EntityCreature entityCreature) {
         this.entityCreature = entityCreature;
     }
 

@@ -25,7 +25,7 @@ public class CampfireHandler implements BlockHandler {
         private final Tag<NBT> internal = Tag.NBT("Items");
 
         @Override
-        public @Nullable List<ItemStack> read(TagReadable reader) {
+        public @Nullable List<ItemStack> read(@NotNull TagReadable reader) {
             NBTList<NBTCompound> item = (NBTList<NBTCompound>) reader.getTag(internal);
             if (item == null)
                 return null;
@@ -40,7 +40,7 @@ public class CampfireHandler implements BlockHandler {
         }
 
         @Override
-        public void write(TagWritable writer, @Nullable List<ItemStack> value) {
+        public void write(@NotNull TagWritable writer, @Nullable List<ItemStack> value) {
             if (value == null) {
                 writer.removeTag(internal);
                 return;
@@ -59,12 +59,12 @@ public class CampfireHandler implements BlockHandler {
     });
 
     @Override
-    public Collection<Tag<?>> getBlockEntityTags() {
+    public @NotNull Collection<Tag<?>> getBlockEntityTags() {
         return List.of(ITEMS);
     }
 
     @Override
-    public NamespaceID getNamespaceId() {
+    public @NotNull NamespaceID getNamespaceId() {
         return NamespaceID.from("minestom:test");
     }
 }

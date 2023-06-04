@@ -8,12 +8,12 @@ import org.jetbrains.annotations.NotNull;
 import static net.minestom.server.network.NetworkBuffer.BOOLEAN;
 
 public record ClearTitlesPacket(boolean reset) implements ServerPacket {
-    public ClearTitlesPacket(NetworkBuffer reader) {
+    public ClearTitlesPacket(@NotNull NetworkBuffer reader) {
         this(reader.read(BOOLEAN));
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.write(BOOLEAN, reset);
     }
 

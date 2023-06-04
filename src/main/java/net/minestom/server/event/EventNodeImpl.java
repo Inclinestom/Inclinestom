@@ -34,8 +34,8 @@ non-sealed class EventNodeImpl<T extends Event> implements EventNode<T> {
     volatile int priority;
     volatile EventNodeImpl<? super T> parent;
 
-    EventNodeImpl(String name,
-                  EventFilter<T, ?> filter,
+    EventNodeImpl(@NotNull String name,
+                  @NotNull EventFilter<T, ?> filter,
                   @Nullable BiPredicate<T, Object> predicate) {
         this.name = name;
         this.filter = filter;
@@ -45,13 +45,13 @@ non-sealed class EventNodeImpl<T extends Event> implements EventNode<T> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <E extends T> ListenerHandle<E> getHandle(Class<E> handleType) {
+    public <E extends T> @NotNull ListenerHandle<E> getHandle(@NotNull Class<E> handleType) {
         return (ListenerHandle<E>) handleMap.computeIfAbsent(handleType,
                 aClass -> new Handle<>((Class<T>) aClass));
     }
 
     @Override
-    public <E extends T> List<EventNode<E>> findChildren(String name, Class<E> eventType) {
+    public <E extends T> @NotNull List<EventNode<E>> findChildren(@NotNull String name, Class<E> eventType) {
         synchronized (GLOBAL_CHILD_LOCK) {
             final Set<EventNode<T>> children = getChildren();
             if (children.isEmpty()) return List.of();
@@ -67,12 +67,12 @@ non-sealed class EventNodeImpl<T extends Event> implements EventNode<T> {
     }
 
     @Contract(pure = true)
-    public Set<EventNode<T>> getChildren() {
+    public @NotNull Set<@NotNull EventNode<T>> getChildren() {
         return Collections.unmodifiableSet(children);
     }
 
     @Override
-    public <E extends T> void replaceChildren(String name, Class<E> eventType, EventNode<E> eventNode) {
+    public <E extends T> void replaceChildren(@NotNull String name, @NotNull Class<E> eventType, @NotNull EventNode<E> eventNode) {
         synchronized (GLOBAL_CHILD_LOCK) {
             final Set<EventNode<T>> children = getChildren();
             if (children.isEmpty()) return;
@@ -88,7 +88,7 @@ non-sealed class EventNodeImpl<T extends Event> implements EventNode<T> {
     }
 
     @Override
-    public void removeChildren(String name, Class<? extends T> eventType) {
+    public void removeChildren(@NotNull String name, @NotNull Class<? extends T> eventType) {
         synchronized (GLOBAL_CHILD_LOCK) {
             final Set<EventNode<T>> children = getChildren();
             if (children.isEmpty()) return;
@@ -103,7 +103,7 @@ non-sealed class EventNodeImpl<T extends Event> implements EventNode<T> {
     }
 
     @Override
-    public EventNode<T> addChild(EventNode<? extends T> child) {
+    public @NotNull EventNode<T> addChild(@NotNull EventNode<? extends T> child) {
         synchronized (GLOBAL_CHILD_LOCK) {
             final var childImpl = (EventNodeImpl<? extends T>) child;
             Check.stateCondition(childImpl.parent != null, "Node already has a parent");
@@ -116,7 +116,7 @@ non-sealed class EventNodeImpl<T extends Event> implements EventNode<T> {
     }
 
     @Override
-    public EventNode<T> removeChild(EventNode<? extends T> child) {
+    public @NotNull EventNode<T> removeChild(@NotNull EventNode<? extends T> child) {
         synchronized (GLOBAL_CHILD_LOCK) {
             final var childImpl = (EventNodeImpl<? extends T>) child;
             final boolean result = this.children.remove(childImpl);
@@ -128,7 +128,7 @@ non-sealed class EventNodeImpl<T extends Event> implements EventNode<T> {
     }
 
     @Override
-    public EventNode<T> addListener(EventListener<? extends T> listener) {
+    public @NotNull EventNode<T> addListener(@NotNull EventListener<? extends T> listener) {
         synchronized (GLOBAL_CHILD_LOCK) {
             final var eventType = listener.eventType();
             ListenerEntry<T> entry = getEntry(eventType);
@@ -139,7 +139,7 @@ non-sealed class EventNodeImpl<T extends Event> implements EventNode<T> {
     }
 
     @Override
-    public EventNode<T> removeListener(EventListener<? extends T> listener) {
+    public @NotNull EventNode<T> removeListener(@NotNull EventListener<? extends T> listener) {
         synchronized (GLOBAL_CHILD_LOCK) {
             final var eventType = listener.eventType();
             ListenerEntry<T> entry = listenerMap.get(eventType);
@@ -150,7 +150,7 @@ non-sealed class EventNodeImpl<T extends Event> implements EventNode<T> {
     }
 
     @Override
-    public <E extends T, H> EventNode<E> map(H value, EventFilter<E, H> filter) {
+    public @NotNull <E extends T, H> EventNode<E> map(@NotNull H value, @NotNull EventFilter<E, H> filter) {
         EventNodeImpl<E> node;
         synchronized (GLOBAL_CHILD_LOCK) {
             node = new EventNodeLazyImpl<>(this, value, filter);
@@ -164,7 +164,7 @@ non-sealed class EventNodeImpl<T extends Event> implements EventNode<T> {
     }
 
     @Override
-    public void unmap(Object value) {
+    public void unmap(@NotNull Object value) {
         synchronized (GLOBAL_CHILD_LOCK) {
             final var mappedNode = this.registeredMappedNode.remove(value);
             if (mappedNode != null) mappedNode.invalidateEventsFor(this);
@@ -172,7 +172,7 @@ non-sealed class EventNodeImpl<T extends Event> implements EventNode<T> {
     }
 
     @Override
-    public void register(EventBinding<? extends T> binding) {
+    public void register(@NotNull EventBinding<? extends T> binding) {
         synchronized (GLOBAL_CHILD_LOCK) {
             for (var eventType : binding.eventTypes()) {
                 ListenerEntry<T> entry = getEntry((Class<? extends T>) eventType);
@@ -183,7 +183,7 @@ non-sealed class EventNodeImpl<T extends Event> implements EventNode<T> {
     }
 
     @Override
-    public void unregister(EventBinding<? extends T> binding) {
+    public void unregister(@NotNull EventBinding<? extends T> binding) {
         synchronized (GLOBAL_CHILD_LOCK) {
             for (var eventType : binding.eventTypes()) {
                 ListenerEntry<T> entry = listenerMap.get(eventType);
@@ -195,12 +195,12 @@ non-sealed class EventNodeImpl<T extends Event> implements EventNode<T> {
     }
 
     @Override
-    public Class<T> getEventType() {
+    public @NotNull Class<T> getEventType() {
         return eventType;
     }
 
     @Override
-    public String getName() {
+    public @NotNull String getName() {
         return name;
     }
 
@@ -210,7 +210,7 @@ non-sealed class EventNodeImpl<T extends Event> implements EventNode<T> {
     }
 
     @Override
-    public EventNode<T> setPriority(int priority) {
+    public @NotNull EventNode<T> setPriority(int priority) {
         this.priority = priority;
         return this;
     }
@@ -243,7 +243,7 @@ non-sealed class EventNodeImpl<T extends Event> implements EventNode<T> {
         buffer.append(String.format("%s - EventType: %s - Priority: %d", graph.name(), graph.eventType(), graph.priority()));
         buffer.append('\n');
         var nextNodes = graph.children();
-        for (Iterator<? extends Graph> iterator = nextNodes.iterator(); iterator.hasNext(); ) {
+        for (Iterator<? extends @NotNull Graph> iterator = nextNodes.iterator(); iterator.hasNext(); ) {
             Graph next = iterator.next();
             if (iterator.hasNext()) {
                 genToStringTree(buffer, childrenPrefix + '├' + '─' + " ", childrenPrefix + '│' + "   ", next);
@@ -316,7 +316,7 @@ non-sealed class EventNodeImpl<T extends Event> implements EventNode<T> {
         }
 
         @Override
-        public void call(E event) {
+        public void call(@NotNull E event) {
             final Consumer<E> listener = updatedListener();
             if (listener == null) return;
             try {
@@ -407,7 +407,7 @@ non-sealed class EventNodeImpl<T extends Event> implements EventNode<T> {
          * <p>
          * Most computation should ideally be done outside the consumers as a one-time cost.
          */
-        private @Nullable Consumer<E> listenersConsumer(ListenerEntry<E> entry) {
+        private @Nullable Consumer<E> listenersConsumer(@NotNull ListenerEntry<E> entry) {
             final EventListener<E>[] listenersCopy = entry.listeners.toArray(EventListener[]::new);
             final Consumer<E>[] bindingsCopy = entry.bindingConsumers.toArray(Consumer[]::new);
             final boolean listenersEmpty = listenersCopy.length == 0;
@@ -480,7 +480,7 @@ non-sealed class EventNodeImpl<T extends Event> implements EventNode<T> {
             };
         }
 
-        void callListener(EventListener<E> listener, E event) {
+        void callListener(@NotNull EventListener<E> listener, E event) {
             var node = (EventNodeImpl<E>) EventNodeImpl.this;
             EventListener.Result result = listener.run(event);
             if (result == EventListener.Result.EXPIRED) {

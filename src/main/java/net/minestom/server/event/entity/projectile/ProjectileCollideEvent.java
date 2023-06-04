@@ -9,21 +9,21 @@ import org.jetbrains.annotations.NotNull;
 
 class ProjectileCollideEvent implements EntityInstanceEvent, CancellableEvent, RecursiveEvent {
 
-    private final Entity projectile;
-    private final Pos position;
+    private final @NotNull Entity projectile;
+    private final @NotNull Pos position;
     private boolean cancelled;
 
-    protected ProjectileCollideEvent(Entity projectile, Pos position) {
+    protected ProjectileCollideEvent(@NotNull Entity projectile, @NotNull Pos position) {
         this.projectile = projectile;
         this.position = position;
     }
 
     @Override
-    public Entity getEntity() {
+    public @NotNull Entity getEntity() {
         return projectile;
     }
 
-    public Pos getCollisionPosition() {
+    public @NotNull Pos getCollisionPosition() {
         return position;
     }
 

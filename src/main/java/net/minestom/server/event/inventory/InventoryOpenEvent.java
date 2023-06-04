@@ -20,7 +20,7 @@ public class InventoryOpenEvent implements InventoryEvent, PlayerInstanceEvent, 
 
     private boolean cancelled;
 
-    public InventoryOpenEvent(@Nullable Inventory inventory, Player player) {
+    public InventoryOpenEvent(@Nullable Inventory inventory, @NotNull Player player) {
         this.inventory = inventory;
         this.player = player;
     }

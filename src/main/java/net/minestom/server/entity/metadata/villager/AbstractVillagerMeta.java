@@ -9,7 +9,7 @@ public class AbstractVillagerMeta extends AgeableMobMeta {
     public static final byte OFFSET = AgeableMobMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 1;
 
-    protected AbstractVillagerMeta(Entity entity, Metadata metadata) {
+    protected AbstractVillagerMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
         super(entity, metadata);
     }
 

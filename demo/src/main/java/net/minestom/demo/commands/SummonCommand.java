@@ -37,7 +37,7 @@ public class SummonCommand extends Command {
         setDefaultExecutor((sender, context) -> sender.sendMessage("Usage: /summon <type> <x> <y> <z> <class>"));
     }
 
-    private void execute(CommandSender commandSender, CommandContext commandContext) {
+    private void execute(@NotNull CommandSender commandSender, @NotNull CommandContext commandContext) {
         final Entity entity = commandContext.get(entityClass).instantiate(commandContext.get(this.entity));
         //noinspection ConstantConditions - One couldn't possibly execute a command without being in an instance
         entity.setInstance(((Player) commandSender).getInstance(), Pos.fromPoint(commandContext.get(pos).fromSender(commandSender)));

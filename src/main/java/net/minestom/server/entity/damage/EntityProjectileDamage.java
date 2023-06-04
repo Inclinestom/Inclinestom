@@ -12,7 +12,7 @@ public class EntityProjectileDamage extends DamageType {
     private final Entity shooter;
     private final Entity projectile;
 
-    public EntityProjectileDamage(@Nullable Entity shooter, Entity projectile) {
+    public EntityProjectileDamage(@Nullable Entity shooter, @NotNull Entity projectile) {
         super("projectile_source");
         this.shooter = shooter;
         this.projectile = projectile;

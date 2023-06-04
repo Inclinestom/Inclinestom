@@ -14,5 +14,5 @@ public interface ClientPreplayPacket extends ClientPacket {
      *
      * @param connection the connection who sent the packet
      */
-    void process(PlayerConnection connection);
+    void process(@NotNull PlayerConnection connection);
 }

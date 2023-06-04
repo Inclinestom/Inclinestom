@@ -48,7 +48,7 @@ public record BiomeEffects(int fogColor, int skyColor, int waterColor, int water
     }
 
     public record MoodSound(NamespaceID sound, int tickDelay, int blockSearchExtent, double offset) {
-        public NBTCompound toNbt() {
+        public @NotNull NBTCompound toNbt() {
             return NBT.Compound(Map.of(
                     "sound", NBT.String(sound.toString()),
                     "tick_delay", NBT.Int(tickDelay),
@@ -58,7 +58,7 @@ public record BiomeEffects(int fogColor, int skyColor, int waterColor, int water
     }
 
     public record AdditionsSound(NamespaceID sound, double tickChance) {
-        public NBTCompound toNbt() {
+        public @NotNull NBTCompound toNbt() {
             return NBT.Compound(Map.of(
                     "sound", NBT.String(sound.toString()),
                     "tick_chance", NBT.Double(tickChance)));
@@ -66,7 +66,7 @@ public record BiomeEffects(int fogColor, int skyColor, int waterColor, int water
     }
 
     public record Music(NamespaceID sound, int minDelay, int maxDelay, boolean replaceCurrentMusic) {
-        public NBTCompound toNbt() {
+        public @NotNull NBTCompound toNbt() {
             return NBT.Compound(Map.of(
                     "sound", NBT.String(sound.toString()),
                     "min_delay", NBT.Int(minDelay),

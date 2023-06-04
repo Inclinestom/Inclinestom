@@ -7,13 +7,13 @@ import org.jetbrains.annotations.NotNull;
 
 import static net.minestom.server.network.NetworkBuffer.VAR_INT;
 
-public record ClientUseItemPacket(Player.Hand hand, int sequence) implements ClientPacket {
-    public ClientUseItemPacket(NetworkBuffer reader) {
+public record ClientUseItemPacket(@NotNull Player.Hand hand, int sequence) implements ClientPacket {
+    public ClientUseItemPacket(@NotNull NetworkBuffer reader) {
         this(reader.readEnum(Player.Hand.class), reader.read(VAR_INT));
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.writeEnum(Player.Hand.class, hand);
         writer.write(VAR_INT, sequence);
     }

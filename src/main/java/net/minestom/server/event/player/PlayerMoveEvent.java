@@ -17,7 +17,7 @@ public class PlayerMoveEvent implements PlayerInstanceEvent, CancellableEvent {
 
     private boolean cancelled;
 
-    public PlayerMoveEvent(Player player, Pos newPosition, boolean onGround) {
+    public PlayerMoveEvent(@NotNull Player player, @NotNull Pos newPosition, boolean onGround) {
         this.player = player;
         this.newPosition = newPosition;
         this.onGround = onGround;
@@ -28,7 +28,7 @@ public class PlayerMoveEvent implements PlayerInstanceEvent, CancellableEvent {
      *
      * @return the new position
      */
-    public Pos getNewPosition() {
+    public @NotNull Pos getNewPosition() {
         return newPosition;
     }
 
@@ -37,7 +37,7 @@ public class PlayerMoveEvent implements PlayerInstanceEvent, CancellableEvent {
      *
      * @param newPosition the new target position
      */
-    public void setNewPosition(Pos newPosition) {
+    public void setNewPosition(@NotNull Pos newPosition) {
         this.newPosition = newPosition;
     }
 
@@ -63,7 +63,7 @@ public class PlayerMoveEvent implements PlayerInstanceEvent, CancellableEvent {
     }
 
     @Override
-    public Player getPlayer() {
+    public @NotNull Player getPlayer() {
         return player;
     }
 }

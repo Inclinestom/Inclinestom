@@ -39,7 +39,7 @@ final class ObjectArrayImpl {
         }
 
         @Override
-        public @UnknownNullability T [] arrayCopy(Class<T> type) {
+        public @UnknownNullability T @NotNull [] arrayCopy(@NotNull Class<T> type) {
             //noinspection unchecked,rawtypes
             return (T[]) Arrays.<T, T>copyOf(array, max + 1, (Class) type.arrayType());
         }
@@ -77,7 +77,7 @@ final class ObjectArrayImpl {
         }
 
         @Override
-        public @UnknownNullability T [] arrayCopy(Class<T> type) {
+        public @UnknownNullability T @NotNull [] arrayCopy(@NotNull Class<T> type) {
             //noinspection unchecked,rawtypes
             return (T[]) Arrays.<T, T>copyOf(array, max + 1, (Class) type.arrayType());
         }

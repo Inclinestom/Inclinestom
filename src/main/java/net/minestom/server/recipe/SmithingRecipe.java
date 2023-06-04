@@ -10,10 +10,10 @@ public abstract class SmithingRecipe extends Recipe {
     private ItemStack result;
 
     protected SmithingRecipe(
-            String recipeId,
-            DeclareRecipesPacket.Ingredient baseIngredient,
-            DeclareRecipesPacket.Ingredient additionIngredient,
-            ItemStack result
+            @NotNull String recipeId,
+            @NotNull DeclareRecipesPacket.Ingredient baseIngredient,
+            @NotNull DeclareRecipesPacket.Ingredient additionIngredient,
+            @NotNull ItemStack result
     ) {
         super(Type.SMITHING, recipeId);
         this.baseIngredient = baseIngredient;
@@ -26,7 +26,7 @@ public abstract class SmithingRecipe extends Recipe {
         return baseIngredient;
     }
 
-    public void setBaseIngredient(DeclareRecipesPacket.Ingredient baseIngredient) {
+    public void setBaseIngredient(@NotNull DeclareRecipesPacket.Ingredient baseIngredient) {
         this.baseIngredient = baseIngredient;
     }
 
@@ -35,7 +35,7 @@ public abstract class SmithingRecipe extends Recipe {
         return additionIngredient;
     }
 
-    public void setAdditionIngredient(DeclareRecipesPacket.Ingredient additionIngredient) {
+    public void setAdditionIngredient(@NotNull DeclareRecipesPacket.Ingredient additionIngredient) {
         this.additionIngredient = additionIngredient;
     }
 
@@ -44,7 +44,7 @@ public abstract class SmithingRecipe extends Recipe {
         return result;
     }
 
-    public void setResult(ItemStack result) {
+    public void setResult(@NotNull ItemStack result) {
         this.result = result;
     }
 }

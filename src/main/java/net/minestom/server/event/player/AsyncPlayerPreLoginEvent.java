@@ -16,7 +16,7 @@ public class AsyncPlayerPreLoginEvent implements PlayerEvent {
     private String username;
     private UUID playerUuid;
 
-    public AsyncPlayerPreLoginEvent(Player player) {
+    public AsyncPlayerPreLoginEvent(@NotNull Player player) {
         this.player = player;
         this.username = player.getUsername();
         this.playerUuid = player.getUuid();
@@ -37,7 +37,7 @@ public class AsyncPlayerPreLoginEvent implements PlayerEvent {
      *
      * @param username the new player username
      */
-    public void setUsername(String username) {
+    public void setUsername(@NotNull String username) {
         this.username = username;
     }
 
@@ -56,12 +56,12 @@ public class AsyncPlayerPreLoginEvent implements PlayerEvent {
      *
      * @param playerUuid the new player uuid
      */
-    public void setPlayerUuid(UUID playerUuid) {
+    public void setPlayerUuid(@NotNull UUID playerUuid) {
         this.playerUuid = playerUuid;
     }
 
     @Override
-    public Player getPlayer() {
+    public @NotNull Player getPlayer() {
         return player;
     }
 }

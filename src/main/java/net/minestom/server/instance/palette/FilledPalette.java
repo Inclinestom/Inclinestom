@@ -16,7 +16,7 @@ record FilledPalette(byte dim, int value) implements SpecializedPalette.Immutabl
     }
 
     @Override
-    public void getAll(EntryConsumer consumer) {
+    public void getAll(@NotNull EntryConsumer consumer) {
         final byte dimension = this.dim;
         final int value = this.value;
         for (byte y = 0; y < dimension; y++)
@@ -26,7 +26,7 @@ record FilledPalette(byte dim, int value) implements SpecializedPalette.Immutabl
     }
 
     @Override
-    public void getAllPresent(EntryConsumer consumer) {
+    public void getAllPresent(@NotNull EntryConsumer consumer) {
         if (value != 0) getAll(consumer);
     }
 
@@ -41,12 +41,12 @@ record FilledPalette(byte dim, int value) implements SpecializedPalette.Immutabl
     }
 
     @Override
-    public SpecializedPalette clone() {
+    public @NotNull SpecializedPalette clone() {
         return this;
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.write(BYTE, (byte) 0);
         writer.write(VAR_INT, value);
         writer.write(VAR_INT, 0);

@@ -14,28 +14,28 @@ public interface UnitModifier extends Block.Setter, Biome.Setter {
      * @param z the z coordinate
      * @param block the block to set
      */
-    void setRelative(int x, int y, int z, Block block);
+    void setRelative(int x, int y, int z, @NotNull Block block);
 
     /**
      * Sets all blocks within the unit to the block given by the supplier.
      *
      * @param supplier the supplier of the block to set
      */
-    void setAll(Supplier supplier);
+    void setAll(@NotNull Supplier supplier);
 
     /**
      * Sets all blocks within the unit to the block given by the supplier, relative to the absolute position of the unit.
      *
      * @param supplier the supplier of the block to set
      */
-    void setAllRelative(Supplier supplier);
+    void setAllRelative(@NotNull Supplier supplier);
 
     /**
      * Fills the unit with the given block.
      *
      * @param block the block to fill
      */
-    void fill(Block block);
+    void fill(@NotNull Block block);
 
     /**
      * Fills the 3d rectangular area with the given block.
@@ -44,7 +44,7 @@ public interface UnitModifier extends Block.Setter, Biome.Setter {
      * @param end the end (max) point of the area
      * @param block the block to fill
      */
-    void fill(Point start, Point end, Block block);
+    void fill(@NotNull Point start, @NotNull Point end, @NotNull Block block);
 
     /**
      * Fills the 3d rectangular area with the given biome.
@@ -53,16 +53,16 @@ public interface UnitModifier extends Block.Setter, Biome.Setter {
      * @param maxHeight the maximum height of the area
      * @param block the block to fill
      */
-    void fillHeight(int minHeight, int maxHeight, Block block);
+    void fillHeight(int minHeight, int maxHeight, @NotNull Block block);
 
     /**
      * Fills the 3d rectangular area with the given biome.
      *
      * @param biome the biome to fill
      */
-    void fillBiome(Biome biome);
+    void fillBiome(@NotNull Biome biome);
 
     interface Supplier {
-        Block get(int x, int y, int z);
+        @NotNull Block get(int x, int y, int z);
     }
 }

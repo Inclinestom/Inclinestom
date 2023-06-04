@@ -50,7 +50,7 @@ public sealed abstract class AbstractInventory implements InventoryClickHandler,
      * @param slot      the slot to set the item
      * @param itemStack the item to set
      */
-    public synchronized void setItemStack(int slot, ItemStack itemStack) {
+    public synchronized void setItemStack(int slot, @NotNull ItemStack itemStack) {
         Check.argCondition(!MathUtils.isBetween(slot, 0, getSize()),
                 "Inventory does not have the slot " + slot);
         safeItemInsert(slot, itemStack);
@@ -66,7 +66,7 @@ public sealed abstract class AbstractInventory implements InventoryClickHandler,
      * @param itemStack the item to insert (use air instead of null)
      * @throws IllegalArgumentException if the slot {@code slot} does not exist
      */
-    protected final void safeItemInsert(int slot, ItemStack itemStack, boolean sendPacket) {
+    protected final void safeItemInsert(int slot, @NotNull ItemStack itemStack, boolean sendPacket) {
         ItemStack previous;
         synchronized (this) {
             Check.argCondition(
@@ -85,21 +85,21 @@ public sealed abstract class AbstractInventory implements InventoryClickHandler,
         }
     }
 
-    protected final void safeItemInsert(int slot, ItemStack itemStack) {
+    protected final void safeItemInsert(int slot, @NotNull ItemStack itemStack) {
         safeItemInsert(slot, itemStack, true);
     }
 
-    protected abstract void UNSAFE_itemInsert(int slot, ItemStack itemStack, boolean sendPacket);
+    protected abstract void UNSAFE_itemInsert(int slot, @NotNull ItemStack itemStack, boolean sendPacket);
 
-    public synchronized <T> T processItemStack(ItemStack itemStack,
-                                                        TransactionType type,
-                                                        TransactionOption<T> option) {
+    public synchronized <T> @NotNull T processItemStack(@NotNull ItemStack itemStack,
+                                                        @NotNull TransactionType type,
+                                                        @NotNull TransactionOption<T> option) {
         return option.fill(type, this, itemStack);
     }
 
-    public synchronized <T> List<T> processItemStacks(List<ItemStack> itemStacks,
-                                                                        TransactionType type,
-                                                                        TransactionOption<T> option) {
+    public synchronized <T> @NotNull List<@NotNull T> processItemStacks(@NotNull List<@NotNull ItemStack> itemStacks,
+                                                                        @NotNull TransactionType type,
+                                                                        @NotNull TransactionOption<T> option) {
         List<T> result = new ArrayList<>(itemStacks.size());
         itemStacks.forEach(itemStack -> {
             T transactionResult = processItemStack(itemStack, type, option);
@@ -115,11 +115,11 @@ public sealed abstract class AbstractInventory implements InventoryClickHandler,
      * @param option    the transaction option
      * @return true if the item has been successfully added, false otherwise
      */
-    public <T> T addItemStack(ItemStack itemStack, TransactionOption<T> option) {
+    public <T> @NotNull T addItemStack(@NotNull ItemStack itemStack, @NotNull TransactionOption<T> option) {
         return processItemStack(itemStack, TransactionType.ADD, option);
     }
 
-    public boolean addItemStack(ItemStack itemStack) {
+    public boolean addItemStack(@NotNull ItemStack itemStack) {
         return addItemStack(itemStack, TransactionOption.ALL_OR_NOTHING);
     }
 
@@ -130,8 +130,8 @@ public sealed abstract class AbstractInventory implements InventoryClickHandler,
      * @param option     the transaction option
      * @return the operation results
      */
-    public <T> List<T> addItemStacks(List<ItemStack> itemStacks,
-                                                       TransactionOption<T> option) {
+    public <T> @NotNull List<@NotNull T> addItemStacks(@NotNull List<@NotNull ItemStack> itemStacks,
+                                                       @NotNull TransactionOption<T> option) {
         return processItemStacks(itemStacks, TransactionType.ADD, option);
     }
 
@@ -141,7 +141,7 @@ public sealed abstract class AbstractInventory implements InventoryClickHandler,
      * @param itemStack the item to take
      * @return true if the item has been successfully fully taken, false otherwise
      */
-    public <T> T takeItemStack(ItemStack itemStack, TransactionOption<T> option) {
+    public <T> @NotNull T takeItemStack(@NotNull ItemStack itemStack, @NotNull TransactionOption<T> option) {
         return processItemStack(itemStack, TransactionType.TAKE, option);
     }
 
@@ -151,12 +151,12 @@ public sealed abstract class AbstractInventory implements InventoryClickHandler,
      * @param itemStacks items to take
      * @return the operation results
      */
-    public <T> List<T> takeItemStacks(List<ItemStack> itemStacks,
-                                                        TransactionOption<T> option) {
+    public <T> @NotNull List<@NotNull T> takeItemStacks(@NotNull List<@NotNull ItemStack> itemStacks,
+                                                        @NotNull TransactionOption<T> option) {
         return processItemStacks(itemStacks, TransactionType.TAKE, option);
     }
 
-    public synchronized void replaceItemStack(int slot, UnaryOperator<ItemStack> operator) {
+    public synchronized void replaceItemStack(int slot, @NotNull UnaryOperator<@NotNull ItemStack> operator) {
         var currentItem = getItemStack(slot);
         setItemStack(slot, operator.apply(currentItem));
     }
@@ -181,7 +181,7 @@ public sealed abstract class AbstractInventory implements InventoryClickHandler,
      * @param slot the slot to check
      * @return the item in the slot {@code slot}
      */
-    public ItemStack getItemStack(int slot) {
+    public @NotNull ItemStack getItemStack(int slot) {
         return (ItemStack) ITEM_UPDATER.getVolatile(itemStacks, slot);
     }
 
@@ -193,7 +193,7 @@ public sealed abstract class AbstractInventory implements InventoryClickHandler,
      *
      * @return an array containing all the inventory's items
      */
-    public ItemStack[] getItemStacks() {
+    public @NotNull ItemStack[] getItemStacks() {
         return itemStacks.clone();
     }
 
@@ -220,7 +220,7 @@ public sealed abstract class AbstractInventory implements InventoryClickHandler,
      *
      * @return a modifiable {@link List} containing all the inventory conditions
      */
-    public List<InventoryCondition> getInventoryConditions() {
+    public @NotNull List<@NotNull InventoryCondition> getInventoryConditions() {
         return inventoryConditions;
     }
 
@@ -229,7 +229,7 @@ public sealed abstract class AbstractInventory implements InventoryClickHandler,
      *
      * @param inventoryCondition the inventory condition to add
      */
-    public void addInventoryCondition(InventoryCondition inventoryCondition) {
+    public void addInventoryCondition(@NotNull InventoryCondition inventoryCondition) {
         this.inventoryConditions.add(inventoryCondition);
     }
 
@@ -240,7 +240,7 @@ public sealed abstract class AbstractInventory implements InventoryClickHandler,
      * @throws IllegalArgumentException if the size of the array is not equal to {@link #getSize()}
      * @throws NullPointerException     if {@code itemStacks} contains one null element or more
      */
-    public void copyContents(ItemStack[] itemStacks) {
+    public void copyContents(@NotNull ItemStack[] itemStacks) {
         Check.argCondition(itemStacks.length != getSize(),
                 "The size of the array has to be of the same size as the inventory: " + getSize());
 
@@ -252,7 +252,7 @@ public sealed abstract class AbstractInventory implements InventoryClickHandler,
     }
 
     @Override
-    public TagHandler tagHandler() {
+    public @NotNull TagHandler tagHandler() {
         return tagHandler;
     }
 }

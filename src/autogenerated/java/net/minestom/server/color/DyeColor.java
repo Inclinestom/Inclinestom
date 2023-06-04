@@ -47,23 +47,23 @@ public enum DyeColor implements RGBLike {
 
     private final int mapColorId;
 
-    DyeColor(Color textureDiffuseColor, Color textColor,
-            Color fireworkColor, int mapColorId) {
+    DyeColor(@NotNull Color textureDiffuseColor, @NotNull Color textColor,
+            @NotNull Color fireworkColor, int mapColorId) {
         this.textureDiffuseColor = textureDiffuseColor;
         this.textColor = textColor;
         this.fireworkColor = fireworkColor;
         this.mapColorId = mapColorId;
     }
 
-    public Color color() {
+    public @NotNull Color color() {
         return this.textureDiffuseColor;
     }
 
-    public Color textColor() {
+    public @NotNull Color textColor() {
         return this.textColor;
     }
 
-    public Color fireworkColor() {
+    public @NotNull Color fireworkColor() {
         return this.fireworkColor;
     }
 

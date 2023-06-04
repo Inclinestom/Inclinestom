@@ -30,11 +30,11 @@ import static net.minestom.server.network.NetworkBuffer.*;
 public class BinaryReader extends InputStream {
     private final NetworkBuffer buffer;
 
-    public BinaryReader(NetworkBuffer buffer) {
+    public BinaryReader(@NotNull NetworkBuffer buffer) {
         this.buffer = buffer;
     }
 
-    public BinaryReader(ByteBuffer buffer) {
+    public BinaryReader(@NotNull ByteBuffer buffer) {
         this.buffer = new NetworkBuffer(buffer);
     }
 
@@ -206,7 +206,7 @@ public class BinaryReader extends InputStream {
      * @param <T>      the readable object type
      * @return the read object
      */
-    public <T extends Readable> T read(Supplier<T> supplier) {
+    public <T extends Readable> T read(@NotNull Supplier<@NotNull T> supplier) {
         T result = supplier.get();
         result.read(this);
         return result;
@@ -220,7 +220,7 @@ public class BinaryReader extends InputStream {
      * @param <T>      the readable object type
      * @return the read objects
      */
-    public <T extends Readable> T[] readArray(Supplier<T> supplier) {
+    public <T extends Readable> @NotNull T[] readArray(@NotNull Supplier<@NotNull T> supplier) {
         Readable[] result = new Readable[readVarInt()];
         for (int i = 0; i < result.length; i++) {
             result[i] = supplier.get();
@@ -229,11 +229,11 @@ public class BinaryReader extends InputStream {
         return (T[]) result;
     }
 
-    public <T> List<T> readVarIntList(Function<BinaryReader, T> supplier) {
+    public <T> List<T> readVarIntList(@NotNull Function<BinaryReader, T> supplier) {
         return readList(readVarInt(), supplier);
     }
 
-    public <T> List<T> readByteList(Function<BinaryReader, T> supplier) {
+    public <T> List<T> readByteList(@NotNull Function<BinaryReader, T> supplier) {
         return readList(readByte(), supplier);
     }
 
@@ -245,7 +245,7 @@ public class BinaryReader extends InputStream {
         }
     }
 
-    private <T> List<T> readList(int length, Function<BinaryReader, T> supplier) {
+    private <T> List<T> readList(int length, @NotNull Function<BinaryReader, T> supplier) {
         List<T> list = new ArrayList<>(length);
         for (int i = 0; i < length; i++) {
             list.add(supplier.apply(this));

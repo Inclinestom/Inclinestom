@@ -254,7 +254,7 @@ public class ResponseData {
      * @param entry the entry
      * @see NamedAndIdentified
      */
-    public void addEntry(NamedAndIdentified entry) {
+    public void addEntry(@NotNull NamedAndIdentified entry) {
         this.entries.add(entry);
     }
 
@@ -264,7 +264,7 @@ public class ResponseData {
      * @param entries the entries
      * @see NamedAndIdentified
      */
-    public void addEntries(NamedAndIdentified... entries) {
+    public void addEntries(@NotNull NamedAndIdentified... entries) {
         this.addEntries(Arrays.asList(entries));
     }
 
@@ -274,7 +274,7 @@ public class ResponseData {
      * @param entries the entries
      * @see NamedAndIdentified
      */
-    public void addEntries(Collection<? extends NamedAndIdentified> entries) {
+    public void addEntries(@NotNull Collection<? extends NamedAndIdentified> entries) {
         this.entries.addAll(entries);
     }
 
@@ -290,7 +290,7 @@ public class ResponseData {
      *
      * @return the entries
      */
-    public Collection<NamedAndIdentified> getEntries() {
+    public @NotNull Collection<NamedAndIdentified> getEntries() {
         return this.entries;
     }
 
@@ -320,7 +320,7 @@ public class ResponseData {
      * @deprecated Use {@link ServerListPingType#getPingResponse(ResponseData)}
      */
     @Deprecated
-    public JsonObject build() {
+    public @NotNull JsonObject build() {
         return ServerListPingType.getModernPingResponse(this, true);
     }
 
@@ -332,23 +332,23 @@ public class ResponseData {
     @Deprecated
     public static class PingPlayer {
 
-        private static PingPlayer of(String name, UUID uuid) {
+        private static @NotNull PingPlayer of(@NotNull String name, @NotNull UUID uuid) {
             return new PingPlayer(name, uuid);
         }
 
         private final String name;
         private final UUID uuid;
 
-        private PingPlayer(String name, UUID uuid) {
+        private PingPlayer(@NotNull String name, @NotNull UUID uuid) {
             this.name = name;
             this.uuid = uuid;
         }
 
-        public String getName() {
+        public @NotNull String getName() {
             return name;
         }
 
-        public UUID getUuid() {
+        public @NotNull UUID getUuid() {
             return uuid;
         }
     }

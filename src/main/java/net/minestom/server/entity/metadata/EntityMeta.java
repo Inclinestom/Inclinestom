@@ -24,7 +24,7 @@ public class EntityMeta {
     private final WeakReference<Entity> entityRef;
     protected final Metadata metadata;
 
-    public EntityMeta(@Nullable Entity entity, Metadata metadata) {
+    public EntityMeta(@Nullable Entity entity, @NotNull Metadata metadata) {
         this.entityRef = new WeakReference<>(entity);
         this.metadata = metadata;
     }

@@ -9,15 +9,15 @@ import java.util.Collection;
 
 public sealed interface StatisticType extends ProtocolObject, StatisticTypes permits StatisticTypeImpl {
 
-    static Collection<StatisticType> values() {
+    static @NotNull Collection<@NotNull StatisticType> values() {
         return StatisticTypeImpl.values();
     }
 
-    static @Nullable StatisticType fromNamespaceId(String namespaceID) {
+    static @Nullable StatisticType fromNamespaceId(@NotNull String namespaceID) {
         return StatisticTypeImpl.getSafe(namespaceID);
     }
 
-    static @Nullable StatisticType fromNamespaceId(NamespaceID namespaceID) {
+    static @Nullable StatisticType fromNamespaceId(@NotNull NamespaceID namespaceID) {
         return fromNamespaceId(namespaceID.asString());
     }
 

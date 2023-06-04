@@ -39,8 +39,8 @@ public class Advancement {
     // Packet
     private AdvancementsPacket.Criteria criteria;
 
-    public Advancement(Component title, Component description,
-                       ItemStack icon, FrameType frameType,
+    public Advancement(@NotNull Component title, Component description,
+                       @NotNull ItemStack icon, @NotNull FrameType frameType,
                        float x, float y) {
         this.title = title;
         this.description = description;
@@ -50,8 +50,8 @@ public class Advancement {
         this.y = y;
     }
 
-    public Advancement(Component title, Component description,
-                       Material icon, FrameType frameType,
+    public Advancement(@NotNull Component title, @NotNull Component description,
+                       @NotNull Material icon, @NotNull FrameType frameType,
                        float x, float y) {
         this(title, description, ItemStack.of(icon), frameType, x, y);
     }
@@ -86,7 +86,7 @@ public class Advancement {
         return tab;
     }
 
-    protected void setTab(AdvancementTab tab) {
+    protected void setTab(@NotNull AdvancementTab tab) {
         this.tab = tab;
     }
 
@@ -104,7 +104,7 @@ public class Advancement {
      *
      * @param title the new title
      */
-    public void setTitle(Component title) {
+    public void setTitle(@NotNull Component title) {
         this.title = title;
         update();
     }
@@ -114,7 +114,7 @@ public class Advancement {
      *
      * @return the description title
      */
-    public Component getDescription() {
+    public @NotNull Component getDescription() {
         return description;
     }
 
@@ -123,7 +123,7 @@ public class Advancement {
      *
      * @param description the new description
      */
-    public void setDescription(Component description) {
+    public void setDescription(@NotNull Component description) {
         this.description = description;
         update();
     }
@@ -133,7 +133,7 @@ public class Advancement {
      *
      * @return the advancement icon
      */
-    public ItemStack getIcon() {
+    public @NotNull ItemStack getIcon() {
         return icon;
     }
 
@@ -142,7 +142,7 @@ public class Advancement {
      *
      * @param icon the new advancement icon
      */
-    public void setIcon(ItemStack icon) {
+    public void setIcon(@NotNull ItemStack icon) {
         this.icon = icon;
         update();
     }
@@ -281,12 +281,12 @@ public class Advancement {
         this.parent = parent;
     }
 
-    protected AdvancementsPacket.ProgressMapping toProgressMapping() {
+    protected @NotNull AdvancementsPacket.ProgressMapping toProgressMapping() {
         final var advancementProgress = new AdvancementsPacket.AdvancementProgress(List.of(criteria));
         return new AdvancementsPacket.ProgressMapping(identifier, advancementProgress);
     }
 
-    protected AdvancementsPacket.DisplayData toDisplayData() {
+    protected @NotNull AdvancementsPacket.DisplayData toDisplayData() {
         return new AdvancementsPacket.DisplayData(title, description, icon,
                 frameType, getFlags(), background, x, y);
     }
@@ -296,7 +296,7 @@ public class Advancement {
      *
      * @return the mapping of this advancement
      */
-    protected AdvancementsPacket.AdvancementMapping toMapping() {
+    protected @NotNull AdvancementsPacket.AdvancementMapping toMapping() {
         final Advancement parent = getParent();
         final String parentIdentifier = parent != null ? parent.getIdentifier() : null;
         AdvancementsPacket.Advancement adv = new AdvancementsPacket.Advancement(parentIdentifier, toDisplayData(),

@@ -17,47 +17,47 @@ public final class Check {
     }
 
     @Contract("null, _ -> fail")
-    public static void notNull(@Nullable Object object, String reason) {
+    public static void notNull(@Nullable Object object, @NotNull String reason) {
         if (Objects.isNull(object)) {
             throw new NullPointerException(reason);
         }
     }
 
     @Contract("null, _, _ -> fail")
-    public static void notNull(@Nullable Object object, String reason, Object... arguments) {
+    public static void notNull(@Nullable Object object, @NotNull String reason, Object... arguments) {
         if (Objects.isNull(object)) {
             throw new NullPointerException(MessageFormat.format(reason, arguments));
         }
     }
 
     @Contract("true, _ -> fail")
-    public static void argCondition(boolean condition, String reason) {
+    public static void argCondition(boolean condition, @NotNull String reason) {
         if (condition) {
             throw new IllegalArgumentException(reason);
         }
     }
 
     @Contract("true, _, _ -> fail")
-    public static void argCondition(boolean condition, String reason, Object... arguments) {
+    public static void argCondition(boolean condition, @NotNull String reason, Object... arguments) {
         if (condition) {
             throw new IllegalArgumentException(MessageFormat.format(reason, arguments));
         }
     }
 
     @Contract("_ -> fail")
-    public static void fail(String reason) {
+    public static void fail(@NotNull String reason) {
         throw new IllegalArgumentException(reason);
     }
 
     @Contract("true, _ -> fail")
-    public static void stateCondition(boolean condition, String reason) {
+    public static void stateCondition(boolean condition, @NotNull String reason) {
         if (condition) {
             throw new IllegalStateException(reason);
         }
     }
 
     @Contract("true, _, _ -> fail")
-    public static void stateCondition(boolean condition, String reason, Object... arguments) {
+    public static void stateCondition(boolean condition, @NotNull String reason, Object... arguments) {
         if (condition) {
             throw new IllegalStateException(MessageFormat.format(reason, arguments));
         }

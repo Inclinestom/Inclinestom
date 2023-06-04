@@ -25,7 +25,7 @@ class IterableAudienceProvider implements AudienceProvider<Iterable<? extends Au
     }
 
     @Override
-    public Iterable<? extends Audience> all() {
+    public @NotNull Iterable<? extends Audience> all() {
         List<Audience> all = new ArrayList<>();
         this.players().forEach(all::add);
         this.console().forEach(all::add);
@@ -34,22 +34,22 @@ class IterableAudienceProvider implements AudienceProvider<Iterable<? extends Au
     }
 
     @Override
-    public Iterable<? extends Audience> players() {
+    public @NotNull Iterable<? extends Audience> players() {
         return MinecraftServer.getConnectionManager().getOnlinePlayers();
     }
 
     @Override
-    public Iterable<? extends Audience> players(Predicate<Player> filter) {
+    public @NotNull Iterable<? extends Audience> players(@NotNull Predicate<Player> filter) {
         return MinecraftServer.getConnectionManager().getOnlinePlayers().stream().filter(filter).toList();
     }
 
     @Override
-    public Iterable<? extends Audience> console() {
+    public @NotNull Iterable<? extends Audience> console() {
         return this.console;
     }
 
     @Override
-    public Iterable<? extends Audience> server() {
+    public @NotNull Iterable<? extends Audience> server() {
         List<Audience> all = new ArrayList<>();
         this.players().forEach(all::add);
         this.console().forEach(all::add);
@@ -57,32 +57,32 @@ class IterableAudienceProvider implements AudienceProvider<Iterable<? extends Au
     }
 
     @Override
-    public Iterable<? extends Audience> customs() {
+    public @NotNull Iterable<? extends Audience> customs() {
         return this.registry.all();
     }
 
     @Override
-    public Iterable<? extends Audience> custom(Key key) {
+    public @NotNull Iterable<? extends Audience> custom(@NotNull Key key) {
         return this.registry.of(key);
     }
 
     @Override
-    public Iterable<? extends Audience> custom(Key key, Predicate<Audience> filter) {
+    public @NotNull Iterable<? extends Audience> custom(@NotNull Key key, Predicate<Audience> filter) {
         return StreamSupport.stream(this.registry.of(key).spliterator(), false).filter(filter).toList();
     }
 
     @Override
-    public Iterable<? extends Audience> customs(Predicate<Audience> filter) {
+    public @NotNull Iterable<? extends Audience> customs(@NotNull Predicate<Audience> filter) {
         return this.registry.of(filter);
     }
 
     @Override
-    public Iterable<? extends Audience> all(Predicate<Audience> filter) {
+    public @NotNull Iterable<? extends Audience> all(@NotNull Predicate<Audience> filter) {
         return StreamSupport.stream(this.all().spliterator(), false).filter(filter).toList();
     }
 
     @Override
-    public AudienceRegistry registry() {
+    public @NotNull AudienceRegistry registry() {
         return this.registry;
     }
 }

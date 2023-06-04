@@ -13,7 +13,7 @@ public class PandaMeta extends AnimalMeta {
     private final static byte SITTING_BIT = 0x08;
     private final static byte ON_BACK_BIT = 0x10;
 
-    public PandaMeta(Entity entity, Metadata metadata) {
+    public PandaMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
         super(entity, metadata);
     }
 
@@ -46,7 +46,7 @@ public class PandaMeta extends AnimalMeta {
         return Gene.VALUES[super.metadata.getIndex(OFFSET + 3, (byte) 0)];
     }
 
-    public void setMainGene(Gene value) {
+    public void setMainGene(@NotNull Gene value) {
         super.metadata.setIndex(OFFSET + 3, Metadata.Byte((byte) value.ordinal()));
     }
 
@@ -55,7 +55,7 @@ public class PandaMeta extends AnimalMeta {
         return Gene.VALUES[super.metadata.getIndex(OFFSET + 4, (byte) 0)];
     }
 
-    public void setHiddenGene(Gene value) {
+    public void setHiddenGene(@NotNull Gene value) {
         super.metadata.setIndex(OFFSET + 4, Metadata.Byte((byte) value.ordinal()));
     }
 

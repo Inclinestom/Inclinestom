@@ -8,7 +8,7 @@ public class MuleMeta extends ChestedHorseMeta {
     public static final byte OFFSET = ChestedHorseMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 0;
 
-    public MuleMeta(Entity entity, Metadata metadata) {
+    public MuleMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
         super(entity, metadata);
     }
 

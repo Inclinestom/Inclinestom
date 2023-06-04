@@ -11,12 +11,12 @@ public class PlayerStopFlyingEvent implements PlayerInstanceEvent {
 
     private final Player player;
 
-    public PlayerStopFlyingEvent(Player player) {
+    public PlayerStopFlyingEvent(@NotNull Player player) {
         this.player = player;
     }
 
     @Override
-    public Player getPlayer() {
+    public @NotNull Player getPlayer() {
         return player;
     }
 }

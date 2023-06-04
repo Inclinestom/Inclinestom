@@ -267,13 +267,13 @@ public class TagPathTest {
             private static final Tag<Integer> VALUE_TAG = Tag.Integer("value");
 
             @Override
-            public @Nullable Entry read(TagReadable reader) {
+            public @Nullable Entry read(@NotNull TagReadable reader) {
                 final Integer value = reader.getTag(VALUE_TAG);
                 return value != null ? new Entry(value) : null;
             }
 
             @Override
-            public void write(TagWritable writer, Entry value) {
+            public void write(@NotNull TagWritable writer, @NotNull Entry value) {
                 writer.setTag(VALUE_TAG, value.value);
             }
         });

@@ -11,11 +11,11 @@ public class BrewingStandInventory extends Inventory {
     private short brewTime;
     private short fuelTime;
 
-    public BrewingStandInventory(Component title) {
+    public BrewingStandInventory(@NotNull Component title) {
         super(InventoryType.BREWING_STAND, title);
     }
 
-    public BrewingStandInventory(String title) {
+    public BrewingStandInventory(@NotNull String title) {
         super(InventoryType.BREWING_STAND, title);
     }
 

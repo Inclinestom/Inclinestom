@@ -127,17 +127,17 @@ public class CommandConditionTest {
 
     private static final class Sender implements CommandSender {
         @Override
-        public Set<Permission> getAllPermissions() {
+        public @NotNull Set<Permission> getAllPermissions() {
             return null;
         }
 
         @Override
-        public TagHandler tagHandler() {
+        public @NotNull TagHandler tagHandler() {
             return null;
         }
 
         @Override
-        public Identity identity() {
+        public @NotNull Identity identity() {
             return Identity.nil();
         }
     }

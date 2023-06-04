@@ -10,7 +10,7 @@ public class SpiderMeta extends MonsterMeta {
 
     private final static byte CLIMBING_BIT = 0x01;
 
-    public SpiderMeta(Entity entity, Metadata metadata) {
+    public SpiderMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
         super(entity, metadata);
     }
 

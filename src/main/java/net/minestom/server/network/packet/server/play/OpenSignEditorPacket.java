@@ -8,13 +8,13 @@ import org.jetbrains.annotations.NotNull;
 
 import static net.minestom.server.network.NetworkBuffer.BLOCK_POSITION;
 
-public record OpenSignEditorPacket(Point position) implements ServerPacket {
-    public OpenSignEditorPacket(NetworkBuffer reader) {
+public record OpenSignEditorPacket(@NotNull Point position) implements ServerPacket {
+    public OpenSignEditorPacket(@NotNull NetworkBuffer reader) {
         this(reader.read(BLOCK_POSITION));
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.write(BLOCK_POSITION, position);
     }
 

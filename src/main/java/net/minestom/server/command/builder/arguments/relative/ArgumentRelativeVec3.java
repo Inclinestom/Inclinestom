@@ -12,7 +12,7 @@ import java.util.function.Function;
  */
 public class ArgumentRelativeVec3 extends ArgumentRelativeVec {
 
-    public ArgumentRelativeVec3(String id) {
+    public ArgumentRelativeVec3(@NotNull String id) {
         super(id, 3);
     }
 

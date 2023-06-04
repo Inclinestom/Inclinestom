@@ -9,7 +9,7 @@ public class AxolotlMeta extends AnimalMeta {
     public static final byte OFFSET = AnimalMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 3;
 
-    public AxolotlMeta(Entity entity, Metadata metadata) {
+    public AxolotlMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
         super(entity, metadata);
     }
 

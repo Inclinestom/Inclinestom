@@ -26,7 +26,7 @@ public class ArgumentNbtTag extends Argument<NBT> {
 
     @NotNull
     @Override
-    public NBT parse(String input) throws ArgumentSyntaxException {
+    public NBT parse(@NotNull String input) throws ArgumentSyntaxException {
         try {
             return new SNBTParser(new StringReader(input)).parse();
         } catch (NBTException e) {

@@ -14,40 +14,40 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 sealed interface Graph permits GraphImpl {
-    static Builder builder(Argument<?> argument, @Nullable Execution execution) {
+    static @NotNull Builder builder(@NotNull Argument<?> argument, @Nullable Execution execution) {
         return new GraphImpl.BuilderImpl(argument, execution);
     }
 
-    static Builder builder(Argument<?> argument) {
+    static @NotNull Builder builder(@NotNull Argument<?> argument) {
         return new GraphImpl.BuilderImpl(argument, null);
     }
 
-    static Graph fromCommand(Command command) {
+    static @NotNull Graph fromCommand(@NotNull Command command) {
         return GraphImpl.fromCommand(command);
     }
 
-    static Graph merge(Collection<Command> commands) {
+    static @NotNull Graph merge(@NotNull Collection<@NotNull Command> commands) {
         return GraphImpl.merge(commands);
     }
 
-    static Graph merge(List<Graph> graphs) {
+    static @NotNull Graph merge(@NotNull List<@NotNull Graph> graphs) {
         return GraphImpl.merge(graphs);
     }
 
-    static Graph merge(Graph ... graphs) {
+    static @NotNull Graph merge(@NotNull Graph @NotNull ... graphs) {
         return merge(List.of(graphs));
     }
 
-    Node root();
+    @NotNull Node root();
 
-    boolean compare(Graph graph, Comparator comparator);
+    boolean compare(@NotNull Graph graph, @NotNull Comparator comparator);
 
     sealed interface Node permits GraphImpl.NodeImpl {
-        Argument<?> argument();
+        @NotNull Argument<?> argument();
 
         @UnknownNullability Execution execution();
 
-        List<Node> next();
+        @NotNull List<@NotNull Node> next();
     }
 
     sealed interface Execution extends Predicate<CommandSender> permits GraphImpl.ExecutionImpl {
@@ -69,19 +69,19 @@ sealed interface Graph permits GraphImpl {
     }
 
     sealed interface Builder permits GraphImpl.BuilderImpl {
-        Builder append(Argument<?> argument, @Nullable Execution execution, Consumer<Builder> consumer);
+        @NotNull Builder append(@NotNull Argument<?> argument, @Nullable Execution execution, @NotNull Consumer<Builder> consumer);
 
-        Builder append(Argument<?> argument, @Nullable Execution execution);
+        @NotNull Builder append(@NotNull Argument<?> argument, @Nullable Execution execution);
 
-        default Builder append(Argument<?> argument, Consumer<Builder> consumer) {
+        default @NotNull Builder append(@NotNull Argument<?> argument, @NotNull Consumer<Builder> consumer) {
             return append(argument, null, consumer);
         }
 
-        default Builder append(Argument<?> argument) {
+        default @NotNull Builder append(@NotNull Argument<?> argument) {
             return append(argument, (Execution) null);
         }
 
-        Graph build();
+        @NotNull Graph build();
     }
 
     enum Comparator {

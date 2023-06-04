@@ -9,12 +9,12 @@ import static net.minestom.server.network.NetworkBuffer.FLOAT;
 import static net.minestom.server.network.NetworkBuffer.VAR_INT;
 
 public record UpdateHealthPacket(float health, int food, float foodSaturation) implements ServerPacket {
-    public UpdateHealthPacket(NetworkBuffer reader) {
+    public UpdateHealthPacket(@NotNull NetworkBuffer reader) {
         this(reader.read(FLOAT), reader.read(VAR_INT), reader.read(FLOAT));
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.write(FLOAT, health);
         writer.write(VAR_INT, food);
         writer.write(FLOAT, foodSaturation);

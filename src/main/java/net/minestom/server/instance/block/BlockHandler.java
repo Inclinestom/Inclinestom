@@ -26,7 +26,7 @@ public interface BlockHandler {
      *
      * @param placement the placement details
      */
-    default void onPlace(Placement placement) {
+    default void onPlace(@NotNull Placement placement) {
     }
 
     /**
@@ -34,7 +34,7 @@ public interface BlockHandler {
      *
      * @param destroy the destroy details
      */
-    default void onDestroy(Destroy destroy) {
+    default void onDestroy(@NotNull Destroy destroy) {
     }
 
     /**
@@ -44,7 +44,7 @@ public interface BlockHandler {
      * @param interaction the interaction details
      * @return true to let the block interaction happens, false to cancel
      */
-    default boolean onInteract(Interaction interaction) {
+    default boolean onInteract(@NotNull Interaction interaction) {
         return true;
     }
 
@@ -53,17 +53,17 @@ public interface BlockHandler {
      *
      * @param touch the contact details
      */
-    default void onTouch(Touch touch) {
+    default void onTouch(@NotNull Touch touch) {
     }
 
-    default void tick(Tick tick) {
+    default void tick(@NotNull Tick tick) {
     }
 
     default boolean isTickable() {
         return false;
     }
 
-    default Collection<Tag<?>> getBlockEntityTags() {
+    default @NotNull Collection<Tag<?>> getBlockEntityTags() {
         return List.of();
     }
 
@@ -78,7 +78,7 @@ public interface BlockHandler {
      *
      * @return the namespace id of this handler
      */
-    NamespaceID getNamespaceId();
+    @NotNull NamespaceID getNamespaceId();
 
     /**
      * Represents an object forwarded to {@link #onPlace(Placement)}.
@@ -95,15 +95,15 @@ public interface BlockHandler {
             this.blockPosition = blockPosition;
         }
 
-        public Block getBlock() {
+        public @NotNull Block getBlock() {
             return block;
         }
 
-        public Instance getInstance() {
+        public @NotNull Instance getInstance() {
             return instance;
         }
 
-        public Point getBlockPosition() {
+        public @NotNull Point getBlockPosition() {
             return blockPosition;
         }
     }
@@ -126,15 +126,15 @@ public interface BlockHandler {
             this.cursorZ = cursorZ;
         }
 
-        public Player getPlayer() {
+        public @NotNull Player getPlayer() {
             return player;
         }
 
-        public Player.Hand getHand() {
+        public @NotNull Player.Hand getHand() {
             return hand;
         }
 
-        public BlockFace getBlockFace() {
+        public @NotNull BlockFace getBlockFace() {
             return blockFace;
         }
 
@@ -163,15 +163,15 @@ public interface BlockHandler {
             this.blockPosition = blockPosition;
         }
 
-        public Block getBlock() {
+        public @NotNull Block getBlock() {
             return block;
         }
 
-        public Instance getInstance() {
+        public @NotNull Instance getInstance() {
             return instance;
         }
 
-        public Point getBlockPosition() {
+        public @NotNull Point getBlockPosition() {
             return blockPosition;
         }
     }
@@ -185,7 +185,7 @@ public interface BlockHandler {
             this.player = player;
         }
 
-        public Player getPlayer() {
+        public @NotNull Player getPlayer() {
             return player;
         }
     }
@@ -208,27 +208,27 @@ public interface BlockHandler {
             this.hand = hand;
         }
 
-        public Block getBlock() {
+        public @NotNull Block getBlock() {
             return block;
         }
 
-        public Instance getInstance() {
+        public @NotNull Instance getInstance() {
             return instance;
         }
 
-        public Point getBlockPosition() {
+        public @NotNull Point getBlockPosition() {
             return blockPosition;
         }
 
-        public Point getCursorPosition() {
+        public @NotNull Point getCursorPosition() {
             return cursorPosition;
         }
 
-        public Player getPlayer() {
+        public @NotNull Player getPlayer() {
             return player;
         }
 
-        public Player.Hand getHand() {
+        public @NotNull Player.Hand getHand() {
             return hand;
         }
     }
@@ -247,19 +247,19 @@ public interface BlockHandler {
             this.touching = touching;
         }
 
-        public Block getBlock() {
+        public @NotNull Block getBlock() {
             return block;
         }
 
-        public Instance getInstance() {
+        public @NotNull Instance getInstance() {
             return instance;
         }
 
-        public Point getBlockPosition() {
+        public @NotNull Point getBlockPosition() {
             return blockPosition;
         }
 
-        public Entity getTouching() {
+        public @NotNull Entity getTouching() {
             return touching;
         }
     }
@@ -276,15 +276,15 @@ public interface BlockHandler {
             this.blockPosition = blockPosition;
         }
 
-        public Block getBlock() {
+        public @NotNull Block getBlock() {
             return block;
         }
 
-        public Instance getInstance() {
+        public @NotNull Instance getInstance() {
             return instance;
         }
 
-        public Point getBlockPosition() {
+        public @NotNull Point getBlockPosition() {
             return blockPosition;
         }
     }
@@ -297,7 +297,7 @@ public interface BlockHandler {
     final class Dummy implements BlockHandler {
         private static final Map<String, BlockHandler> DUMMY_CACHE = new ConcurrentHashMap<>();
 
-        public static BlockHandler get(String namespace) {
+        public static @NotNull BlockHandler get(@NotNull String namespace) {
             return DUMMY_CACHE.computeIfAbsent(namespace, Dummy::new);
         }
 
@@ -308,7 +308,7 @@ public interface BlockHandler {
         }
 
         @Override
-        public NamespaceID getNamespaceId() {
+        public @NotNull NamespaceID getNamespaceId() {
             return namespace;
         }
     }

@@ -16,7 +16,7 @@ public class PickupItemEvent implements EntityInstanceEvent, ItemEvent, Cancella
 
     private boolean cancelled;
 
-    public PickupItemEvent(LivingEntity livingEntity, ItemEntity itemEntity) {
+    public PickupItemEvent(@NotNull LivingEntity livingEntity, @NotNull ItemEntity itemEntity) {
         this.livingEntity = livingEntity;
         this.itemEntity = itemEntity;
     }
@@ -47,7 +47,7 @@ public class PickupItemEvent implements EntityInstanceEvent, ItemEvent, Cancella
     }
 
     @Override
-    public Entity getEntity() {
+    public @NotNull Entity getEntity() {
         return livingEntity;
     }
 }

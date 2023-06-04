@@ -11,12 +11,12 @@ public class PlayerDisconnectEvent implements PlayerInstanceEvent {
 
     private final Player player;
 
-    public PlayerDisconnectEvent(Player player) {
+    public PlayerDisconnectEvent(@NotNull Player player) {
         this.player = player;
     }
 
     @Override
-    public Player getPlayer() {
+    public @NotNull Player getPlayer() {
         return player;
     }
 }

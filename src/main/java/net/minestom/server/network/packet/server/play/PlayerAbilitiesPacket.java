@@ -14,12 +14,12 @@ public record PlayerAbilitiesPacket(byte flags, float flyingSpeed, float fieldVi
     public static final byte FLAG_ALLOW_FLYING = 0x04;
     public static final byte FLAG_INSTANT_BREAK = 0x08;
 
-    public PlayerAbilitiesPacket(NetworkBuffer reader) {
+    public PlayerAbilitiesPacket(@NotNull NetworkBuffer reader) {
         this(reader.read(BYTE), reader.read(FLOAT), reader.read(FLOAT));
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.write(BYTE, flags);
         writer.write(FLOAT, flyingSpeed);
         writer.write(FLOAT, fieldViewModifier);

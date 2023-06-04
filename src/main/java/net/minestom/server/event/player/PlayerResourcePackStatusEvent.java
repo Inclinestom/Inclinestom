@@ -13,7 +13,7 @@ public class PlayerResourcePackStatusEvent implements PlayerEvent {
     private final Player player;
     private final ResourcePackStatus status;
 
-    public PlayerResourcePackStatusEvent(Player player, ResourcePackStatus status) {
+    public PlayerResourcePackStatusEvent(@NotNull Player player, @NotNull ResourcePackStatus status) {
         this.player = player;
         this.status = status;
     }
@@ -29,7 +29,7 @@ public class PlayerResourcePackStatusEvent implements PlayerEvent {
     }
 
     @Override
-    public Player getPlayer() {
+    public @NotNull Player getPlayer() {
         return player;
     }
 }

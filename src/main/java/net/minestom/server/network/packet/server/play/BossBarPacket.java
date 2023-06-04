@@ -17,8 +17,8 @@ import java.util.function.UnaryOperator;
 
 import static net.minestom.server.network.NetworkBuffer.*;
 
-public record BossBarPacket(UUID uuid, Action action) implements ComponentHoldingServerPacket {
-    public BossBarPacket(NetworkBuffer reader) {
+public record BossBarPacket(@NotNull UUID uuid, @NotNull Action action) implements ComponentHoldingServerPacket {
+    public BossBarPacket(@NotNull NetworkBuffer reader) {
         this(reader.read(NetworkBuffer.UUID), switch (reader.read(VAR_INT)) {
             case 0 -> new AddAction(reader);
             case 1 -> new RemoveAction();
@@ -31,21 +31,21 @@ public record BossBarPacket(UUID uuid, Action action) implements ComponentHoldin
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.write(NetworkBuffer.UUID, uuid);
         writer.write(VAR_INT, action.id());
         writer.write(action);
     }
 
     @Override
-    public Collection<Component> components() {
+    public @NotNull Collection<Component> components() {
         return this.action instanceof ComponentHolder<?> holder
                 ? holder.components()
                 : List.of();
     }
 
     @Override
-    public ServerPacket copyWithOperator(UnaryOperator<Component> operator) {
+    public @NotNull ServerPacket copyWithOperator(@NotNull UnaryOperator<Component> operator) {
         return this.action instanceof ComponentHolder<?> holder
                 ? new BossBarPacket(this.uuid, (Action) holder.copyWithOperator(operator))
                 : this;
@@ -56,22 +56,22 @@ public record BossBarPacket(UUID uuid, Action action) implements ComponentHoldin
         int id();
     }
 
-    public record AddAction(Component title, float health, BossBar.Color color,
-                            BossBar.Overlay overlay,
+    public record AddAction(@NotNull Component title, float health, @NotNull BossBar.Color color,
+                            @NotNull BossBar.Overlay overlay,
                             byte flags) implements Action, ComponentHolder<AddAction> {
-        public AddAction(BossBar bar) {
+        public AddAction(@NotNull BossBar bar) {
             this(bar.name(), bar.progress(), bar.color(), bar.overlay(),
                     AdventurePacketConvertor.getBossBarFlagValue(bar.flags()));
         }
 
-        public AddAction(NetworkBuffer reader) {
+        public AddAction(@NotNull NetworkBuffer reader) {
             this(reader.read(COMPONENT), reader.read(FLOAT),
                     BossBar.Color.values()[reader.read(VAR_INT)],
                     BossBar.Overlay.values()[reader.read(VAR_INT)], reader.read(BYTE));
         }
 
         @Override
-        public void write(NetworkBuffer writer) {
+        public void write(@NotNull NetworkBuffer writer) {
             writer.write(COMPONENT, title);
             writer.write(FLOAT, health);
             writer.write(VAR_INT, AdventurePacketConvertor.getBossBarColorValue(color));
@@ -85,19 +85,19 @@ public record BossBarPacket(UUID uuid, Action action) implements ComponentHoldin
         }
 
         @Override
-        public Collection<Component> components() {
+        public @NotNull Collection<Component> components() {
             return List.of(this.title);
         }
 
         @Override
-        public AddAction copyWithOperator(UnaryOperator<Component> operator) {
+        public @NotNull AddAction copyWithOperator(@NotNull UnaryOperator<Component> operator) {
             return new AddAction(operator.apply(this.title), this.health, this.color, this.overlay, this.flags);
         }
     }
 
     public record RemoveAction() implements Action {
         @Override
-        public void write(NetworkBuffer writer) {
+        public void write(@NotNull NetworkBuffer writer) {
         }
 
         @Override
@@ -107,16 +107,16 @@ public record BossBarPacket(UUID uuid, Action action) implements ComponentHoldin
     }
 
     public record UpdateHealthAction(float health) implements Action {
-        public UpdateHealthAction(BossBar bar) {
+        public UpdateHealthAction(@NotNull BossBar bar) {
             this(bar.progress());
         }
 
-        public UpdateHealthAction(NetworkBuffer reader) {
+        public UpdateHealthAction(@NotNull NetworkBuffer reader) {
             this(reader.read(FLOAT));
         }
 
         @Override
-        public void write(NetworkBuffer writer) {
+        public void write(@NotNull NetworkBuffer writer) {
             writer.write(FLOAT, health);
         }
 
@@ -126,17 +126,17 @@ public record BossBarPacket(UUID uuid, Action action) implements ComponentHoldin
         }
     }
 
-    public record UpdateTitleAction(Component title) implements Action, ComponentHolder<UpdateTitleAction> {
-        public UpdateTitleAction(BossBar bar) {
+    public record UpdateTitleAction(@NotNull Component title) implements Action, ComponentHolder<UpdateTitleAction> {
+        public UpdateTitleAction(@NotNull BossBar bar) {
             this(bar.name());
         }
 
-        public UpdateTitleAction(NetworkBuffer reader) {
+        public UpdateTitleAction(@NotNull NetworkBuffer reader) {
             this(reader.read(COMPONENT));
         }
 
         @Override
-        public void write(NetworkBuffer writer) {
+        public void write(@NotNull NetworkBuffer writer) {
             writer.write(COMPONENT, title);
         }
 
@@ -146,28 +146,28 @@ public record BossBarPacket(UUID uuid, Action action) implements ComponentHoldin
         }
 
         @Override
-        public Collection<Component> components() {
+        public @NotNull Collection<Component> components() {
             return List.of(this.title);
         }
 
         @Override
-        public UpdateTitleAction copyWithOperator(UnaryOperator<Component> operator) {
+        public @NotNull UpdateTitleAction copyWithOperator(@NotNull UnaryOperator<Component> operator) {
             return new UpdateTitleAction(operator.apply(this.title));
         }
     }
 
-    public record UpdateStyleAction(BossBar.Color color,
-                                    BossBar.Overlay overlay) implements Action {
-        public UpdateStyleAction(BossBar bar) {
+    public record UpdateStyleAction(@NotNull BossBar.Color color,
+                                    @NotNull BossBar.Overlay overlay) implements Action {
+        public UpdateStyleAction(@NotNull BossBar bar) {
             this(bar.color(), bar.overlay());
         }
 
-        public UpdateStyleAction(NetworkBuffer reader) {
+        public UpdateStyleAction(@NotNull NetworkBuffer reader) {
             this(BossBar.Color.values()[reader.read(VAR_INT)], BossBar.Overlay.values()[reader.read(VAR_INT)]);
         }
 
         @Override
-        public void write(NetworkBuffer writer) {
+        public void write(@NotNull NetworkBuffer writer) {
             writer.write(VAR_INT, AdventurePacketConvertor.getBossBarColorValue(color));
             writer.write(VAR_INT, AdventurePacketConvertor.getBossBarOverlayValue(overlay));
         }
@@ -179,16 +179,16 @@ public record BossBarPacket(UUID uuid, Action action) implements ComponentHoldin
     }
 
     public record UpdateFlagsAction(byte flags) implements Action {
-        public UpdateFlagsAction(BossBar bar) {
+        public UpdateFlagsAction(@NotNull BossBar bar) {
             this(AdventurePacketConvertor.getBossBarFlagValue(bar.flags()));
         }
 
-        public UpdateFlagsAction(NetworkBuffer reader) {
+        public UpdateFlagsAction(@NotNull NetworkBuffer reader) {
             this(reader.read(BYTE));
         }
 
         @Override
-        public void write(NetworkBuffer writer) {
+        public void write(@NotNull NetworkBuffer writer) {
             writer.write(BYTE, flags);
         }
 

@@ -31,7 +31,7 @@ public final class VelocityProxy {
      * @param secret the forwarding secret,
      *               be sure to do not hardcode it in your code but to retrieve it from a file or anywhere else safe
      */
-    public static void enable(String secret) {
+    public static void enable(@NotNull String secret) {
         VelocityProxy.enabled = true;
         VelocityProxy.key = new SecretKeySpec(secret.getBytes(), MAC_ALGORITHM);
     }
@@ -45,7 +45,7 @@ public final class VelocityProxy {
         return enabled;
     }
 
-    public static boolean checkIntegrity(NetworkBuffer buffer) {
+    public static boolean checkIntegrity(@NotNull NetworkBuffer buffer) {
         final byte[] signature = new byte[32];
         for (int i = 0; i < signature.length; i++) {
             signature[i] = buffer.read(BYTE);

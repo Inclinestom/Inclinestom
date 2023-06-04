@@ -11,13 +11,13 @@ import static net.minestom.server.network.NetworkBuffer.*;
 
 public record EntitySoundEffectPacket(int soundId, Sound.Source source, int entityId,
                                       float volume, float pitch, long seed) implements ServerPacket {
-    public EntitySoundEffectPacket(NetworkBuffer reader) {
+    public EntitySoundEffectPacket(@NotNull NetworkBuffer reader) {
         this(reader.read(VAR_INT), Sound.Source.values()[reader.read(VAR_INT)], reader.read(VAR_INT),
                 reader.read(FLOAT), reader.read(FLOAT), reader.read(LONG));
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.write(VAR_INT, soundId);
         writer.write(VAR_INT, AdventurePacketConvertor.getSoundSourceValue(source));
         writer.write(VAR_INT, entityId);

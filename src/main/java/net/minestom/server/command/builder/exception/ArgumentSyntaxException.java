@@ -18,7 +18,7 @@ public class ArgumentSyntaxException extends RuntimeException {
     private final String input;
     private final int errorCode;
 
-    public ArgumentSyntaxException(String message, String input, int errorCode) {
+    public ArgumentSyntaxException(@NotNull String message, @NotNull String input, int errorCode) {
         super(message);
         this.input = input;
         this.errorCode = errorCode;

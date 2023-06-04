@@ -9,14 +9,14 @@ import org.jetbrains.annotations.NotNull;
 import static net.minestom.server.network.NetworkBuffer.*;
 
 public record SpawnExperienceOrbPacket(int entityId,
-                                       Pos position, short expCount) implements ServerPacket {
-    public SpawnExperienceOrbPacket(NetworkBuffer reader) {
+                                       @NotNull Pos position, short expCount) implements ServerPacket {
+    public SpawnExperienceOrbPacket(@NotNull NetworkBuffer reader) {
         this(reader.read(VAR_INT),
                 new Pos(reader.read(DOUBLE), reader.read(DOUBLE), reader.read(DOUBLE)), reader.read(SHORT));
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.write(VAR_INT, entityId);
         writer.write(DOUBLE, position.x());
         writer.write(DOUBLE, position.y());

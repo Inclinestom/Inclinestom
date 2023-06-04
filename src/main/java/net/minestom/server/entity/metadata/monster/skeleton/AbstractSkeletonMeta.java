@@ -9,7 +9,7 @@ public class AbstractSkeletonMeta extends MonsterMeta {
     public static final byte OFFSET = MonsterMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 0;
 
-    protected AbstractSkeletonMeta(Entity entity, Metadata metadata) {
+    protected AbstractSkeletonMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
         super(entity, metadata);
     }
 

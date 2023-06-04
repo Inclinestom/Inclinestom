@@ -6,13 +6,13 @@ import net.minestom.server.network.packet.server.ServerPacket;
 import net.minestom.server.network.packet.server.ServerPacketIdentifier;
 import org.jetbrains.annotations.NotNull;
 
-public record OpenBookPacket(Player.Hand hand) implements ServerPacket {
-    public OpenBookPacket(NetworkBuffer reader) {
+public record OpenBookPacket(@NotNull Player.Hand hand) implements ServerPacket {
+    public OpenBookPacket(@NotNull NetworkBuffer reader) {
         this(reader.readEnum(Player.Hand.class));
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.writeEnum(Player.Hand.class, hand);
     }
 

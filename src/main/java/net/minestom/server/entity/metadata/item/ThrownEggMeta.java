@@ -9,7 +9,7 @@ public class ThrownEggMeta extends ItemContainingMeta {
     public static final byte OFFSET = ItemContainingMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 0;
 
-    public ThrownEggMeta(Entity entity, Metadata metadata) {
+    public ThrownEggMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
         super(entity, metadata, Material.EGG);
     }
 

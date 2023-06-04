@@ -10,8 +10,8 @@ import java.util.List;
 import static net.minestom.server.network.NetworkBuffer.BLOCK_POSITION;
 import static net.minestom.server.network.NetworkBuffer.STRING;
 
-public record ClientUpdateSignPacket(Point blockPosition,
-                                     List<String> lines) implements ClientPacket {
+public record ClientUpdateSignPacket(@NotNull Point blockPosition,
+                                     @NotNull List<String> lines) implements ClientPacket {
     public ClientUpdateSignPacket {
         lines = List.copyOf(lines);
         if (lines.size() != 4) {
@@ -24,12 +24,12 @@ public record ClientUpdateSignPacket(Point blockPosition,
         }
     }
 
-    public ClientUpdateSignPacket(NetworkBuffer reader) {
+    public ClientUpdateSignPacket(@NotNull NetworkBuffer reader) {
         this(reader.read(BLOCK_POSITION), readLines(reader));
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.write(BLOCK_POSITION, blockPosition);
         writer.write(STRING, lines.get(0));
         writer.write(STRING, lines.get(1));
@@ -37,7 +37,7 @@ public record ClientUpdateSignPacket(Point blockPosition,
         writer.write(STRING, lines.get(3));
     }
 
-    private static List<String> readLines(NetworkBuffer reader) {
+    private static List<String> readLines(@NotNull NetworkBuffer reader) {
         return List.of(reader.read(STRING), reader.read(STRING),
                 reader.read(STRING), reader.read(STRING));
     }

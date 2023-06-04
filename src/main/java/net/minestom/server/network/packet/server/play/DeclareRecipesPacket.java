@@ -11,12 +11,12 @@ import java.util.List;
 
 import static net.minestom.server.network.NetworkBuffer.*;
 
-public record DeclareRecipesPacket(List<DeclaredRecipe> recipes) implements ServerPacket {
+public record DeclareRecipesPacket(@NotNull List<DeclaredRecipe> recipes) implements ServerPacket {
     public DeclareRecipesPacket {
         recipes = List.copyOf(recipes);
     }
 
-    public DeclareRecipesPacket(NetworkBuffer reader) {
+    public DeclareRecipesPacket(@NotNull NetworkBuffer reader) {
         this(reader.readCollection(r -> {
             final String type = r.read(STRING);
             return switch (type) {
@@ -34,7 +34,7 @@ public record DeclareRecipesPacket(List<DeclaredRecipe> recipes) implements Serv
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.writeCollection(recipes, (bWriter, recipe) -> {
             bWriter.write(STRING, recipe.type());
             bWriter.write(STRING, recipe.recipeId());
@@ -51,35 +51,35 @@ public record DeclareRecipesPacket(List<DeclaredRecipe> recipes) implements Serv
             permits DeclaredShapelessCraftingRecipe, DeclaredShapedCraftingRecipe,
             DeclaredSmeltingRecipe, DeclaredBlastingRecipe, DeclaredSmokingRecipe,
             DeclaredCampfireCookingRecipe, DeclaredStonecutterRecipe, DeclaredSmithingRecipe {
-        String type();
+        @NotNull String type();
 
-        String recipeId();
+        @NotNull String recipeId();
     }
 
     public record DeclaredShapelessCraftingRecipe(String recipeId, String group,
                                                   List<Ingredient> ingredients,
                                                   ItemStack result) implements DeclaredRecipe {
-        private DeclaredShapelessCraftingRecipe(NetworkBuffer reader) {
+        private DeclaredShapelessCraftingRecipe(@NotNull NetworkBuffer reader) {
             this(reader.read(STRING), reader.read(STRING),
                     reader.readCollection(Ingredient::new), reader.read(ITEM));
         }
 
         @Override
-        public void write(NetworkBuffer writer) {
+        public void write(@NotNull NetworkBuffer writer) {
             writer.write(STRING, group);
             writer.writeCollection(ingredients);
             writer.write(ITEM, result);
         }
 
         @Override
-        public String type() {
+        public @NotNull String type() {
             return "crafting_shapeless";
         }
     }
 
-    public record DeclaredShapedCraftingRecipe(String recipeId, int width, int height,
-                                               String group, List<Ingredient> ingredients,
-                                               ItemStack result) implements DeclaredRecipe {
+    public record DeclaredShapedCraftingRecipe(@NotNull String recipeId, int width, int height,
+                                               @NotNull String group, @NotNull List<Ingredient> ingredients,
+                                               @NotNull ItemStack result) implements DeclaredRecipe {
         public DeclaredShapedCraftingRecipe {
             ingredients = List.copyOf(ingredients);
         }
@@ -88,11 +88,11 @@ public record DeclareRecipesPacket(List<DeclaredRecipe> recipes) implements Serv
             this(packet.recipeId, packet.width, packet.height, packet.group, packet.ingredients, packet.result);
         }
 
-        public DeclaredShapedCraftingRecipe(NetworkBuffer reader) {
+        public DeclaredShapedCraftingRecipe(@NotNull NetworkBuffer reader) {
             this(read(reader));
         }
 
-        private static DeclaredShapedCraftingRecipe read(NetworkBuffer reader) {
+        private static DeclaredShapedCraftingRecipe read(@NotNull NetworkBuffer reader) {
 
             String recipeId = reader.read(STRING);
             int width = reader.read(VAR_INT);
@@ -107,7 +107,7 @@ public record DeclareRecipesPacket(List<DeclaredRecipe> recipes) implements Serv
         }
 
         @Override
-        public void write(NetworkBuffer writer) {
+        public void write(@NotNull NetworkBuffer writer) {
             writer.write(VAR_INT, width);
             writer.write(VAR_INT, height);
             writer.write(STRING, group);
@@ -118,22 +118,22 @@ public record DeclareRecipesPacket(List<DeclaredRecipe> recipes) implements Serv
         }
 
         @Override
-        public String type() {
+        public @NotNull String type() {
             return "crafting_shaped";
         }
     }
 
-    public record DeclaredSmeltingRecipe(String recipeId, String group,
-                                         Ingredient ingredient, ItemStack result,
+    public record DeclaredSmeltingRecipe(@NotNull String recipeId, @NotNull String group,
+                                         @NotNull Ingredient ingredient, @NotNull ItemStack result,
                                          float experience, int cookingTime) implements DeclaredRecipe {
-        public DeclaredSmeltingRecipe(NetworkBuffer reader) {
+        public DeclaredSmeltingRecipe(@NotNull NetworkBuffer reader) {
             this(reader.read(STRING), reader.read(STRING),
                     new Ingredient(reader), reader.read(ITEM),
                     reader.read(FLOAT), reader.read(VAR_INT));
         }
 
         @Override
-        public void write(NetworkBuffer writer) {
+        public void write(@NotNull NetworkBuffer writer) {
             writer.write(STRING, group);
             writer.write(ingredient);
             writer.write(ITEM, result);
@@ -142,22 +142,22 @@ public record DeclareRecipesPacket(List<DeclaredRecipe> recipes) implements Serv
         }
 
         @Override
-        public String type() {
+        public @NotNull String type() {
             return "smelting";
         }
     }
 
-    public record DeclaredBlastingRecipe(String recipeId, String group,
-                                         Ingredient ingredient, ItemStack result,
+    public record DeclaredBlastingRecipe(@NotNull String recipeId, @NotNull String group,
+                                         @NotNull Ingredient ingredient, @NotNull ItemStack result,
                                          float experience, int cookingTime) implements DeclaredRecipe {
-        public DeclaredBlastingRecipe(NetworkBuffer reader) {
+        public DeclaredBlastingRecipe(@NotNull NetworkBuffer reader) {
             this(reader.read(STRING), reader.read(STRING),
                     new Ingredient(reader), reader.read(ITEM),
                     reader.read(FLOAT), reader.read(VAR_INT));
         }
 
         @Override
-        public void write(NetworkBuffer writer) {
+        public void write(@NotNull NetworkBuffer writer) {
             writer.write(STRING, group);
             writer.write(ingredient);
             writer.write(ITEM, result);
@@ -166,22 +166,22 @@ public record DeclareRecipesPacket(List<DeclaredRecipe> recipes) implements Serv
         }
 
         @Override
-        public String type() {
+        public @NotNull String type() {
             return "blasting";
         }
     }
 
-    public record DeclaredSmokingRecipe(String recipeId, String group,
-                                        Ingredient ingredient, ItemStack result,
+    public record DeclaredSmokingRecipe(@NotNull String recipeId, @NotNull String group,
+                                        @NotNull Ingredient ingredient, @NotNull ItemStack result,
                                         float experience, int cookingTime) implements DeclaredRecipe {
-        public DeclaredSmokingRecipe(NetworkBuffer reader) {
+        public DeclaredSmokingRecipe(@NotNull NetworkBuffer reader) {
             this(reader.read(STRING), reader.read(STRING),
                     new Ingredient(reader), reader.read(ITEM),
                     reader.read(FLOAT), reader.read(VAR_INT));
         }
 
         @Override
-        public void write(NetworkBuffer writer) {
+        public void write(@NotNull NetworkBuffer writer) {
             writer.write(STRING, group);
             writer.write(ingredient);
             writer.write(ITEM, result);
@@ -190,22 +190,22 @@ public record DeclareRecipesPacket(List<DeclaredRecipe> recipes) implements Serv
         }
 
         @Override
-        public String type() {
+        public @NotNull String type() {
             return "smoking";
         }
     }
 
-    public record DeclaredCampfireCookingRecipe(String recipeId, String group,
-                                                Ingredient ingredient, ItemStack result,
+    public record DeclaredCampfireCookingRecipe(@NotNull String recipeId, @NotNull String group,
+                                                @NotNull Ingredient ingredient, @NotNull ItemStack result,
                                                 float experience, int cookingTime) implements DeclaredRecipe {
-        public DeclaredCampfireCookingRecipe(NetworkBuffer reader) {
+        public DeclaredCampfireCookingRecipe(@NotNull NetworkBuffer reader) {
             this(reader.read(STRING), reader.read(STRING),
                     new Ingredient(reader), reader.read(ITEM),
                     reader.read(FLOAT), reader.read(VAR_INT));
         }
 
         @Override
-        public void write(NetworkBuffer writer) {
+        public void write(@NotNull NetworkBuffer writer) {
             writer.write(STRING, group);
             writer.write(ingredient);
             writer.write(ITEM, result);
@@ -214,60 +214,60 @@ public record DeclareRecipesPacket(List<DeclaredRecipe> recipes) implements Serv
         }
 
         @Override
-        public String type() {
+        public @NotNull String type() {
             return "campfire_cooking";
         }
     }
 
     public record DeclaredStonecutterRecipe(String recipeId, String group,
                                             Ingredient ingredient, ItemStack result) implements DeclaredRecipe {
-        public DeclaredStonecutterRecipe(NetworkBuffer reader) {
+        public DeclaredStonecutterRecipe(@NotNull NetworkBuffer reader) {
             this(reader.read(STRING), reader.read(STRING),
                     new Ingredient(reader), reader.read(ITEM));
         }
 
         @Override
-        public void write(NetworkBuffer writer) {
+        public void write(@NotNull NetworkBuffer writer) {
             writer.write(STRING, group);
             writer.write(ingredient);
             writer.write(ITEM, result);
         }
 
         @Override
-        public String type() {
+        public @NotNull String type() {
             return "stonecutter";
         }
     }
 
     public record DeclaredSmithingRecipe(String recipeId, Ingredient base, Ingredient addition,
                                          ItemStack result) implements DeclaredRecipe {
-        public DeclaredSmithingRecipe(NetworkBuffer reader) {
+        public DeclaredSmithingRecipe(@NotNull NetworkBuffer reader) {
             this(reader.read(STRING), new Ingredient(reader), new Ingredient(reader), reader.read(ITEM));
         }
 
         @Override
-        public void write(NetworkBuffer writer) {
+        public void write(@NotNull NetworkBuffer writer) {
             writer.write(base);
             writer.write(addition);
             writer.write(ITEM, result);
         }
 
         @Override
-        public String type() {
+        public @NotNull String type() {
             return "smithing";
         }
     }
 
-    public record Ingredient(List<ItemStack> items) implements NetworkBuffer.Writer {
+    public record Ingredient(@NotNull List<ItemStack> items) implements NetworkBuffer.Writer {
         public Ingredient {
             items = List.copyOf(items);
         }
 
-        public Ingredient(NetworkBuffer reader) {
+        public Ingredient(@NotNull NetworkBuffer reader) {
             this(reader.readCollection(ITEM));
         }
 
-        public void write(NetworkBuffer writer) {
+        public void write(@NotNull NetworkBuffer writer) {
             writer.writeCollection(ITEM, items);
         }
     }

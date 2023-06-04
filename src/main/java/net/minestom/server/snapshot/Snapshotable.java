@@ -22,7 +22,7 @@ public interface Snapshotable {
      * @param updater the snapshot updater/context
      * @return the updated snapshot
      */
-    default Snapshot updateSnapshot(SnapshotUpdater updater) {
+    default @NotNull Snapshot updateSnapshot(@NotNull SnapshotUpdater updater) {
         throw new UnsupportedOperationException("Snapshot is not supported for this object");
     }
 }

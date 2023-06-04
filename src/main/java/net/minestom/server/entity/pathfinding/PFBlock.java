@@ -21,7 +21,7 @@ public final class PFBlock implements IBlockDescription, IBlockObject {
      * @param block the block
      * @return the {@link PFBlock} linked to {@code blockStateId}
      */
-    public static PFBlock get(Block block) {
+    public static @NotNull PFBlock get(@NotNull Block block) {
         return BLOCK_DESCRIPTION_MAP.computeIfAbsent(block.stateId(), state -> new PFBlock(block));
     }
 

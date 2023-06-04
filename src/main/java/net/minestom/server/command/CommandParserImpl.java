@@ -79,7 +79,7 @@ final class CommandParserImpl implements CommandParser {
     }
 
     @Override
-    public CommandParser.Result parse(Graph graph, String input) {
+    public @NotNull CommandParser.Result parse(@NotNull Graph graph, @NotNull String input) {
         final CommandStringReader reader = new CommandStringReader(input);
         final Chain chain = new Chain();
         // Read from input
@@ -177,7 +177,7 @@ final class CommandParserImpl implements CommandParser {
         private static final Result INSTANCE = new UnknownCommandResult();
 
         @Override
-        public ExecutableCommand executable() {
+        public @NotNull ExecutableCommand executable() {
             return UnknownExecutableCmd.INSTANCE;
         }
 
@@ -197,7 +197,7 @@ final class CommandParserImpl implements CommandParser {
 
         @Nullable CommandCondition condition();
 
-        Map<String, ArgumentResult<Object>> arguments();
+        @NotNull Map<String, ArgumentResult<Object>> arguments();
 
         CommandExecutor globalListener();
 
@@ -217,7 +217,7 @@ final class CommandParserImpl implements CommandParser {
 
     record InvalidCommand(String input, CommandCondition condition, ArgumentCallback callback,
                           ArgumentResult.SyntaxError<?> error,
-                          Map<String, ArgumentResult<Object>> arguments, CommandExecutor globalListener,
+                          @NotNull Map<String, ArgumentResult<Object>> arguments, CommandExecutor globalListener,
                           @Nullable SuggestionCallback suggestionCallback, List<Argument<?>> args)
             implements InternalKnownCommand, Result.KnownCommand.Invalid {
 
@@ -229,13 +229,13 @@ final class CommandParserImpl implements CommandParser {
         }
 
         @Override
-        public ExecutableCommand executable() {
+        public @NotNull ExecutableCommand executable() {
             return new InvalidExecutableCmd(condition, globalListener, callback, error, input, arguments);
         }
     }
 
     record ValidCommand(String input, CommandCondition condition, CommandExecutor executor,
-                        Map<String, ArgumentResult<Object>> arguments,
+                        @NotNull Map<String, ArgumentResult<Object>> arguments,
                         CommandExecutor globalListener, @Nullable SuggestionCallback suggestionCallback, List<Argument<?>> args)
             implements InternalKnownCommand, Result.KnownCommand.Valid {
 
@@ -250,7 +250,7 @@ final class CommandParserImpl implements CommandParser {
         }
 
         @Override
-        public ExecutableCommand executable() {
+        public @NotNull ExecutableCommand executable() {
             return new ValidExecutableCmd(condition, globalListener, executor, input, arguments);
         }
     }
@@ -259,7 +259,7 @@ final class CommandParserImpl implements CommandParser {
         static final ExecutableCommand INSTANCE = new UnknownExecutableCmd();
 
         @Override
-        public Result execute(CommandSender sender) {
+        public @NotNull Result execute(@NotNull CommandSender sender) {
             return ExecutionResultImpl.UNKNOWN;
         }
     }
@@ -268,7 +268,7 @@ final class CommandParserImpl implements CommandParser {
                               String input,
                               Map<String, ArgumentResult<Object>> arguments) implements ExecutableCommand {
         @Override
-        public Result execute(CommandSender sender) {
+        public @NotNull Result execute(@NotNull CommandSender sender) {
             final CommandContext context = createCommandContext(input, arguments);
 
             globalListener().apply(sender, context);
@@ -290,7 +290,7 @@ final class CommandParserImpl implements CommandParser {
                                 ArgumentResult.SyntaxError<?> error, String input,
                                 Map<String, ArgumentResult<Object>> arguments) implements ExecutableCommand {
         @Override
-        public Result execute(CommandSender sender) {
+        public @NotNull Result execute(@NotNull CommandSender sender) {
             globalListener().apply(sender, createCommandContext(input, arguments));
 
             if (condition != null && !condition.canUse(sender, input())) {

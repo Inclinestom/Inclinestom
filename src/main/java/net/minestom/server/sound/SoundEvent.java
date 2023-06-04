@@ -11,15 +11,15 @@ import java.util.Collection;
 
 public sealed interface SoundEvent extends ProtocolObject, Sound.Type, SoundEvents permits SoundEventImpl {
 
-    static Collection<SoundEvent> values() {
+    static @NotNull Collection<@NotNull SoundEvent> values() {
         return SoundEventImpl.values();
     }
 
-    static @Nullable SoundEvent fromNamespaceId(String namespaceID) {
+    static @Nullable SoundEvent fromNamespaceId(@NotNull String namespaceID) {
         return SoundEventImpl.getSafe(namespaceID);
     }
 
-    static @Nullable SoundEvent fromNamespaceId(NamespaceID namespaceID) {
+    static @Nullable SoundEvent fromNamespaceId(@NotNull NamespaceID namespaceID) {
         return fromNamespaceId(namespaceID.asString());
     }
 
@@ -28,7 +28,7 @@ public sealed interface SoundEvent extends ProtocolObject, Sound.Type, SoundEven
     }
 
     @Override
-    default Key key() {
+    default @NotNull Key key() {
         return ProtocolObject.super.key();
     }
 }

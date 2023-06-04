@@ -10,11 +10,11 @@ record PotionTypeImpl(NamespaceID namespace, int id) implements PotionType {
     private static final Registry.Container<PotionType> CONTAINER = Registry.createContainer(Registry.Resource.POTION_TYPES,
             (namespace, properties) -> new PotionTypeImpl(NamespaceID.from(namespace), properties.getInt("id")));
 
-    static PotionType get(String namespace) {
+    static PotionType get(@NotNull String namespace) {
         return CONTAINER.get(namespace);
     }
 
-    static PotionType getSafe(String namespace) {
+    static PotionType getSafe(@NotNull String namespace) {
         return CONTAINER.getSafe(namespace);
     }
 

@@ -33,12 +33,12 @@ public class EntityCreature extends LivingEntity implements NavigableEntity, Ent
     /**
      * Constructor which allows to specify an UUID. Only use if you know what you are doing!
      */
-    public EntityCreature(EntityType entityType, UUID uuid) {
+    public EntityCreature(@NotNull EntityType entityType, @NotNull UUID uuid) {
         super(entityType, uuid);
         heal();
     }
 
-    public EntityCreature(EntityType entityType) {
+    public EntityCreature(@NotNull EntityType entityType) {
         this(entityType, UUID.randomUUID());
     }
 
@@ -55,7 +55,7 @@ public class EntityCreature extends LivingEntity implements NavigableEntity, Ent
     }
 
     @Override
-    public CompletableFuture<Void> setInstance(Instance instance, Pos spawnPosition) {
+    public CompletableFuture<Void> setInstance(@NotNull Instance instance, @NotNull Pos spawnPosition) {
         this.navigator.setPathFinder(new HydrazinePathFinder(navigator.getPathingEntity(), instance.getInstanceSpace()));
 
         return super.setInstance(instance, spawnPosition);
@@ -130,7 +130,7 @@ public class EntityCreature extends LivingEntity implements NavigableEntity, Ent
      * @param target    the entity target
      * @param swingHand true to swing the entity main hand, false otherwise
      */
-    public void attack(Entity target, boolean swingHand) {
+    public void attack(@NotNull Entity target, boolean swingHand) {
         if (swingHand)
             swingMainHand();
         EntityAttackEvent attackEvent = new EntityAttackEvent(this, target);
@@ -144,7 +144,7 @@ public class EntityCreature extends LivingEntity implements NavigableEntity, Ent
      *
      * @param target the entity target
      */
-    public void attack(Entity target) {
+    public void attack(@NotNull Entity target) {
         attack(target, false);
     }
 

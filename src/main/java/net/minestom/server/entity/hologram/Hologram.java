@@ -158,7 +158,7 @@ public class Hologram implements Viewable {
      * {@inheritDoc}
      */
     @Override
-    public boolean addViewer(Player player) {
+    public boolean addViewer(@NotNull Player player) {
         return entity.addViewer(player);
     }
 
@@ -166,7 +166,7 @@ public class Hologram implements Viewable {
      * {@inheritDoc}
      */
     @Override
-    public boolean removeViewer(Player player) {
+    public boolean removeViewer(@NotNull Player player) {
         return entity.removeViewer(player);
     }
 

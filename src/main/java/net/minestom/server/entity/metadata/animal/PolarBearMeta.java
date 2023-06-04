@@ -8,7 +8,7 @@ public class PolarBearMeta extends AnimalMeta {
     public static final byte OFFSET = AnimalMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 1;
 
-    public PolarBearMeta(Entity entity, Metadata metadata) {
+    public PolarBearMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
         super(entity, metadata);
     }
 

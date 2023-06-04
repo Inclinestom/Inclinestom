@@ -27,5 +27,5 @@ public interface CommandCondition {
      *                      null if this is an access request
      * @return true if the sender has the right to use the command, false otherwise
      */
-    boolean canUse(CommandSender sender, @Nullable String commandString);
+    boolean canUse(@NotNull CommandSender sender, @Nullable String commandString);
 }

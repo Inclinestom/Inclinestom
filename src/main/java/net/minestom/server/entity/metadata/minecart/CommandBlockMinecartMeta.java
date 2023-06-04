@@ -9,23 +9,23 @@ public class CommandBlockMinecartMeta extends AbstractMinecartMeta {
     public static final byte OFFSET = AbstractMinecartMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 2;
 
-    public CommandBlockMinecartMeta(Entity entity, Metadata metadata) {
+    public CommandBlockMinecartMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
         super(entity, metadata);
     }
 
-    public String getCommand() {
+    public @NotNull String getCommand() {
         return super.metadata.getIndex(OFFSET, "");
     }
 
-    public void setCommand(String value) {
+    public void setCommand(@NotNull String value) {
         super.metadata.setIndex(OFFSET, Metadata.String(value));
     }
 
-    public Component getLastOutput() {
+    public @NotNull Component getLastOutput() {
         return super.metadata.getIndex(OFFSET + 1, Component.empty());
     }
 
-    public void setLastOutput(Component value) {
+    public void setLastOutput(@NotNull Component value) {
         super.metadata.setIndex(OFFSET + 1, Metadata.Chat(value));
     }
 

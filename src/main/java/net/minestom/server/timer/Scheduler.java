@@ -11,7 +11,7 @@ import java.util.function.Supplier;
  * Tasks are by default executed in the caller thread.
  */
 public sealed interface Scheduler permits SchedulerImpl, SchedulerManager {
-    static Scheduler newScheduler() {
+    static @NotNull Scheduler newScheduler() {
         return new SchedulerImpl();
     }
 
@@ -40,39 +40,39 @@ public sealed interface Scheduler permits SchedulerImpl, SchedulerManager {
      * @param executionType the execution type
      * @return the created task
      */
-    Task submitTask(Supplier<TaskSchedule> task, ExecutionType executionType);
+    @NotNull Task submitTask(@NotNull Supplier<TaskSchedule> task, @NotNull ExecutionType executionType);
 
-    default Task submitTask(Supplier<TaskSchedule> task) {
+    default @NotNull Task submitTask(@NotNull Supplier<TaskSchedule> task) {
         return submitTask(task, ExecutionType.SYNC);
     }
 
-    default Task.Builder buildTask(Runnable task) {
+    default @NotNull Task.Builder buildTask(@NotNull Runnable task) {
         return new Task.Builder(this, task);
     }
 
-    default Task scheduleTask(Runnable task,
-                                       TaskSchedule delay, TaskSchedule repeat,
-                                       ExecutionType executionType) {
+    default @NotNull Task scheduleTask(@NotNull Runnable task,
+                                       @NotNull TaskSchedule delay, @NotNull TaskSchedule repeat,
+                                       @NotNull ExecutionType executionType) {
         return buildTask(task).delay(delay).repeat(repeat).executionType(executionType).schedule();
     }
 
-    default Task scheduleTask(Runnable task, TaskSchedule delay, TaskSchedule repeat) {
+    default @NotNull Task scheduleTask(@NotNull Runnable task, @NotNull TaskSchedule delay, @NotNull TaskSchedule repeat) {
         return scheduleTask(task, delay, repeat, ExecutionType.SYNC);
     }
 
-    default Task scheduleNextTick(Runnable task, ExecutionType executionType) {
+    default @NotNull Task scheduleNextTick(@NotNull Runnable task, @NotNull ExecutionType executionType) {
         return buildTask(task).delay(TaskSchedule.nextTick()).executionType(executionType).schedule();
     }
 
-    default Task scheduleNextTick(Runnable task) {
+    default @NotNull Task scheduleNextTick(@NotNull Runnable task) {
         return scheduleNextTick(task, ExecutionType.SYNC);
     }
 
-    default Task scheduleNextProcess(Runnable task, ExecutionType executionType) {
+    default @NotNull Task scheduleNextProcess(@NotNull Runnable task, @NotNull ExecutionType executionType) {
         return buildTask(task).delay(TaskSchedule.immediate()).executionType(executionType).schedule();
     }
 
-    default Task scheduleNextProcess(Runnable task) {
+    default @NotNull Task scheduleNextProcess(@NotNull Runnable task) {
         return scheduleNextProcess(task, ExecutionType.SYNC);
     }
 }

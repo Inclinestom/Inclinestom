@@ -8,12 +8,12 @@ import org.jetbrains.annotations.NotNull;
 import static net.minestom.server.network.NetworkBuffer.VAR_INT;
 
 public record UpdateViewDistancePacket(int viewDistance) implements ServerPacket {
-    public UpdateViewDistancePacket(NetworkBuffer reader) {
+    public UpdateViewDistancePacket(@NotNull NetworkBuffer reader) {
         this(reader.read(VAR_INT));
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.write(VAR_INT, viewDistance);
     }
 

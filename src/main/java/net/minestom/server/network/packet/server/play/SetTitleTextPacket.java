@@ -13,13 +13,13 @@ import java.util.function.UnaryOperator;
 
 import static net.minestom.server.network.NetworkBuffer.COMPONENT;
 
-public record SetTitleTextPacket(Component title) implements ComponentHoldingServerPacket {
-    public SetTitleTextPacket(NetworkBuffer reader) {
+public record SetTitleTextPacket(@NotNull Component title) implements ComponentHoldingServerPacket {
+    public SetTitleTextPacket(@NotNull NetworkBuffer reader) {
         this(reader.read(COMPONENT));
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.write(COMPONENT, title);
     }
 
@@ -29,12 +29,12 @@ public record SetTitleTextPacket(Component title) implements ComponentHoldingSer
     }
 
     @Override
-    public Collection<Component> components() {
+    public @NotNull Collection<Component> components() {
         return List.of(this.title);
     }
 
     @Override
-    public ServerPacket copyWithOperator(UnaryOperator<Component> operator) {
+    public @NotNull ServerPacket copyWithOperator(@NotNull UnaryOperator<Component> operator) {
         return new SetTitleTextPacket(operator.apply(this.title));
     }
 }

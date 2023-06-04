@@ -19,7 +19,7 @@ public final class FluidGenerator extends MinestomCodeGenerator {
     private final InputStream fluidsFile;
     private final File outputFolder;
 
-    public FluidGenerator(@Nullable InputStream fluidsFile, File outputFolder) {
+    public FluidGenerator(@Nullable InputStream fluidsFile, @NotNull File outputFolder) {
         this.fluidsFile = fluidsFile;
         this.outputFolder = outputFolder;
     }

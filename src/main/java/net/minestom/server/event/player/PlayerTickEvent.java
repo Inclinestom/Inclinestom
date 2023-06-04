@@ -11,12 +11,12 @@ public class PlayerTickEvent implements PlayerInstanceEvent {
 
     private final Player player;
 
-    public PlayerTickEvent(Player player) {
+    public PlayerTickEvent(@NotNull Player player) {
         this.player = player;
     }
 
     @Override
-    public Player getPlayer() {
+    public @NotNull Player getPlayer() {
         return player;
     }
 }

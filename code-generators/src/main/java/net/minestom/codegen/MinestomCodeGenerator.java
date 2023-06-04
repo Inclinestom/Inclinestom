@@ -18,7 +18,7 @@ public abstract class MinestomCodeGenerator {
 
     public abstract void generate();
 
-    protected void writeFiles(List<JavaFile> fileList, File outputFolder) {
+    protected void writeFiles(@NotNull List<JavaFile> fileList, File outputFolder) {
         for (JavaFile javaFile : fileList) {
             try {
                 javaFile.writeTo(outputFolder);

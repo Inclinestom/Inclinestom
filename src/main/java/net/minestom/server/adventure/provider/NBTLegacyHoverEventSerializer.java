@@ -28,7 +28,7 @@ final class NBTLegacyHoverEventSerializer implements LegacyHoverEventSerializer 
     }
 
     @Override
-    public HoverEvent.ShowItem deserializeShowItem(Component input) throws IOException {
+    public HoverEvent.@NotNull ShowItem deserializeShowItem(@NotNull Component input) throws IOException {
         final String raw = PlainTextComponentSerializer.plainText().serialize(input);
         try {
             // attempt the parse
@@ -48,7 +48,7 @@ final class NBTLegacyHoverEventSerializer implements LegacyHoverEventSerializer 
     }
 
     @Override
-    public HoverEvent.ShowEntity deserializeShowEntity(Component input, Codec.Decoder<Component, String, ? extends RuntimeException> componentDecoder) throws IOException {
+    public HoverEvent.@NotNull ShowEntity deserializeShowEntity(@NotNull Component input, Codec.Decoder<Component, String, ? extends RuntimeException> componentDecoder) throws IOException {
         final String raw = PlainTextComponentSerializer.plainText().serialize(input);
         try {
             final NBT nbt = MinestomAdventure.NBT_CODEC.decode(raw);
@@ -65,7 +65,7 @@ final class NBTLegacyHoverEventSerializer implements LegacyHoverEventSerializer 
     }
 
     @Override
-    public Component serializeShowItem(HoverEvent.ShowItem input) throws IOException {
+    public @NotNull Component serializeShowItem(HoverEvent.@NotNull ShowItem input) throws IOException {
         AtomicReference<NBTException> exception = new AtomicReference<>(null);
         final NBTCompound tag = NBT.Compound(t -> {
             t.setString(ITEM_TYPE, input.item().asString());
@@ -89,7 +89,7 @@ final class NBTLegacyHoverEventSerializer implements LegacyHoverEventSerializer 
     }
 
     @Override
-    public Component serializeShowEntity(HoverEvent.ShowEntity input, Codec.Encoder<Component, String, ? extends RuntimeException> componentEncoder) {
+    public @NotNull Component serializeShowEntity(HoverEvent.@NotNull ShowEntity input, Codec.Encoder<Component, String, ? extends RuntimeException> componentEncoder) {
         final NBTCompound tag = NBT.Compound(t -> {
             t.setString(ENTITY_ID, input.id().toString());
             t.setString(ENTITY_TYPE, input.type().asString());

@@ -51,7 +51,7 @@ public final class ConnectionManager {
      * @param connection the player connection
      * @return the player linked to the connection
      */
-    public Player getPlayer(PlayerConnection connection) {
+    public Player getPlayer(@NotNull PlayerConnection connection) {
         return connectionPlayerMap.get(connection);
     }
 
@@ -60,7 +60,7 @@ public final class ConnectionManager {
      *
      * @return an unmodifiable collection containing all the online players
      */
-    public Collection<Player> getOnlinePlayers() {
+    public @NotNull Collection<@NotNull Player> getOnlinePlayers() {
         return unmodifiablePlayers;
     }
 
@@ -70,7 +70,7 @@ public final class ConnectionManager {
      * @param username the player username (can be partial)
      * @return the closest match, null if no players are online
      */
-    public @Nullable Player findPlayer(String username) {
+    public @Nullable Player findPlayer(@NotNull String username) {
         Player exact = getPlayer(username);
         if (exact != null) return exact;
         final String username1 = username.toLowerCase(Locale.ROOT);
@@ -94,7 +94,7 @@ public final class ConnectionManager {
      * @param username the player username (ignoreCase)
      * @return the first player who validate the username condition, null if none was found
      */
-    public @Nullable Player getPlayer(String username) {
+    public @Nullable Player getPlayer(@NotNull String username) {
         for (Player player : getOnlinePlayers()) {
             if (player.getUsername().equalsIgnoreCase(username))
                 return player;
@@ -110,7 +110,7 @@ public final class ConnectionManager {
      * @param uuid the player UUID
      * @return the first player who validate the UUID condition, null if none was found
      */
-    public @Nullable Player getPlayer(UUID uuid) {
+    public @Nullable Player getPlayer(@NotNull UUID uuid) {
         for (Player player : getOnlinePlayers()) {
             if (player.getUuid().equals(uuid))
                 return player;
@@ -143,7 +143,7 @@ public final class ConnectionManager {
      * @return the uuid based on {@code playerConnection}
      * return a random UUID if no UUID provider is defined see {@link #setUuidProvider(UuidProvider)}
      */
-    public UUID getPlayerConnectionUuid(PlayerConnection playerConnection, String username) {
+    public @NotNull UUID getPlayerConnectionUuid(@NotNull PlayerConnection playerConnection, @NotNull String username) {
         return uuidProvider.provide(playerConnection, username);
     }
 
@@ -161,11 +161,11 @@ public final class ConnectionManager {
      *
      * @return the current {@link PlayerProvider}
      */
-    public PlayerProvider getPlayerProvider() {
+    public @NotNull PlayerProvider getPlayerProvider() {
         return playerProvider;
     }
 
-    public synchronized void registerPlayer(Player player) {
+    public synchronized void registerPlayer(@NotNull Player player) {
         this.players.add(player);
         this.connectionPlayerMap.put(player.getPlayerConnection(), player);
     }
@@ -178,7 +178,7 @@ public final class ConnectionManager {
      * @param connection the player connection
      * @see PlayerConnection#disconnect() to properly disconnect a player
      */
-    public synchronized void removePlayer(PlayerConnection connection) {
+    public synchronized void removePlayer(@NotNull PlayerConnection connection) {
         final Player player = this.connectionPlayerMap.remove(connection);
         if (player == null) return;
         this.players.remove(player);
@@ -193,7 +193,7 @@ public final class ConnectionManager {
      * @param player   the player
      * @param register true to register the newly created player in {@link ConnectionManager} lists
      */
-    public CompletableFuture<Void> startPlayState(Player player, boolean register) {
+    public CompletableFuture<Void> startPlayState(@NotNull Player player, boolean register) {
         return AsyncUtils.runAsync(() -> {
             final PlayerConnection playerConnection = player.getPlayerConnection();
             // Compression
@@ -233,8 +233,8 @@ public final class ConnectionManager {
      * @return the newly created player object
      * @see #startPlayState(Player, boolean)
      */
-    public Player startPlayState(PlayerConnection connection,
-                                          UUID uuid, String username,
+    public @NotNull Player startPlayState(@NotNull PlayerConnection connection,
+                                          @NotNull UUID uuid, @NotNull String username,
                                           boolean register) {
         final Player player = playerProvider.createPlayer(uuid, username, connection);
         startPlayState(player, register);

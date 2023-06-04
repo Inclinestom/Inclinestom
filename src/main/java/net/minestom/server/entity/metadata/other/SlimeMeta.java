@@ -9,7 +9,7 @@ public class SlimeMeta extends MobMeta {
     public static final byte OFFSET = MobMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 1;
 
-    public SlimeMeta(Entity entity, Metadata metadata) {
+    public SlimeMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
         super(entity, metadata);
     }
 

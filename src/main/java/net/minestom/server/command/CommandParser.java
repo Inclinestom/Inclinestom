@@ -12,7 +12,7 @@ import java.util.List;
 @ApiStatus.Internal
 @ApiStatus.Experimental
 public interface CommandParser {
-    static CommandParser parser() {
+    static @NotNull CommandParser parser() {
         return CommandParserImpl.PARSER;
     }
 
@@ -24,10 +24,10 @@ public interface CommandParser {
      * @return the parsed command which can be executed and cached
      */
     @Contract("_, _ -> new")
-    Result parse(Graph graph, String input);
+    @NotNull Result parse(@NotNull Graph graph, @NotNull String input);
 
     sealed interface Result {
-        ExecutableCommand executable();
+        @NotNull ExecutableCommand executable();
 
         @ApiStatus.Internal
         @Nullable Suggestion suggestion(CommandSender sender);

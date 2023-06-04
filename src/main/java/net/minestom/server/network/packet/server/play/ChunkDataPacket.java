@@ -10,16 +10,16 @@ import org.jetbrains.annotations.NotNull;
 import static net.minestom.server.network.NetworkBuffer.INT;
 
 public record ChunkDataPacket(int chunkX, int chunkZ,
-                              ChunkData chunkData,
-                              LightData lightData) implements ServerPacket {
-    public ChunkDataPacket(NetworkBuffer reader) {
+                              @NotNull ChunkData chunkData,
+                              @NotNull LightData lightData) implements ServerPacket {
+    public ChunkDataPacket(@NotNull NetworkBuffer reader) {
         this(reader.read(INT), reader.read(INT),
                 new ChunkData(reader),
                 new LightData(reader));
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.write(INT, chunkX);
         writer.write(INT, chunkZ);
         writer.write(chunkData);

@@ -53,7 +53,7 @@ public class ArgumentParserTest {
         assertParserEquals("Word<arg1> UUID<arg2> NBT<arg3>", ArgumentType.Word("arg1"), ArgumentType.UUID("arg2"), ArgumentType.NBT("arg3"));
     }
 
-    private static void assertParserEquals(String input, Argument<?> ... args) {
+    private static void assertParserEquals(@NotNull String input, @NotNull Argument<?> @NotNull ... args) {
         assertArrayEquals(ArgumentParser.generate(input), args);
     }
 }

@@ -15,7 +15,7 @@ public final class AsyncUtils {
         return (CompletableFuture<T>) VOID_FUTURE;
     }
 
-    public static CompletableFuture<Void> runAsync(Runnable runnable) {
+    public static @NotNull CompletableFuture<Void> runAsync(@NotNull Runnable runnable) {
         return CompletableFuture.runAsync(() -> {
             try {
                 runnable.run();

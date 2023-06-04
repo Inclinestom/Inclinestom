@@ -27,7 +27,7 @@ public class AdvancementManager {
      * @throws IllegalStateException if a tab with the identifier {@code rootIdentifier} already exists
      */
     @NotNull
-    public AdvancementTab createTab(String rootIdentifier, AdvancementRoot root) {
+    public AdvancementTab createTab(@NotNull String rootIdentifier, @NotNull AdvancementRoot root) {
         Check.stateCondition(advancementTabMap.containsKey(rootIdentifier),
                 "A tab with the identifier '" + rootIdentifier + "' already exists");
         final AdvancementTab advancementTab = new AdvancementTab(rootIdentifier, root);
@@ -42,7 +42,7 @@ public class AdvancementManager {
      * @return the {@link AdvancementTab} associated with the identifier, null if not any
      */
     @Nullable
-    public AdvancementTab getTab(String rootIdentifier) {
+    public AdvancementTab getTab(@NotNull String rootIdentifier) {
         return advancementTabMap.get(rootIdentifier);
     }
 

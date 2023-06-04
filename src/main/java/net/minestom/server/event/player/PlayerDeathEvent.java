@@ -15,7 +15,7 @@ public class PlayerDeathEvent implements PlayerInstanceEvent {
     private Component deathText;
     private Component chatMessage;
 
-    public PlayerDeathEvent(Player player, Component deathText, Component chatMessage) {
+    public PlayerDeathEvent(@NotNull Player player, Component deathText, Component chatMessage) {
         this.player = player;
         this.deathText = deathText;
         this.chatMessage = chatMessage;
@@ -58,7 +58,7 @@ public class PlayerDeathEvent implements PlayerInstanceEvent {
     }
 
     @Override
-    public Player getPlayer() {
+    public @NotNull Player getPlayer() {
         return player;
     }
 }

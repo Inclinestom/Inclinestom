@@ -8,7 +8,7 @@ public class RavagerMeta extends RaiderMeta {
     public static final byte OFFSET = RaiderMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 0;
 
-    public RavagerMeta(Entity entity, Metadata metadata) {
+    public RavagerMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
         super(entity, metadata);
     }
 

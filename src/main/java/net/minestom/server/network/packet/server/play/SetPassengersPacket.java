@@ -10,17 +10,17 @@ import java.util.List;
 import static net.minestom.server.network.NetworkBuffer.VAR_INT;
 
 public record SetPassengersPacket(int vehicleEntityId,
-                                  List<Integer> passengersId) implements ServerPacket {
+                                  @NotNull List<Integer> passengersId) implements ServerPacket {
     public SetPassengersPacket {
         passengersId = List.copyOf(passengersId);
     }
 
-    public SetPassengersPacket(NetworkBuffer reader) {
+    public SetPassengersPacket(@NotNull NetworkBuffer reader) {
         this(reader.read(VAR_INT), reader.readCollection(VAR_INT));
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.write(VAR_INT, vehicleEntityId);
         writer.writeCollection(VAR_INT, passengersId);
     }

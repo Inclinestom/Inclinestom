@@ -16,14 +16,14 @@ import java.util.function.UnaryOperator;
 import static net.minestom.server.network.NetworkBuffer.*;
 
 public record SetSlotPacket(byte windowId, int stateId, short slot,
-                            ItemStack itemStack) implements ComponentHoldingServerPacket {
-    public SetSlotPacket(NetworkBuffer reader) {
+                            @NotNull ItemStack itemStack) implements ComponentHoldingServerPacket {
+    public SetSlotPacket(@NotNull NetworkBuffer reader) {
         this(reader.read(BYTE), reader.read(VAR_INT), reader.read(SHORT),
                 reader.read(ITEM));
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.write(BYTE, windowId);
         writer.write(VAR_INT, stateId);
         writer.write(SHORT, slot);
@@ -36,7 +36,7 @@ public record SetSlotPacket(byte windowId, int stateId, short slot,
     }
 
     @Override
-    public Collection<Component> components() {
+    public @NotNull Collection<Component> components() {
         final var components = new ArrayList<>(this.itemStack.getLore());
         final var displayname = this.itemStack.getDisplayName();
         if (displayname != null) components.add(displayname);
@@ -45,7 +45,7 @@ public record SetSlotPacket(byte windowId, int stateId, short slot,
     }
 
     @Override
-    public ServerPacket copyWithOperator(UnaryOperator<Component> operator) {
+    public @NotNull ServerPacket copyWithOperator(@NotNull UnaryOperator<Component> operator) {
         return new SetSlotPacket(this.windowId, this.stateId, this.slot, this.itemStack.withDisplayName(operator).withLore(lines -> {
             final var translatedComponents = new ArrayList<Component>();
             lines.forEach(component -> translatedComponents.add(operator.apply(component)));
@@ -59,7 +59,7 @@ public record SetSlotPacket(byte windowId, int stateId, short slot,
      * @param cursorItem the cursor item
      * @return a set slot packet to change a player cursor item
      */
-    public static SetSlotPacket createCursorPacket(ItemStack cursorItem) {
+    public static @NotNull SetSlotPacket createCursorPacket(@NotNull ItemStack cursorItem) {
         return new SetSlotPacket((byte) -1, 0, (short) -1, cursorItem);
     }
 }

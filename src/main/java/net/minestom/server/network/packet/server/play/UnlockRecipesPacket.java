@@ -15,7 +15,7 @@ public record UnlockRecipesPacket(int mode,
                                   boolean smeltingRecipeBookOpen, boolean smeltingRecipeBookFilterActive,
                                   boolean blastFurnaceRecipeBookOpen, boolean blastFurnaceRecipeBookFilterActive,
                                   boolean smokerRecipeBookOpen, boolean smokerRecipeBookFilterActive,
-                                  List<String> recipeIds,
+                                  @NotNull List<String> recipeIds,
                                   @UnknownNullability List<String> initRecipeIds) implements ServerPacket {
     public UnlockRecipesPacket {
         recipeIds = List.copyOf(recipeIds);
@@ -24,7 +24,7 @@ public record UnlockRecipesPacket(int mode,
         }
     }
 
-    public UnlockRecipesPacket(NetworkBuffer reader) {
+    public UnlockRecipesPacket(@NotNull NetworkBuffer reader) {
         this(read(reader));
     }
 
@@ -37,7 +37,7 @@ public record UnlockRecipesPacket(int mode,
                 packet.recipeIds, packet.initRecipeIds);
     }
 
-    private static UnlockRecipesPacket read(NetworkBuffer reader) {
+    private static UnlockRecipesPacket read(@NotNull NetworkBuffer reader) {
         var mode = reader.read(VAR_INT);
         var craftingRecipeBookOpen = reader.read(BOOLEAN);
         var craftingRecipeBookFilterActive = reader.read(BOOLEAN);
@@ -58,7 +58,7 @@ public record UnlockRecipesPacket(int mode,
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.write(VAR_INT, mode);
         writer.write(BOOLEAN, craftingRecipeBookOpen);
         writer.write(BOOLEAN, craftingRecipeBookFilterActive);

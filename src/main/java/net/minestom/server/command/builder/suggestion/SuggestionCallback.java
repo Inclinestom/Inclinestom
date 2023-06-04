@@ -6,5 +6,5 @@ import org.jetbrains.annotations.NotNull;
 
 @FunctionalInterface
 public interface SuggestionCallback {
-    void apply(CommandSender sender, CommandContext context, Suggestion suggestion);
+    void apply(@NotNull CommandSender sender, @NotNull CommandContext context, @NotNull Suggestion suggestion);
 }

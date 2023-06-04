@@ -8,12 +8,12 @@ import org.jetbrains.annotations.NotNull;
 import static net.minestom.server.network.NetworkBuffer.INT;
 
 public record UnloadChunkPacket(int chunkX, int chunkZ) implements ServerPacket {
-    public UnloadChunkPacket(NetworkBuffer reader) {
+    public UnloadChunkPacket(@NotNull NetworkBuffer reader) {
         this(reader.read(INT), reader.read(INT));
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.write(INT, chunkX);
         writer.write(INT, chunkZ);
     }

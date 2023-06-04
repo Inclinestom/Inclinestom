@@ -33,12 +33,12 @@ public class BlockClientNbtTest {
     public void handler() {
         var handler = new BlockHandler() {
             @Override
-            public Collection<Tag<?>> getBlockEntityTags() {
+            public @NotNull Collection<Tag<?>> getBlockEntityTags() {
                 return List.of(Tag.String("test"));
             }
 
             @Override
-            public NamespaceID getNamespaceId() {
+            public @NotNull NamespaceID getNamespaceId() {
                 return NamespaceID.from("minestom:test");
             }
         };

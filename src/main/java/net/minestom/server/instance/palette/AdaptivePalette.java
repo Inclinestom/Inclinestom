@@ -32,12 +32,12 @@ final class AdaptivePalette implements Palette, Cloneable {
     }
 
     @Override
-    public void getAll(EntryConsumer consumer) {
+    public void getAll(@NotNull EntryConsumer consumer) {
         this.palette.getAll(consumer);
     }
 
     @Override
-    public void getAllPresent(EntryConsumer consumer) {
+    public void getAllPresent(@NotNull EntryConsumer consumer) {
         this.palette.getAllPresent(consumer);
     }
 
@@ -55,14 +55,14 @@ final class AdaptivePalette implements Palette, Cloneable {
     }
 
     @Override
-    public void setAll(EntrySupplier supplier) {
+    public void setAll(@NotNull EntrySupplier supplier) {
         SpecializedPalette newPalette = new FlexiblePalette(this);
         newPalette.setAll(supplier);
         this.palette = newPalette;
     }
 
     @Override
-    public void replace(int x, int y, int z, IntUnaryOperator operator) {
+    public void replace(int x, int y, int z, @NotNull IntUnaryOperator operator) {
         if (x < 0 || y < 0 || z < 0) {
             throw new IllegalArgumentException("Coordinates must be positive");
         }
@@ -70,7 +70,7 @@ final class AdaptivePalette implements Palette, Cloneable {
     }
 
     @Override
-    public void replaceAll(EntryFunction function) {
+    public void replaceAll(@NotNull EntryFunction function) {
         flexiblePalette().replaceAll(function);
     }
 
@@ -95,7 +95,7 @@ final class AdaptivePalette implements Palette, Cloneable {
     }
 
     @Override
-    public Palette clone() {
+    public @NotNull Palette clone() {
         try {
             AdaptivePalette adaptivePalette = (AdaptivePalette) super.clone();
             adaptivePalette.palette = palette.clone();
@@ -106,7 +106,7 @@ final class AdaptivePalette implements Palette, Cloneable {
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         final SpecializedPalette optimized = optimizedPalette();
         this.palette = optimized;
         optimized.write(writer);

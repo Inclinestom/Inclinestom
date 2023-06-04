@@ -10,11 +10,11 @@ record ParticleImpl(NamespaceID namespace, int id) implements Particle {
     private static final Registry.Container<Particle> CONTAINER = Registry.createContainer(Registry.Resource.PARTICLES,
             (namespace, properties) -> new ParticleImpl(NamespaceID.from(namespace), properties.getInt("id")));
 
-    static Particle get(String namespace) {
+    static Particle get(@NotNull String namespace) {
         return CONTAINER.get(namespace);
     }
 
-    static Particle getSafe(String namespace) {
+    static Particle getSafe(@NotNull String namespace) {
         return CONTAINER.getSafe(namespace);
     }
 

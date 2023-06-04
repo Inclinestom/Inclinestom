@@ -17,16 +17,16 @@ import java.nio.ByteBuffer;
  * You can retrieve the different packet handlers per state (status/login/play)
  * from the {@link ClientPacketsHandler} classes.
  */
-public record PacketProcessor(ClientPacketsHandler statusHandler,
-                              ClientPacketsHandler loginHandler,
-                              ClientPacketsHandler playHandler) {
+public record PacketProcessor(@NotNull ClientPacketsHandler statusHandler,
+                              @NotNull ClientPacketsHandler loginHandler,
+                              @NotNull ClientPacketsHandler playHandler) {
     public PacketProcessor() {
         this(new ClientPacketsHandler.Status(),
                 new ClientPacketsHandler.Login(),
                 new ClientPacketsHandler.Play());
     }
 
-    public ClientPacket create(ConnectionState connectionState, int packetId, ByteBuffer body) {
+    public @NotNull ClientPacket create(@NotNull ConnectionState connectionState, int packetId, ByteBuffer body) {
         NetworkBuffer buffer = new NetworkBuffer(body);
         final ClientPacket clientPacket = switch (connectionState) {
             case PLAY -> playHandler.create(packetId, buffer);
@@ -41,7 +41,7 @@ public record PacketProcessor(ClientPacketsHandler statusHandler,
         return clientPacket;
     }
 
-    public ClientPacket process(PlayerConnection connection, int packetId, ByteBuffer body) {
+    public ClientPacket process(@NotNull PlayerConnection connection, int packetId, ByteBuffer body) {
         final ClientPacket packet = create(connection.getConnectionState(), packetId, body);
         if (packet instanceof ClientPreplayPacket prePlayPacket) {
             prePlayPacket.process(connection);

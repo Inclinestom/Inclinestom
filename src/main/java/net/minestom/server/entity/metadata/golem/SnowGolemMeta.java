@@ -8,7 +8,7 @@ public class SnowGolemMeta extends AbstractGolemMeta {
     public static final byte OFFSET = AbstractGolemMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 1;
 
-    public SnowGolemMeta(Entity entity, Metadata metadata) {
+    public SnowGolemMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
         super(entity, metadata);
     }
 

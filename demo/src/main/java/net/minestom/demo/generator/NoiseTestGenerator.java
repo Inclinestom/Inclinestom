@@ -10,6 +10,7 @@ import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.instance.generator.GenerationUnit;
 import net.minestom.server.instance.generator.Generator;
+import org.jetbrains.annotations.NotNull;
 
 public class NoiseTestGenerator implements Generator {
 
@@ -28,7 +29,7 @@ public class NoiseTestGenerator implements Generator {
     }
 
     @Override
-    public void generate(GenerationUnit unit) {
+    public void generate(@NotNull GenerationUnit unit) {
         Point start = unit.absoluteStart();
         for (int x = 0; x < Instance.SECTION_SIZE; x++) {
             for (int z = 0; z < Instance.SECTION_SIZE; z++) {

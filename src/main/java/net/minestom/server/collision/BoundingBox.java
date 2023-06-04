@@ -36,7 +36,7 @@ public final class BoundingBox implements Shape {
 
     @Override
     @ApiStatus.Experimental
-    public boolean intersectBox(Point positionRelative, BoundingBox boundingBox) {
+    public boolean intersectBox(@NotNull Point positionRelative, @NotNull BoundingBox boundingBox) {
         return (minX() + positionRelative.x() <= boundingBox.maxX() - Vec.EPSILON / 2 && maxX() + positionRelative.x() >= boundingBox.minX() + Vec.EPSILON / 2) &&
                 (minY() + positionRelative.y() <= boundingBox.maxY() - Vec.EPSILON / 2 && maxY() + positionRelative.y() >= boundingBox.minY() + Vec.EPSILON / 2) &&
                 (minZ() + positionRelative.z() <= boundingBox.maxZ() - Vec.EPSILON / 2 && maxZ() + positionRelative.z() >= boundingBox.minZ() + Vec.EPSILON / 2);
@@ -44,7 +44,7 @@ public final class BoundingBox implements Shape {
 
     @Override
     @ApiStatus.Experimental
-    public boolean intersectBoxSwept(Point rayStart, Point rayDirection, Point shapePos, BoundingBox moving, SweepResult finalResult) {
+    public boolean intersectBoxSwept(@NotNull Point rayStart, @NotNull Point rayDirection, @NotNull Point shapePos, @NotNull BoundingBox moving, @NotNull SweepResult finalResult) {
         if (RayUtils.BoundingBoxIntersectionCheck(moving, rayStart, rayDirection, this, shapePos, finalResult) ) {
             finalResult.collidedShapePosition = shapePos;
             finalResult.collidedShape = this;
@@ -60,7 +60,7 @@ public final class BoundingBox implements Shape {
      * @return true if this bounding box intersects with the entity, false otherwise
      */
     @ApiStatus.Experimental
-    public boolean intersectEntity(Point src, Entity entity) {
+    public boolean intersectEntity(@NotNull Point src, @NotNull Entity entity) {
         return intersectBox(src.sub(entity.getPosition()), entity.getBoundingBox());
     }
 
@@ -70,12 +70,12 @@ public final class BoundingBox implements Shape {
     }
 
     @Override
-    public Point relativeStart() {
+    public @NotNull Point relativeStart() {
         return offset;
     }
 
     @Override
-    public Point relativeEnd() {
+    public @NotNull Point relativeEnd() {
         Point relativeEnd = this.relativeEnd;
         if (relativeEnd == null) this.relativeEnd = relativeEnd = offset.add(width, height, depth);
         return relativeEnd;
@@ -106,7 +106,7 @@ public final class BoundingBox implements Shape {
      * @param z the Z offset
      * @return a new {@link BoundingBox} expanded
      */
-    public BoundingBox expand(double x, double y, double z) {
+    public @NotNull BoundingBox expand(double x, double y, double z) {
         return new BoundingBox(this.width + x, this.height + y, this.depth + z);
     }
 
@@ -118,7 +118,7 @@ public final class BoundingBox implements Shape {
      * @param z the Z offset
      * @return a new bounding box contracted
      */
-    public BoundingBox contract(double x, double y, double z) {
+    public @NotNull BoundingBox contract(double x, double y, double z) {
         return new BoundingBox(this.width - x, this.height - y, this.depth - z);
     }
 
@@ -169,7 +169,7 @@ public final class BoundingBox implements Shape {
         return offset.equals(that.offset);
     }
 
-    public static @Nullable BoundingBox fromPose(Entity.Pose pose) {
+    public static @Nullable BoundingBox fromPose(@NotNull Entity.Pose pose) {
         return switch (pose) {
             case FALL_FLYING, SWIMMING, SPIN_ATTACK -> smallBoundingBox;
             case SLEEPING, DYING -> sleepingBoundingBox;

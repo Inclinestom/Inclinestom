@@ -21,7 +21,7 @@ public sealed interface ListenerHandle<E extends Event> permits EventNodeImpl.Ha
      *
      * @param event the event to call
      */
-    void call(E event);
+    void call(@NotNull E event);
 
     /**
      * Gets if any listener has been registered for the given handle.

@@ -8,7 +8,7 @@ public class CatMeta extends TameableAnimalMeta {
     public static final byte OFFSET = TameableAnimalMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 4;
 
-    public CatMeta(Entity entity, Metadata metadata) {
+    public CatMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
         super(entity, metadata);
     }
 
@@ -17,7 +17,7 @@ public class CatMeta extends TameableAnimalMeta {
         return Color.VALUES[super.metadata.getIndex(OFFSET, 1)];
     }
 
-    public void setColor(Color value) {
+    public void setColor(@NotNull Color value) {
         super.metadata.setIndex(OFFSET, Metadata.VarInt(value.ordinal()));
     }
 

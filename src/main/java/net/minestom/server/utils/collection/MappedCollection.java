@@ -9,9 +9,9 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
 @ApiStatus.Internal
-public record MappedCollection<O, R>(Collection<O> original,
-                                     Function<O, R> mapper) implements Collection<R> {
-    public static <O extends AtomicReference<R>, R> MappedCollection<O, R> plainReferences(Collection<O> original) {
+public record MappedCollection<O, R>(@NotNull Collection<O> original,
+                                     @NotNull Function<O, R> mapper) implements Collection<R> {
+    public static <O extends AtomicReference<R>, R> MappedCollection<O, R> plainReferences(@NotNull Collection<O> original) {
         return new MappedCollection<>(original, AtomicReference::getPlain);
     }
 
@@ -34,7 +34,7 @@ public record MappedCollection<O, R>(Collection<O> original,
     }
 
     @Override
-    public Iterator<R> iterator() {
+    public @NotNull Iterator<R> iterator() {
         var iterator = original.iterator();
         return new Iterator<>() {
             @Override
@@ -50,19 +50,19 @@ public record MappedCollection<O, R>(Collection<O> original,
     }
 
     @Override
-    public Object [] toArray() {
+    public @NotNull Object @NotNull [] toArray() {
         // TODO
         throw new UnsupportedOperationException("Unsupported array object");
     }
 
     @Override
-    public <T> T [] toArray(T [] a) {
+    public <T> @NotNull T @NotNull [] toArray(@NotNull T @NotNull [] a) {
         // TODO
         throw new UnsupportedOperationException("Unsupported array generic");
     }
 
     @Override
-    public boolean containsAll(Collection<?> c) {
+    public boolean containsAll(@NotNull Collection<?> c) {
         if (c.size() > original.size()) return false;
         for (var entry : c) {
             if (!contains(entry)) return false;
@@ -81,17 +81,17 @@ public record MappedCollection<O, R>(Collection<O> original,
     }
 
     @Override
-    public boolean addAll(Collection<? extends R> c) {
+    public boolean addAll(@NotNull Collection<? extends R> c) {
         throw new UnsupportedOperationException("Unmodifiable collection");
     }
 
     @Override
-    public boolean removeAll(Collection<?> c) {
+    public boolean removeAll(@NotNull Collection<?> c) {
         throw new UnsupportedOperationException("Unmodifiable collection");
     }
 
     @Override
-    public boolean retainAll(Collection<?> c) {
+    public boolean retainAll(@NotNull Collection<?> c) {
         throw new UnsupportedOperationException("Unmodifiable collection");
     }
 

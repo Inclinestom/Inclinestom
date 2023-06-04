@@ -9,19 +9,19 @@ import org.jetbrains.annotations.NotNull;
 
 import static net.minestom.server.network.NetworkBuffer.*;
 
-public record BlockActionPacket(Point blockPosition, byte actionId,
+public record BlockActionPacket(@NotNull Point blockPosition, byte actionId,
                                 byte actionParam, int blockId) implements ServerPacket {
     public BlockActionPacket(Point blockPosition, byte actionId, byte actionParam, Block block) {
         this(blockPosition, actionId, actionParam, block.id());
     }
 
-    public BlockActionPacket(NetworkBuffer reader) {
+    public BlockActionPacket(@NotNull NetworkBuffer reader) {
         this(reader.read(BLOCK_POSITION), reader.read(BYTE),
                 reader.read(BYTE), reader.read(VAR_INT));
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.write(BLOCK_POSITION, blockPosition);
         writer.write(BYTE, actionId);
         writer.write(BYTE, actionParam);

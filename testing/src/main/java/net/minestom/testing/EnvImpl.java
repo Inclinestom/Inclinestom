@@ -22,24 +22,24 @@ final class EnvImpl implements Env {
     }
 
     @Override
-    public ServerProcess process() {
+    public @NotNull ServerProcess process() {
         return process;
     }
 
     @Override
-    public TestConnection createConnection() {
+    public @NotNull TestConnection createConnection() {
         return new TestConnectionImpl(this);
     }
 
     @Override
-    public <E extends Event, H> Collector<E> trackEvent(Class<E> eventType, EventFilter<? super E, H> filter, H actor) {
+    public @NotNull <E extends Event, H> Collector<E> trackEvent(@NotNull Class<E> eventType, @NotNull EventFilter<? super E, H> filter, @NotNull H actor) {
         var tracker = new EventCollector<E>(actor);
         this.process.eventHandler().map(actor, filter).addListener(eventType, tracker.events::add);
         return tracker;
     }
 
     @Override
-    public <E extends Event> FlexibleListener<E> listen(Class<E> eventType) {
+    public @NotNull <E extends Event> FlexibleListener<E> listen(@NotNull Class<E> eventType) {
         var handler = process.eventHandler();
         var flexible = new FlexibleListenerImpl<>(eventType);
         var listener = EventListener.of(eventType, e -> flexible.handler.accept(e));
@@ -61,7 +61,7 @@ final class EnvImpl implements Env {
         }
 
         @Override
-        public List<E> collect() {
+        public @NotNull List<E> collect() {
             process.eventHandler().unmap(handler);
             return List.copyOf(events);
         }
@@ -79,7 +79,7 @@ final class EnvImpl implements Env {
         }
 
         @Override
-        public void followup(Consumer<E> handler) {
+        public void followup(@NotNull Consumer<E> handler) {
             updateHandler(handler);
         }
 
@@ -88,7 +88,7 @@ final class EnvImpl implements Env {
             updateHandler(e -> fail("Event " + e.getClass().getSimpleName() + " was not expected"));
         }
 
-        void updateHandler(Consumer<E> handler) {
+        void updateHandler(@NotNull Consumer<E> handler) {
             check();
             this.initialized = true;
             this.called = false;

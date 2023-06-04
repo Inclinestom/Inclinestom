@@ -13,12 +13,12 @@ public record ClientCraftRecipeRequest(byte windowId, String recipe, boolean mak
         }
     }
 
-    public ClientCraftRecipeRequest(NetworkBuffer reader) {
+    public ClientCraftRecipeRequest(@NotNull NetworkBuffer reader) {
         this(reader.read(BYTE), reader.read(STRING), reader.read(BOOLEAN));
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.write(BYTE, windowId);
         writer.write(STRING, recipe);
         writer.write(BOOLEAN, makeAll);

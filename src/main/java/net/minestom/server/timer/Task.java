@@ -9,9 +9,9 @@ import java.util.function.Supplier;
 public sealed interface Task permits TaskImpl {
     int id();
 
-    ExecutionType executionType();
+    @NotNull ExecutionType executionType();
 
-    Scheduler owner();
+    @NotNull Scheduler owner();
 
     /**
      * Unpark the tasks to be executed during next processing.
@@ -36,22 +36,22 @@ public sealed interface Task permits TaskImpl {
             this.runnable = runnable;
         }
 
-        public Builder executionType(ExecutionType executionType) {
+        public @NotNull Builder executionType(@NotNull ExecutionType executionType) {
             this.executionType = executionType;
             return this;
         }
 
-        public Builder delay(TaskSchedule schedule) {
+        public @NotNull Builder delay(@NotNull TaskSchedule schedule) {
             this.delay = schedule;
             return this;
         }
 
-        public Builder repeat(TaskSchedule schedule) {
+        public @NotNull Builder repeat(@NotNull TaskSchedule schedule) {
             this.repeat = schedule;
             return this;
         }
 
-        public Task schedule() {
+        public @NotNull Task schedule() {
             var runnable = this.runnable;
             var delay = this.delay;
             var repeat = this.repeat;
@@ -71,19 +71,19 @@ public sealed interface Task permits TaskImpl {
             }, executionType);
         }
 
-        public Builder delay(Duration duration) {
+        public @NotNull Builder delay(@NotNull Duration duration) {
             return delay(TaskSchedule.duration(duration));
         }
 
-        public Builder delay(long time, TemporalUnit unit) {
+        public @NotNull Builder delay(long time, @NotNull TemporalUnit unit) {
             return delay(Duration.of(time, unit));
         }
 
-        public Builder repeat(Duration duration) {
+        public @NotNull Builder repeat(@NotNull Duration duration) {
             return repeat(TaskSchedule.duration(duration));
         }
 
-        public Builder repeat(long time, TemporalUnit unit) {
+        public @NotNull Builder repeat(long time, @NotNull TemporalUnit unit) {
             return repeat(Duration.of(time, unit));
         }
     }

@@ -17,12 +17,12 @@ public record MultiBlockChangePacket(long chunkSectionPosition,
                 suppressLightUpdates, blocks);
     }
 
-    public MultiBlockChangePacket(NetworkBuffer reader) {
+    public MultiBlockChangePacket(@NotNull NetworkBuffer reader) {
         this(reader.read(LONG), reader.read(BOOLEAN), reader.read(VAR_LONG_ARRAY));
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.write(LONG, chunkSectionPosition);
         writer.write(BOOLEAN, suppressLightUpdates);
         writer.write(VAR_LONG_ARRAY, blocks);

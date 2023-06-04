@@ -14,5 +14,5 @@ public interface EntityEvent extends Event {
      *
      * @return the entity
      */
-    Entity getEntity();
+    @NotNull Entity getEntity();
 }

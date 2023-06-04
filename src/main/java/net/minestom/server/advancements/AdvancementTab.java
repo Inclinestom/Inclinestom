@@ -34,7 +34,7 @@ public class AdvancementTab implements Viewable {
     // will never change (since the root identifier is always the same)
     protected final AdvancementsPacket removePacket;
 
-    protected AdvancementTab(String rootIdentifier, AdvancementRoot root) {
+    protected AdvancementTab(@NotNull String rootIdentifier, @NotNull AdvancementRoot root) {
         this.root = root;
         cacheAdvancement(rootIdentifier, root, null);
         this.removePacket = new AdvancementsPacket(false, List.of(), List.of(rootIdentifier), List.of());
@@ -48,7 +48,7 @@ public class AdvancementTab implements Viewable {
      * if the player doesn't see anything
      */
     @Nullable
-    public static Set<AdvancementTab> getTabs(Player player) {
+    public static Set<AdvancementTab> getTabs(@NotNull Player player) {
         return PLAYER_TAB_MAP.getOrDefault(player.getUuid(), null);
     }
 
@@ -69,7 +69,7 @@ public class AdvancementTab implements Viewable {
      * @param advancement the advancement to add
      * @param parent      the parent of this advancement, it cannot be null
      */
-    public void createAdvancement(String identifier, Advancement advancement, Advancement parent) {
+    public void createAdvancement(@NotNull String identifier, @NotNull Advancement advancement, @NotNull Advancement parent) {
         Check.stateCondition(!advancementMap.containsKey(parent),
                 "You tried to set a parent which doesn't exist or isn't registered");
         cacheAdvancement(identifier, advancement, parent);
@@ -84,7 +84,7 @@ public class AdvancementTab implements Viewable {
      *
      * @return the packet adding this advancement tab and all its advancements
      */
-    protected AdvancementsPacket createPacket() {
+    protected @NotNull AdvancementsPacket createPacket() {
         List<AdvancementsPacket.AdvancementMapping> mappings = new ArrayList<>();
         List<AdvancementsPacket.ProgressMapping> progressMappings = new ArrayList<>();
         for (Advancement advancement : advancementMap.keySet()) {
@@ -101,7 +101,7 @@ public class AdvancementTab implements Viewable {
      * @param advancement the advancement
      * @param parent      the parent of this advancement, only null for the root advancement
      */
-    private void cacheAdvancement(String identifier, Advancement advancement, @Nullable Advancement parent) {
+    private void cacheAdvancement(@NotNull String identifier, @NotNull Advancement advancement, @Nullable Advancement parent) {
         Check.stateCondition(advancement.getTab() != null,
                 "You tried to add an advancement already linked to a tab");
         advancement.setTab(this);
@@ -112,7 +112,7 @@ public class AdvancementTab implements Viewable {
     }
 
     @Override
-    public synchronized boolean addViewer(Player player) {
+    public synchronized boolean addViewer(@NotNull Player player) {
         final boolean result = viewers.add(player);
         if (!result) return false;
         // Send the tab to the player
@@ -122,7 +122,7 @@ public class AdvancementTab implements Viewable {
     }
 
     @Override
-    public synchronized boolean removeViewer(Player player) {
+    public synchronized boolean removeViewer(@NotNull Player player) {
         if (!isViewer(player)) {
             return false;
         }
@@ -143,7 +143,7 @@ public class AdvancementTab implements Viewable {
      *
      * @param player the player
      */
-    private void addPlayer(Player player) {
+    private void addPlayer(@NotNull Player player) {
         Set<AdvancementTab> tabs = PLAYER_TAB_MAP.computeIfAbsent(player.getUuid(), p -> new CopyOnWriteArraySet<>());
         tabs.add(this);
     }
@@ -153,7 +153,7 @@ public class AdvancementTab implements Viewable {
      *
      * @param player the player
      */
-    private void removePlayer(Player player) {
+    private void removePlayer(@NotNull Player player) {
         final UUID uuid = player.getUuid();
         if (!PLAYER_TAB_MAP.containsKey(uuid)) {
             return;

@@ -10,11 +10,11 @@ public class AnvilInventory extends Inventory {
 
     private short repairCost;
 
-    public AnvilInventory(Component title) {
+    public AnvilInventory(@NotNull Component title) {
         super(InventoryType.ANVIL, title);
     }
 
-    public AnvilInventory(String title) {
+    public AnvilInventory(@NotNull String title) {
         super(InventoryType.ANVIL, title);
     }
 

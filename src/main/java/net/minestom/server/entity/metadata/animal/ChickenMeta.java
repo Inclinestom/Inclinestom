@@ -8,7 +8,7 @@ public class ChickenMeta extends AnimalMeta {
     public static final byte OFFSET = AnimalMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 0;
 
-    public ChickenMeta(Entity entity, Metadata metadata) {
+    public ChickenMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
         super(entity, metadata);
     }
 

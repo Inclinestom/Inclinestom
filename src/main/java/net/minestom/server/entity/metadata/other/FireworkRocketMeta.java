@@ -14,7 +14,7 @@ public class FireworkRocketMeta extends EntityMeta implements ProjectileMeta {
 
     private Entity shooter;
 
-    public FireworkRocketMeta(Entity entity, Metadata metadata) {
+    public FireworkRocketMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
         super(entity, metadata);
     }
 
@@ -23,7 +23,7 @@ public class FireworkRocketMeta extends EntityMeta implements ProjectileMeta {
         return super.metadata.getIndex(OFFSET, ItemStack.AIR);
     }
 
-    public void setFireworkInfo(ItemStack value) {
+    public void setFireworkInfo(@NotNull ItemStack value) {
         super.metadata.setIndex(OFFSET, Metadata.Slot(value));
     }
 

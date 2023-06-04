@@ -11,9 +11,9 @@ import java.util.List;
 import java.util.Map;
 
 public record FireworkEffect(boolean flicker, boolean trail,
-                             FireworkEffectType type,
-                             List<Color> colors,
-                             List<Color> fadeColors) {
+                             @NotNull FireworkEffectType type,
+                             @NotNull List<Color> colors,
+                             @NotNull List<Color> fadeColors) {
     public FireworkEffect {
         colors = List.copyOf(colors);
         fadeColors = List.copyOf(fadeColors);
@@ -25,7 +25,7 @@ public record FireworkEffect(boolean flicker, boolean trail,
      * @param compound The NBT connection, which should be a fireworks effect.
      * @return A new created firework effect.
      */
-    public static FireworkEffect fromCompound(NBTCompound compound) {
+    public static @NotNull FireworkEffect fromCompound(@NotNull NBTCompound compound) {
         List<Color> primaryColor = new ArrayList<>();
         List<Color> secondaryColor = new ArrayList<>();
 
@@ -49,7 +49,7 @@ public record FireworkEffect(boolean flicker, boolean trail,
      *
      * @return The firework effect as a nbt compound.
      */
-    public NBTCompound asCompound() {
+    public @NotNull NBTCompound asCompound() {
         return NBT.Compound(Map.of(
                 "Flicker", NBT.Boolean(flicker),
                 "Trail", NBT.Boolean(trail),

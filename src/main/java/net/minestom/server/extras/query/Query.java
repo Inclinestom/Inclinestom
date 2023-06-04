@@ -195,7 +195,7 @@ public class Query {
         }
     }
 
-    private static void sendResponse(Writeable queryResponse, int sessionID, SocketAddress sender) {
+    private static void sendResponse(@NotNull Writeable queryResponse, int sessionID, @NotNull SocketAddress sender) {
         // header
         BinaryWriter response = new BinaryWriter();
         response.writeByte((byte) 0);

@@ -34,7 +34,7 @@ final class TestConnectionImpl implements TestConnection {
     }
 
     @Override
-    public CompletableFuture<Player> connect(Instance instance, Pos pos) {
+    public @NotNull CompletableFuture<Player> connect(@NotNull Instance instance, @NotNull Pos pos) {
         Player player = new Player(UUID.randomUUID(), "RandName", playerConnection);
         player.eventNode().addListener(PlayerLoginEvent.class, event -> {
             event.setSpawningInstance(instance);
@@ -49,7 +49,7 @@ final class TestConnectionImpl implements TestConnection {
     }
 
     @Override
-    public <T extends ServerPacket> Collector<T> trackIncoming(Class<T> type) {
+    public @NotNull <T extends ServerPacket> Collector<T> trackIncoming(@NotNull Class<T> type) {
         var tracker = new IncomingCollector<>(type);
         this.incomingTrackers.add(IncomingCollector.class.cast(tracker));
         return tracker;
@@ -57,7 +57,7 @@ final class TestConnectionImpl implements TestConnection {
 
     final class PlayerConnectionImpl extends PlayerConnection {
         @Override
-        public void sendPacket(SendablePacket packet) {
+        public void sendPacket(@NotNull SendablePacket packet) {
             final var serverPacket = this.extractPacket(packet);
             for (var tracker : incomingTrackers) {
                 if (tracker.type.isAssignableFrom(serverPacket.getClass())) tracker.packets.add(serverPacket);
@@ -79,7 +79,7 @@ final class TestConnectionImpl implements TestConnection {
         }
 
         @Override
-        public SocketAddress getRemoteAddress() {
+        public @NotNull SocketAddress getRemoteAddress() {
             return new InetSocketAddress("localhost", 25565);
         }
 
@@ -98,7 +98,7 @@ final class TestConnectionImpl implements TestConnection {
         }
 
         @Override
-        public List<T> collect() {
+        public @NotNull List<T> collect() {
             incomingTrackers.remove(this);
             return List.copyOf(packets);
         }

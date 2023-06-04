@@ -19,10 +19,10 @@ public class PlayerUseItemOnBlockEvent implements PlayerInstanceEvent, ItemEvent
     private final Point position;
     private final BlockFace blockFace;
 
-    public PlayerUseItemOnBlockEvent(Player player, Player.Hand hand,
-                                     ItemStack itemStack,
-                                     Point position, Point cursorPosition,
-                                     BlockFace blockFace) {
+    public PlayerUseItemOnBlockEvent(@NotNull Player player, @NotNull Player.Hand hand,
+                                     @NotNull ItemStack itemStack,
+                                     @NotNull Point position, @NotNull Point cursorPosition,
+                                     @NotNull BlockFace blockFace) {
         this.player = player;
         this.hand = hand;
         this.itemStack = itemStack;
@@ -35,7 +35,7 @@ public class PlayerUseItemOnBlockEvent implements PlayerInstanceEvent, ItemEvent
      *
      * @return the block position
      */
-    public Point getPosition() {
+    public @NotNull Point getPosition() {
         return position;
     }
 
@@ -44,7 +44,7 @@ public class PlayerUseItemOnBlockEvent implements PlayerInstanceEvent, ItemEvent
      *
      * @return the block face
      */
-    public BlockFace getBlockFace() {
+    public @NotNull BlockFace getBlockFace() {
         return blockFace;
     }
 
@@ -53,7 +53,7 @@ public class PlayerUseItemOnBlockEvent implements PlayerInstanceEvent, ItemEvent
      *
      * @return the hand
      */
-    public Player.Hand getHand() {
+    public @NotNull Player.Hand getHand() {
         return hand;
     }
 
@@ -63,12 +63,12 @@ public class PlayerUseItemOnBlockEvent implements PlayerInstanceEvent, ItemEvent
      * @return the item
      */
     @Override
-    public ItemStack getItemStack() {
+    public @NotNull ItemStack getItemStack() {
         return itemStack;
     }
 
     @Override
-    public Player getPlayer() {
+    public @NotNull Player getPlayer() {
         return player;
     }
 }

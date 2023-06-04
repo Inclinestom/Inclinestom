@@ -19,7 +19,7 @@ public class FoxMeta extends AnimalMeta {
     private final static byte FACEPLANTED_BIT = 0x40;
     private final static byte DEFENDING_BIT = (byte) 0x80;
 
-    public FoxMeta(Entity entity, Metadata metadata) {
+    public FoxMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
         super(entity, metadata);
     }
 
@@ -28,7 +28,7 @@ public class FoxMeta extends AnimalMeta {
         return Type.VALUES[super.metadata.getIndex(OFFSET, 0)];
     }
 
-    public void setType(Type type) {
+    public void setType(@NotNull Type type) {
         super.metadata.setIndex(OFFSET, Metadata.VarInt(type.ordinal()));
     }
 

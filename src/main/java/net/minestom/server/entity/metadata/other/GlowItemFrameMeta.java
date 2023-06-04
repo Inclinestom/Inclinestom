@@ -8,7 +8,7 @@ public class GlowItemFrameMeta extends ItemFrameMeta {
     public static final byte OFFSET = ItemFrameMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 0;
 
-    public GlowItemFrameMeta(Entity entity, Metadata metadata) {
+    public GlowItemFrameMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
         super(entity, metadata);
     }
 }

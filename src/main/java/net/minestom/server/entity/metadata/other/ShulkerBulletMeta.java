@@ -10,7 +10,7 @@ public class ShulkerBulletMeta extends EntityMeta implements ObjectDataProvider 
     public static final byte OFFSET = EntityMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 0;
 
-    public ShulkerBulletMeta(Entity entity, Metadata metadata) {
+    public ShulkerBulletMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
         super(entity, metadata);
     }
 

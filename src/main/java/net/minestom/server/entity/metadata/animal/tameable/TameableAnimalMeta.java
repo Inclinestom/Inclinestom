@@ -14,7 +14,7 @@ public class TameableAnimalMeta extends AnimalMeta {
     private final static byte SITTING_BIT = 0x01;
     private final static byte TAMED_BIT = 0x04;
 
-    protected TameableAnimalMeta(Entity entity, Metadata metadata) {
+    protected TameableAnimalMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
         super(entity, metadata);
     }
 
@@ -39,7 +39,7 @@ public class TameableAnimalMeta extends AnimalMeta {
         return super.metadata.getIndex(OFFSET + 1, null);
     }
 
-    public void setOwner(UUID value) {
+    public void setOwner(@NotNull UUID value) {
         super.metadata.setIndex(OFFSET + 1, Metadata.OptUUID(value));
     }
 

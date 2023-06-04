@@ -16,7 +16,7 @@ public class ShutdownCommand extends Command {
         addSyntax(this::execute);
     }
 
-    private void execute(CommandSender commandSender, CommandContext commandContext) {
+    private void execute(@NotNull CommandSender commandSender, @NotNull CommandContext commandContext) {
         MinecraftServer.stopCleanly();
     }
 }

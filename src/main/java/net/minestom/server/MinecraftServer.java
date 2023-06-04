@@ -102,7 +102,7 @@ public final class MinecraftServer {
      * @param brandName the server brand name
      * @throws NullPointerException if {@code brandName} is null
      */
-    public static void setBrandName(String brandName) {
+    public static void setBrandName(@NotNull String brandName) {
         MinecraftServer.brandName = brandName;
         PacketUtils.broadcastPacket(PluginMessagePacket.getBrandPacket());
     }
@@ -122,7 +122,7 @@ public final class MinecraftServer {
      *
      * @param difficulty the new server difficulty
      */
-    public static void setDifficulty(Difficulty difficulty) {
+    public static void setDifficulty(@NotNull Difficulty difficulty) {
         MinecraftServer.difficulty = difficulty;
         PacketUtils.broadcastPacket(new ServerDifficultyPacket(difficulty, true));
     }
@@ -132,35 +132,35 @@ public final class MinecraftServer {
         return serverProcess;
     }
 
-    public static GlobalEventHandler getGlobalEventHandler() {
+    public static @NotNull GlobalEventHandler getGlobalEventHandler() {
         return serverProcess.eventHandler();
     }
 
-    public static PacketListenerManager getPacketListenerManager() {
+    public static @NotNull PacketListenerManager getPacketListenerManager() {
         return serverProcess.packetListener();
     }
 
-    public static InstanceManager getInstanceManager() {
+    public static @NotNull InstanceManager getInstanceManager() {
         return serverProcess.instance();
     }
 
-    public static BlockManager getBlockManager() {
+    public static @NotNull BlockManager getBlockManager() {
         return serverProcess.block();
     }
 
-    public static CommandManager getCommandManager() {
+    public static @NotNull CommandManager getCommandManager() {
         return serverProcess.command();
     }
 
-    public static RecipeManager getRecipeManager() {
+    public static @NotNull RecipeManager getRecipeManager() {
         return serverProcess.recipe();
     }
 
-    public static TeamManager getTeamManager() {
+    public static @NotNull TeamManager getTeamManager() {
         return serverProcess.team();
     }
 
-    public static SchedulerManager getSchedulerManager() {
+    public static @NotNull SchedulerManager getSchedulerManager() {
         return serverProcess.scheduler();
     }
 
@@ -169,23 +169,23 @@ public final class MinecraftServer {
      *
      * @return the benchmark manager
      */
-    public static BenchmarkManager getBenchmarkManager() {
+    public static @NotNull BenchmarkManager getBenchmarkManager() {
         return serverProcess.benchmark();
     }
 
-    public static ExceptionManager getExceptionManager() {
+    public static @NotNull ExceptionManager getExceptionManager() {
         return serverProcess.exception();
     }
 
-    public static ConnectionManager getConnectionManager() {
+    public static @NotNull ConnectionManager getConnectionManager() {
         return serverProcess.connection();
     }
 
-    public static BossBarManager getBossBarManager() {
+    public static @NotNull BossBarManager getBossBarManager() {
         return serverProcess.bossBar();
     }
 
-    public static PacketProcessor getPacketProcessor() {
+    public static @NotNull PacketProcessor getPacketProcessor() {
         return serverProcess.packetProcessor();
     }
 
@@ -318,12 +318,12 @@ public final class MinecraftServer {
      * @param address the server address
      * @throws IllegalStateException if called before {@link #init()} or if the server is already running
      */
-    public void start(SocketAddress address) {
+    public void start(@NotNull SocketAddress address) {
         serverProcess.start(address);
         new TickSchedulerThread(serverProcess).start();
     }
 
-    public void start(String address, int port) {
+    public void start(@NotNull String address, int port) {
         start(new InetSocketAddress(address, port));
     }
 

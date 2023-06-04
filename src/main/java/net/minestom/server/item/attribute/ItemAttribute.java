@@ -6,9 +6,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
-public record ItemAttribute(UUID uuid,
-                            String name,
-                            Attribute attribute,
-                            AttributeOperation operation, double amount,
-                            AttributeSlot slot) {
+public record ItemAttribute(@NotNull UUID uuid,
+                            @NotNull String name,
+                            @NotNull Attribute attribute,
+                            @NotNull AttributeOperation operation, double amount,
+                            @NotNull AttributeSlot slot) {
 }

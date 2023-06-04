@@ -21,7 +21,7 @@ import static net.minestom.server.network.NetworkBuffer.*;
  * The packet creates or updates teams
  */
 public record TeamsPacket(String teamName, Action action) implements ComponentHoldingServerPacket {
-    public TeamsPacket(NetworkBuffer reader) {
+    public TeamsPacket(@NotNull NetworkBuffer reader) {
         this(reader.read(STRING), switch (reader.read(BYTE)) {
             case 0 -> new CreateTeamAction(reader);
             case 1 -> new RemoveTeamAction();
@@ -33,19 +33,19 @@ public record TeamsPacket(String teamName, Action action) implements ComponentHo
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.write(STRING, teamName);
         writer.write(BYTE, (byte) action.id());
         writer.write(action);
     }
 
     @Override
-    public Collection<Component> components() {
+    public @NotNull Collection<Component> components() {
         return this.action instanceof ComponentHolder<?> holder ? holder.components() : List.of();
     }
 
     @Override
-    public ServerPacket copyWithOperator(UnaryOperator<Component> operator) {
+    public @NotNull ServerPacket copyWithOperator(@NotNull UnaryOperator<Component> operator) {
         return new TeamsPacket(
                 this.teamName,
                 this.action instanceof ComponentHolder<?> holder
@@ -67,7 +67,7 @@ public record TeamsPacket(String teamName, Action action) implements ComponentHo
             entities = List.copyOf(entities);
         }
 
-        public CreateTeamAction(NetworkBuffer reader) {
+        public CreateTeamAction(@NotNull NetworkBuffer reader) {
             this(reader.read(COMPONENT), reader.read(BYTE),
                     NameTagVisibility.fromIdentifier(reader.read(STRING)), CollisionRule.fromIdentifier(reader.read(STRING)),
                     NamedTextColor.namedColor(reader.read(VAR_INT)), reader.read(COMPONENT), reader.read(COMPONENT),
@@ -75,7 +75,7 @@ public record TeamsPacket(String teamName, Action action) implements ComponentHo
         }
 
         @Override
-        public void write(NetworkBuffer writer) {
+        public void write(@NotNull NetworkBuffer writer) {
             writer.write(COMPONENT, displayName);
             writer.write(BYTE, friendlyFlags);
             writer.write(STRING, nameTagVisibility.getIdentifier());
@@ -92,12 +92,12 @@ public record TeamsPacket(String teamName, Action action) implements ComponentHo
         }
 
         @Override
-        public Collection<Component> components() {
+        public @NotNull Collection<Component> components() {
             return List.of(this.displayName, this.teamPrefix, this.teamSuffix);
         }
 
         @Override
-        public CreateTeamAction copyWithOperator(UnaryOperator<Component> operator) {
+        public @NotNull CreateTeamAction copyWithOperator(@NotNull UnaryOperator<Component> operator) {
             return new CreateTeamAction(
                     operator.apply(this.displayName),
                     this.friendlyFlags,
@@ -113,7 +113,7 @@ public record TeamsPacket(String teamName, Action action) implements ComponentHo
 
     public record RemoveTeamAction() implements Action {
         @Override
-        public void write(NetworkBuffer writer) {
+        public void write(@NotNull NetworkBuffer writer) {
         }
 
         @Override
@@ -128,7 +128,7 @@ public record TeamsPacket(String teamName, Action action) implements ComponentHo
                                    Component teamPrefix,
                                    Component teamSuffix) implements Action, ComponentHolder<UpdateTeamAction> {
 
-        public UpdateTeamAction(NetworkBuffer reader) {
+        public UpdateTeamAction(@NotNull NetworkBuffer reader) {
             this(reader.read(COMPONENT), reader.read(BYTE),
                     NameTagVisibility.fromIdentifier(reader.read(STRING)), CollisionRule.fromIdentifier(reader.read(STRING)),
                     NamedTextColor.namedColor(reader.read(VAR_INT)),
@@ -136,7 +136,7 @@ public record TeamsPacket(String teamName, Action action) implements ComponentHo
         }
 
         @Override
-        public void write(NetworkBuffer writer) {
+        public void write(@NotNull NetworkBuffer writer) {
             writer.write(COMPONENT, displayName);
             writer.write(BYTE, friendlyFlags);
             writer.write(STRING, nameTagVisibility.getIdentifier());
@@ -152,12 +152,12 @@ public record TeamsPacket(String teamName, Action action) implements ComponentHo
         }
 
         @Override
-        public Collection<Component> components() {
+        public @NotNull Collection<Component> components() {
             return List.of(this.displayName, this.teamPrefix, this.teamSuffix);
         }
 
         @Override
-        public UpdateTeamAction copyWithOperator(UnaryOperator<Component> operator) {
+        public @NotNull UpdateTeamAction copyWithOperator(@NotNull UnaryOperator<Component> operator) {
             return new UpdateTeamAction(
                     operator.apply(this.displayName),
                     this.friendlyFlags,
@@ -170,17 +170,17 @@ public record TeamsPacket(String teamName, Action action) implements ComponentHo
         }
     }
 
-    public record AddEntitiesToTeamAction(Collection<String> entities) implements Action {
+    public record AddEntitiesToTeamAction(@NotNull Collection<@NotNull String> entities) implements Action {
         public AddEntitiesToTeamAction {
             entities = List.copyOf(entities);
         }
 
-        public AddEntitiesToTeamAction(NetworkBuffer reader) {
+        public AddEntitiesToTeamAction(@NotNull NetworkBuffer reader) {
             this(reader.readCollection(STRING));
         }
 
         @Override
-        public void write(NetworkBuffer writer) {
+        public void write(@NotNull NetworkBuffer writer) {
             writer.writeCollection(STRING, entities);
         }
 
@@ -190,17 +190,17 @@ public record TeamsPacket(String teamName, Action action) implements ComponentHo
         }
     }
 
-    public record RemoveEntitiesToTeamAction(Collection<String> entities) implements Action {
+    public record RemoveEntitiesToTeamAction(@NotNull Collection<@NotNull String> entities) implements Action {
         public RemoveEntitiesToTeamAction {
             entities = List.copyOf(entities);
         }
 
-        public RemoveEntitiesToTeamAction(NetworkBuffer reader) {
+        public RemoveEntitiesToTeamAction(@NotNull NetworkBuffer reader) {
             this(reader.readCollection(STRING));
         }
 
         @Override
-        public void write(NetworkBuffer writer) {
+        public void write(@NotNull NetworkBuffer writer) {
             writer.writeCollection(STRING, entities);
         }
 
@@ -311,7 +311,7 @@ public record TeamsPacket(String teamName, Action action) implements ComponentHo
             this.identifier = identifier;
         }
 
-        public static CollisionRule fromIdentifier(String identifier) {
+        public static @NotNull CollisionRule fromIdentifier(String identifier) {
             for (CollisionRule v : values()) {
                 if (v.getIdentifier().equals(identifier))
                     return v;
@@ -325,7 +325,7 @@ public record TeamsPacket(String teamName, Action action) implements ComponentHo
          *
          * @return the identifier
          */
-        public String getIdentifier() {
+        public @NotNull String getIdentifier() {
             return identifier;
         }
     }

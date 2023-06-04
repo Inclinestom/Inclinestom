@@ -9,7 +9,7 @@ public class TraderLlamaMeta extends EntityMeta {
     public static final byte OFFSET = EntityMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 0;
 
-    public TraderLlamaMeta(Entity entity, Metadata metadata) {
+    public TraderLlamaMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
         super(entity, metadata);
     }
 

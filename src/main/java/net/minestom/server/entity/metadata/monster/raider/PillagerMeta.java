@@ -8,7 +8,7 @@ public class PillagerMeta extends AbstractIllagerMeta {
     public static final byte OFFSET = AbstractIllagerMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 0;
 
-    public PillagerMeta(Entity entity, Metadata metadata) {
+    public PillagerMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
         super(entity, metadata);
     }
 

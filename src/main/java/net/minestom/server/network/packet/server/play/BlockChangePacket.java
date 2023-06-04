@@ -10,17 +10,17 @@ import org.jetbrains.annotations.NotNull;
 import static net.minestom.server.network.NetworkBuffer.BLOCK_POSITION;
 import static net.minestom.server.network.NetworkBuffer.VAR_INT;
 
-public record BlockChangePacket(Point blockPosition, int blockStateId) implements ServerPacket {
-    public BlockChangePacket(Point blockPosition, Block block) {
+public record BlockChangePacket(@NotNull Point blockPosition, int blockStateId) implements ServerPacket {
+    public BlockChangePacket(@NotNull Point blockPosition, @NotNull Block block) {
         this(blockPosition, block.stateId());
     }
 
-    public BlockChangePacket(NetworkBuffer reader) {
+    public BlockChangePacket(@NotNull NetworkBuffer reader) {
         this(reader.read(BLOCK_POSITION), reader.read(VAR_INT));
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.write(BLOCK_POSITION, blockPosition);
         writer.write(VAR_INT, blockStateId);
     }

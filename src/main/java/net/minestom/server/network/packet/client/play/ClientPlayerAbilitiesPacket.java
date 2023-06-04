@@ -7,12 +7,12 @@ import org.jetbrains.annotations.NotNull;
 import static net.minestom.server.network.NetworkBuffer.BYTE;
 
 public record ClientPlayerAbilitiesPacket(byte flags) implements ClientPacket {
-    public ClientPlayerAbilitiesPacket(NetworkBuffer reader) {
+    public ClientPlayerAbilitiesPacket(@NotNull NetworkBuffer reader) {
         this(reader.read(BYTE));
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.write(BYTE, flags);
     }
 }

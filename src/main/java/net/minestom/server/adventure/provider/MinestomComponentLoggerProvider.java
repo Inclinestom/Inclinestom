@@ -15,7 +15,7 @@ public class MinestomComponentLoggerProvider implements ComponentLoggerProvider 
             .build();
 
     @Override
-    public ComponentLogger logger(LoggerHelper helper, String name) {
+    public @NotNull ComponentLogger logger(@NotNull LoggerHelper helper, @NotNull String name) {
         return helper.delegating(LoggerFactory.getLogger(name), SERIALIZER::serialize);
     }
 }

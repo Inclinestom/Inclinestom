@@ -12,19 +12,19 @@ public class RecipeManager {
     private DeclareRecipesPacket declareRecipesPacket = new DeclareRecipesPacket(List.of());
     private final Set<Recipe> recipes = new CopyOnWriteArraySet<>();
 
-    public void addRecipes(Recipe... recipe) {
+    public void addRecipes(@NotNull Recipe... recipe) {
         if (recipes.addAll(List.of(recipe))) {
             refreshRecipesPacket();
         }
     }
 
-    public void addRecipe(Recipe recipe) {
+    public void addRecipe(@NotNull Recipe recipe) {
         if (this.recipes.add(recipe)) {
             refreshRecipesPacket();
         }
     }
 
-    public void removeRecipe(Recipe recipe) {
+    public void removeRecipe(@NotNull Recipe recipe) {
         if (this.recipes.remove(recipe)) {
             refreshRecipesPacket();
         }

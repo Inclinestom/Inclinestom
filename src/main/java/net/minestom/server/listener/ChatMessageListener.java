@@ -63,7 +63,7 @@ public class ChatMessageListener {
         });
     }
 
-    private static Component buildDefaultChatMessage(Player player, String message) {
+    private static @NotNull Component buildDefaultChatMessage(@NotNull Player player, @NotNull String message) {
         final String username = player.getUsername();
         return Component.translatable("chat.type.text")
                 .args(Component.text(username)

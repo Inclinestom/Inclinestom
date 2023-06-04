@@ -11,12 +11,12 @@ public class PlayerStartSneakingEvent implements PlayerInstanceEvent {
 
     private final Player player;
 
-    public PlayerStartSneakingEvent(Player player) {
+    public PlayerStartSneakingEvent(@NotNull Player player) {
         this.player = player;
     }
 
     @Override
-    public Player getPlayer() {
+    public @NotNull Player getPlayer() {
         return player;
     }
 }

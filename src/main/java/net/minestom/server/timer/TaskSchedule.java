@@ -13,53 +13,53 @@ public sealed interface TaskSchedule permits
         TaskScheduleImpl.Park,
         TaskScheduleImpl.Stop,
         TaskScheduleImpl.TickSchedule {
-    static TaskSchedule duration(Duration duration) {
+    static @NotNull TaskSchedule duration(@NotNull Duration duration) {
         return new TaskScheduleImpl.DurationSchedule(duration);
     }
 
-    static TaskSchedule tick(int tick) {
+    static @NotNull TaskSchedule tick(int tick) {
         return new TaskScheduleImpl.TickSchedule(tick);
     }
 
-    static TaskSchedule future(CompletableFuture<?> future) {
+    static @NotNull TaskSchedule future(@NotNull CompletableFuture<?> future) {
         return new TaskScheduleImpl.FutureSchedule(future);
     }
 
-    static TaskSchedule park() {
+    static @NotNull TaskSchedule park() {
         return TaskScheduleImpl.PARK;
     }
 
-    static TaskSchedule stop() {
+    static @NotNull TaskSchedule stop() {
         return TaskScheduleImpl.STOP;
     }
 
-    static TaskSchedule immediate() {
+    static @NotNull TaskSchedule immediate() {
         return TaskScheduleImpl.IMMEDIATE;
     }
 
     // Shortcuts
 
-    static TaskSchedule duration(long amount, TemporalUnit unit) {
+    static @NotNull TaskSchedule duration(long amount, @NotNull TemporalUnit unit) {
         return duration(Duration.of(amount, unit));
     }
 
-    static TaskSchedule nextTick() {
+    static @NotNull TaskSchedule nextTick() {
         return TaskScheduleImpl.NEXT_TICK;
     }
 
-    static TaskSchedule hours(long hours) {
+    static @NotNull TaskSchedule hours(long hours) {
         return duration(Duration.ofHours(hours));
     }
 
-    static TaskSchedule minutes(long minutes) {
+    static @NotNull TaskSchedule minutes(long minutes) {
         return duration(Duration.ofMinutes(minutes));
     }
 
-    static TaskSchedule seconds(long seconds) {
+    static @NotNull TaskSchedule seconds(long seconds) {
         return duration(Duration.ofSeconds(seconds));
     }
 
-    static TaskSchedule millis(long millis) {
+    static @NotNull TaskSchedule millis(long millis) {
         return duration(Duration.ofMillis(millis));
     }
 }

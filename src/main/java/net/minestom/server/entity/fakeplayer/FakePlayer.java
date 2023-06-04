@@ -47,8 +47,8 @@ public class FakePlayer extends Player implements NavigableEntity {
      * @param username The username for the fake player.
      * @param option   Any option for the fake player.
      */
-    protected FakePlayer(UUID uuid, String username,
-                         FakePlayerOption option,
+    protected FakePlayer(@NotNull UUID uuid, @NotNull String username,
+                         @NotNull FakePlayerOption option,
                          @Nullable Consumer<FakePlayer> spawnCallback) {
         super(uuid, username, new FakePlayerConnection());
 
@@ -77,8 +77,8 @@ public class FakePlayer extends Player implements NavigableEntity {
      * @param username      the FakePlayer username
      * @param spawnCallback the optional callback called when the fake player first spawn
      */
-    public static void initPlayer(UUID uuid, String username,
-                                  FakePlayerOption option, @Nullable Consumer<FakePlayer> spawnCallback) {
+    public static void initPlayer(@NotNull UUID uuid, @NotNull String username,
+                                  @NotNull FakePlayerOption option, @Nullable Consumer<FakePlayer> spawnCallback) {
         new FakePlayer(uuid, username, option, spawnCallback);
     }
 
@@ -92,7 +92,7 @@ public class FakePlayer extends Player implements NavigableEntity {
      * @param username      the FakePlayer username
      * @param spawnCallback the optional callback called when the fake player first spawn
      */
-    public static void initPlayer(UUID uuid, String username, @Nullable Consumer<FakePlayer> spawnCallback) {
+    public static void initPlayer(@NotNull UUID uuid, @NotNull String username, @Nullable Consumer<FakePlayer> spawnCallback) {
         initPlayer(uuid, username, new FakePlayerOption(), spawnCallback);
     }
 
@@ -124,14 +124,14 @@ public class FakePlayer extends Player implements NavigableEntity {
     }
 
     @Override
-    public CompletableFuture<Void> setInstance(Instance instance, Pos spawnPosition) {
+    public CompletableFuture<Void> setInstance(@NotNull Instance instance, @NotNull Pos spawnPosition) {
         this.navigator.setPathFinder(new HydrazinePathFinder(navigator.getPathingEntity(), instance.getInstanceSpace()));
 
         return super.setInstance(instance, spawnPosition);
     }
 
     @Override
-    public void updateNewViewer(Player player) {
+    public void updateNewViewer(@NotNull Player player) {
         player.sendPacket(getAddPlayerToList());
         handleTabList(player.getPlayerConnection());
         super.updateNewViewer(player);
@@ -141,7 +141,7 @@ public class FakePlayer extends Player implements NavigableEntity {
      * {@inheritDoc}
      */
     @Override
-    protected void showPlayer(PlayerConnection connection) {
+    protected void showPlayer(@NotNull PlayerConnection connection) {
         super.showPlayer(connection);
         handleTabList(connection);
     }

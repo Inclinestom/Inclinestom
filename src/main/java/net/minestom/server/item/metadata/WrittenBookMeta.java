@@ -39,12 +39,12 @@ public record WrittenBookMeta(TagReadable readable) implements ItemMetaView<Writ
         return getTag(TITLE);
     }
 
-    public List<Component> getPages() {
+    public @NotNull List<@NotNull Component> getPages() {
         return getTag(PAGES);
     }
 
     @Override
-    public <T> @UnknownNullability T getTag(Tag<T> tag) {
+    public <T> @UnknownNullability T getTag(@NotNull Tag<T> tag) {
         return readable.getTag(tag);
     }
 
@@ -85,7 +85,7 @@ public record WrittenBookMeta(TagReadable readable) implements ItemMetaView<Writ
             return title(title != null ? LegacyComponentSerializer.legacySection().serialize(title) : null);
         }
 
-        public Builder pages(List<Component> pages) {
+        public Builder pages(@NotNull List<@NotNull Component> pages) {
             setTag(PAGES, pages);
             return this;
         }

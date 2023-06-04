@@ -57,13 +57,13 @@ public final class Section implements NetworkBuffer.Writer {
     }
 
     @Override
-    public Section clone() {
+    public @NotNull Section clone() {
         return new Section(blockPalette.clone(), biomePalette.clone(),
                 skyLight.clone(), blockLight.clone());
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.write(SHORT, (short) blockPalette.count());
         writer.write(blockPalette);
         writer.write(biomePalette);

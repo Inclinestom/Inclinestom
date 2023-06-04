@@ -16,7 +16,7 @@ public class EntityVelocityEvent implements EntityInstanceEvent, CancellableEven
 
     private boolean cancelled;
 
-    public EntityVelocityEvent(Entity entity, Vec velocity) {
+    public EntityVelocityEvent(@NotNull Entity entity, @NotNull Vec velocity) {
         this.entity = entity;
         this.velocity = velocity;
     }
@@ -27,7 +27,7 @@ public class EntityVelocityEvent implements EntityInstanceEvent, CancellableEven
      * @return the entity
      */
     @Override
-    public Entity getEntity() {
+    public @NotNull Entity getEntity() {
         return entity;
     }
 
@@ -36,7 +36,7 @@ public class EntityVelocityEvent implements EntityInstanceEvent, CancellableEven
      *
      * @return the velocity
      */
-    public Vec getVelocity() {
+    public @NotNull Vec getVelocity() {
         return velocity;
     }
 
@@ -45,7 +45,7 @@ public class EntityVelocityEvent implements EntityInstanceEvent, CancellableEven
      *
      * @param velocity the new velocity
      */
-    public void setVelocity(Vec velocity) {
+    public void setVelocity(@NotNull Vec velocity) {
         this.velocity = velocity;
     }
 

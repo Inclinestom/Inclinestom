@@ -9,7 +9,7 @@ public class AgeableMobMeta extends PathfinderMobMeta {
     public static final byte OFFSET = PathfinderMobMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 1;
 
-    protected AgeableMobMeta(Entity entity, Metadata metadata) {
+    protected AgeableMobMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
         super(entity, metadata);
     }
 

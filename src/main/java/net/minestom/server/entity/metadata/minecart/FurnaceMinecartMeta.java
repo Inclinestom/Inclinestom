@@ -8,7 +8,7 @@ public class FurnaceMinecartMeta extends AbstractMinecartMeta {
     public static final byte OFFSET = AbstractMinecartMeta.MAX_OFFSET;
     public static final byte MAX_OFFSET = OFFSET + 1;
 
-    public FurnaceMinecartMeta(Entity entity, Metadata metadata) {
+    public FurnaceMinecartMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
         super(entity, metadata);
     }
 

@@ -24,12 +24,12 @@ public class ParsedCommand {
      * @param source the command source
      * @return the command data, null if none
      */
-    public @Nullable CommandData execute(CommandSender source) {
+    public @Nullable CommandData execute(@NotNull CommandSender source) {
         final ExecutableCommand.Result result = executableCommand.execute(source);
         return result.commandData();
     }
 
-    public static ParsedCommand fromExecutable(ExecutableCommand executableCommand) {
+    public static @NotNull ParsedCommand fromExecutable(ExecutableCommand executableCommand) {
         return new ParsedCommand(executableCommand);
     }
 }

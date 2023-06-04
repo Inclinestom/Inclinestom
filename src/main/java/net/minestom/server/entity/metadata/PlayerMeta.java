@@ -18,7 +18,7 @@ public class PlayerMeta extends LivingEntityMeta {
     private final static byte RIGHT_LEG_BIT = 0x20;
     private final static byte HAT_BIT = 0x40;
 
-    public PlayerMeta(Entity entity, Metadata metadata) {
+    public PlayerMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
         super(entity, metadata);
     }
 

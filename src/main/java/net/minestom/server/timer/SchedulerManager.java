@@ -20,8 +20,8 @@ public final class SchedulerManager implements Scheduler {
     }
 
     @Override
-    public Task submitTask(Supplier<TaskSchedule> task,
-                                    ExecutionType executionType) {
+    public @NotNull Task submitTask(@NotNull Supplier<TaskSchedule> task,
+                                    @NotNull ExecutionType executionType) {
         return scheduler.submitTask(task, executionType);
     }
 
@@ -29,7 +29,7 @@ public final class SchedulerManager implements Scheduler {
         this.shutdownTasks.drain(Runnable::run);
     }
 
-    public void buildShutdownTask(Runnable runnable) {
+    public void buildShutdownTask(@NotNull Runnable runnable) {
         this.shutdownTasks.relaxedOffer(runnable);
     }
 }

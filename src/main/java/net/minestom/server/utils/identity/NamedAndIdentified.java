@@ -15,7 +15,7 @@ public interface NamedAndIdentified {
      *
      * @return the named and identified instance
      */
-    static NamedAndIdentified empty() {
+    static @NotNull NamedAndIdentified empty() {
         return of(Component.empty(), UUID.randomUUID());
     }
 
@@ -25,7 +25,7 @@ public interface NamedAndIdentified {
      * @param name the name
      * @return the named and identified instance
      */
-    static NamedAndIdentified named(String name) {
+    static @NotNull NamedAndIdentified named(@NotNull String name) {
         return of(name, UUID.randomUUID());
     }
 
@@ -35,7 +35,7 @@ public interface NamedAndIdentified {
      * @param name the name
      * @return the named and identified instance
      */
-    static NamedAndIdentified named(Component name) {
+    static @NotNull NamedAndIdentified named(@NotNull Component name) {
         return of(name, UUID.randomUUID());
     }
 
@@ -45,7 +45,7 @@ public interface NamedAndIdentified {
      * @param uuid the uuid
      * @return the named and identified instance
      */
-    static NamedAndIdentified identified(UUID uuid) {
+    static @NotNull NamedAndIdentified identified(@NotNull UUID uuid) {
         return of(Component.empty(), uuid);
     }
 
@@ -56,7 +56,7 @@ public interface NamedAndIdentified {
      * @param uuid the uuid
      * @return the named and identified instance
      */
-    static NamedAndIdentified of(String name, UUID uuid) {
+    static @NotNull NamedAndIdentified of(@NotNull String name, @NotNull UUID uuid) {
         return new NamedAndIdentifiedImpl(name, uuid);
     }
 
@@ -67,7 +67,7 @@ public interface NamedAndIdentified {
      * @param uuid the uuid
      * @return the named and identified instance
      */
-    static NamedAndIdentified of(Component name, UUID uuid) {
+    static @NotNull NamedAndIdentified of(@NotNull Component name, @NotNull UUID uuid) {
         return new NamedAndIdentifiedImpl(name, uuid);
     }
 
@@ -76,12 +76,12 @@ public interface NamedAndIdentified {
      *
      * @return the name
      */
-    Component getName();
+    @NotNull Component getName();
 
     /**
      * Gets the UUID of this object.
      *
      * @return the uuid
      */
-    UUID getUuid();
+    @NotNull UUID getUuid();
 }

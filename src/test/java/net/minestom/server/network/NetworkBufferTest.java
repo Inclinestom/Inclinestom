@@ -271,7 +271,7 @@ public class NetworkBufferTest {
         assertBufferTypeCollection(BOOLEAN, List.of(true), new byte[]{0x01, 0x01});
     }
 
-    static <T> void assertBufferType(NetworkBuffer.Type<T> type, @UnknownNullability T value, byte[] expected, Action<T> action) {
+    static <T> void assertBufferType(NetworkBuffer.@NotNull Type<T> type, @UnknownNullability T value, byte[] expected, @NotNull Action<T> action) {
         var buffer = new NetworkBuffer();
         action.write(buffer, type, value);
         assertEquals(0, buffer.readIndex());
@@ -304,43 +304,43 @@ public class NetworkBufferTest {
         }
     }
 
-    static <T> void assertBufferType(NetworkBuffer.Type<T> type, T value, byte @Nullable [] expected) {
+    static <T> void assertBufferType(NetworkBuffer.@NotNull Type<T> type, @NotNull T value, byte @Nullable [] expected) {
         assertBufferType(type, value, expected, new Action<>() {
             @Override
-            public void write(NetworkBuffer buffer, NetworkBuffer.Type<T> type, @UnknownNullability T value) {
+            public void write(@NotNull NetworkBuffer buffer, @NotNull NetworkBuffer.Type<T> type, @UnknownNullability T value) {
                 buffer.write(type, value);
             }
 
             @Override
-            public T read(NetworkBuffer buffer, NetworkBuffer.Type<T> type) {
+            public T read(@NotNull NetworkBuffer buffer, @NotNull NetworkBuffer.Type<T> type) {
                 return buffer.read(type);
             }
         });
     }
 
-    static <T> void assertBufferType(NetworkBuffer.Type<T> type, T value) {
+    static <T> void assertBufferType(NetworkBuffer.@NotNull Type<T> type, @NotNull T value) {
         assertBufferType(type, value, null);
     }
 
-    static <T> void assertBufferTypeOptional(NetworkBuffer.Type<T> type, @Nullable T value, byte @Nullable [] expected) {
+    static <T> void assertBufferTypeOptional(NetworkBuffer.@NotNull Type<T> type, @Nullable T value, byte @Nullable [] expected) {
         assertBufferType(type, value, expected, new Action<T>() {
             @Override
-            public void write(NetworkBuffer buffer, NetworkBuffer.Type<T> type, @UnknownNullability T value) {
+            public void write(@NotNull NetworkBuffer buffer, @NotNull NetworkBuffer.Type<T> type, @UnknownNullability T value) {
                 buffer.writeOptional(type, value);
             }
 
             @Override
-            public T read(NetworkBuffer buffer, NetworkBuffer.Type<T> type) {
+            public T read(@NotNull NetworkBuffer buffer, @NotNull NetworkBuffer.Type<T> type) {
                 return buffer.readOptional(type);
             }
         });
     }
 
-    static <T> void assertBufferTypeOptional(NetworkBuffer.Type<T> type, @Nullable T value) {
+    static <T> void assertBufferTypeOptional(NetworkBuffer.@NotNull Type<T> type, @Nullable T value) {
         assertBufferTypeOptional(type, value, null);
     }
 
-    static <T> void assertBufferTypeCollection(NetworkBuffer.Type<T> type, Collection<T> values, byte @Nullable [] expected) {
+    static <T> void assertBufferTypeCollection(NetworkBuffer.@NotNull Type<T> type, @NotNull Collection<T> values, byte @Nullable [] expected) {
         var buffer = new NetworkBuffer();
         buffer.writeCollection(type, values);
         assertEquals(0, buffer.readIndex());
@@ -359,13 +359,13 @@ public class NetworkBufferTest {
         }
     }
 
-    static <T> void assertBufferTypeCollection(NetworkBuffer.Type<T> type, Collection<T> value) {
+    static <T> void assertBufferTypeCollection(NetworkBuffer.@NotNull Type<T> type, @NotNull Collection<T> value) {
         assertBufferTypeCollection(type, value, null);
     }
 
     interface Action<T> {
-        void write(NetworkBuffer buffer, NetworkBuffer.Type<T> type, @UnknownNullability T value);
+        void write(@NotNull NetworkBuffer buffer, NetworkBuffer.@NotNull Type<T> type, @UnknownNullability T value);
 
-        T read(NetworkBuffer buffer, NetworkBuffer.Type<T> type);
+        T read(@NotNull NetworkBuffer buffer, NetworkBuffer.@NotNull Type<T> type);
     }
 }

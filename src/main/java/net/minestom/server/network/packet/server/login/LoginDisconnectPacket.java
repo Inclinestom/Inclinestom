@@ -12,13 +12,13 @@ import java.util.function.UnaryOperator;
 
 import static net.minestom.server.network.NetworkBuffer.COMPONENT;
 
-public record LoginDisconnectPacket(Component kickMessage) implements ComponentHoldingServerPacket {
-    public LoginDisconnectPacket(NetworkBuffer reader) {
+public record LoginDisconnectPacket(@NotNull Component kickMessage) implements ComponentHoldingServerPacket {
+    public LoginDisconnectPacket(@NotNull NetworkBuffer reader) {
         this(reader.read(COMPONENT));
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.write(COMPONENT, kickMessage);
     }
 
@@ -28,12 +28,12 @@ public record LoginDisconnectPacket(Component kickMessage) implements ComponentH
     }
 
     @Override
-    public Collection<Component> components() {
+    public @NotNull Collection<Component> components() {
         return List.of(this.kickMessage);
     }
 
     @Override
-    public LoginDisconnectPacket copyWithOperator(UnaryOperator<Component> operator) {
+    public @NotNull LoginDisconnectPacket copyWithOperator(@NotNull UnaryOperator<Component> operator) {
         return new LoginDisconnectPacket(operator.apply(this.kickMessage));
     }
 }

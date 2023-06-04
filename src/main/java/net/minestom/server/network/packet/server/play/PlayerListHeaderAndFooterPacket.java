@@ -13,25 +13,25 @@ import java.util.function.UnaryOperator;
 
 import static net.minestom.server.network.NetworkBuffer.COMPONENT;
 
-public record PlayerListHeaderAndFooterPacket(Component header,
-                                              Component footer) implements ComponentHoldingServerPacket {
-    public PlayerListHeaderAndFooterPacket(NetworkBuffer reader) {
+public record PlayerListHeaderAndFooterPacket(@NotNull Component header,
+                                              @NotNull Component footer) implements ComponentHoldingServerPacket {
+    public PlayerListHeaderAndFooterPacket(@NotNull NetworkBuffer reader) {
         this(reader.read(COMPONENT), reader.read(COMPONENT));
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.write(COMPONENT, header);
         writer.write(COMPONENT, footer);
     }
 
     @Override
-    public Collection<Component> components() {
+    public @NotNull Collection<Component> components() {
         return List.of(header, footer);
     }
 
     @Override
-    public ServerPacket copyWithOperator(UnaryOperator<Component> operator) {
+    public @NotNull ServerPacket copyWithOperator(@NotNull UnaryOperator<Component> operator) {
         return new PlayerListHeaderAndFooterPacket(operator.apply(header), operator.apply(footer));
     }
 

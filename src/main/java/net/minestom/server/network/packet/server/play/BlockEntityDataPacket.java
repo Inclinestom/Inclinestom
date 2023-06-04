@@ -10,14 +10,14 @@ import org.jglrxavpok.hephaistos.nbt.NBTCompound;
 
 import static net.minestom.server.network.NetworkBuffer.*;
 
-public record BlockEntityDataPacket(Point blockPosition, int action,
+public record BlockEntityDataPacket(@NotNull Point blockPosition, int action,
                                     @Nullable NBTCompound data) implements ServerPacket {
-    public BlockEntityDataPacket(NetworkBuffer reader) {
+    public BlockEntityDataPacket(@NotNull NetworkBuffer reader) {
         this(reader.read(BLOCK_POSITION), reader.read(VAR_INT), (NBTCompound) reader.read(NBT));
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.write(BLOCK_POSITION, blockPosition);
         writer.write(VAR_INT, action);
         if (data != null) {

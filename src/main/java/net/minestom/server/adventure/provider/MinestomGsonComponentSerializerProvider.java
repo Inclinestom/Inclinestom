@@ -8,14 +8,14 @@ import org.jetbrains.annotations.NotNull;
 @SuppressWarnings("UnstableApiUsage") // we are permitted to provide this
 public final class MinestomGsonComponentSerializerProvider implements GsonComponentSerializer.Provider {
     @Override
-    public GsonComponentSerializer gson() {
+    public @NotNull GsonComponentSerializer gson() {
         return GsonComponentSerializer.builder()
                 .legacyHoverEventSerializer(NBTLegacyHoverEventSerializer.INSTANCE)
                 .build();
     }
 
     @Override
-    public GsonComponentSerializer gsonLegacy() {
+    public @NotNull GsonComponentSerializer gsonLegacy() {
         return GsonComponentSerializer.builder()
                 .legacyHoverEventSerializer(NBTLegacyHoverEventSerializer.INSTANCE)
                 .downsampleColors()
@@ -23,7 +23,7 @@ public final class MinestomGsonComponentSerializerProvider implements GsonCompon
     }
 
     @Override
-    public Consumer<GsonComponentSerializer.Builder> builder() {
+    public @NotNull Consumer<GsonComponentSerializer.Builder> builder() {
         return builder -> {}; // we don't need to touch the builder here
     }
 }

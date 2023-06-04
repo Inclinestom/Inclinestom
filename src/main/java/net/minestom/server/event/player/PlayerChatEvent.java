@@ -26,9 +26,9 @@ public class PlayerChatEvent implements PlayerInstanceEvent, CancellableEvent {
 
     private boolean cancelled;
 
-    public PlayerChatEvent(Player player, Collection<Player> recipients,
-                           Supplier<Component> defaultChatFormat,
-                           String message) {
+    public PlayerChatEvent(@NotNull Player player, @NotNull Collection<Player> recipients,
+                           @NotNull Supplier<Component> defaultChatFormat,
+                           @NotNull String message) {
         this.player = player;
         this.recipients = new ArrayList<>(recipients);
         this.defaultChatFormat = defaultChatFormat;
@@ -51,7 +51,7 @@ public class PlayerChatEvent implements PlayerInstanceEvent, CancellableEvent {
      *
      * @return a modifiable list of message targets
      */
-    public Collection<Player> getRecipients() {
+    public @NotNull Collection<Player> getRecipients() {
         return recipients;
     }
 
@@ -60,7 +60,7 @@ public class PlayerChatEvent implements PlayerInstanceEvent, CancellableEvent {
      *
      * @return the sender's message
      */
-    public String getMessage() {
+    public @NotNull String getMessage() {
         return message;
     }
 
@@ -69,7 +69,7 @@ public class PlayerChatEvent implements PlayerInstanceEvent, CancellableEvent {
      *
      * @param message the new message
      */
-    public void setMessage(String message) {
+    public void setMessage(@NotNull String message) {
         this.message = message;
     }
 
@@ -80,11 +80,11 @@ public class PlayerChatEvent implements PlayerInstanceEvent, CancellableEvent {
      *
      * @return the chat format which will be used, null if this is the default one
      */
-    public @Nullable Function<PlayerChatEvent, Component> getChatFormatFunction() {
+    public @Nullable Function<@NotNull PlayerChatEvent, @NotNull Component> getChatFormatFunction() {
         return chatFormat;
     }
 
-    public Supplier<Component> getDefaultChatFormat() {
+    public @NotNull Supplier<@NotNull Component> getDefaultChatFormat() {
         return defaultChatFormat;
     }
 
@@ -99,7 +99,7 @@ public class PlayerChatEvent implements PlayerInstanceEvent, CancellableEvent {
     }
 
     @Override
-    public Player getPlayer() {
+    public @NotNull Player getPlayer() {
         return player;
     }
 }

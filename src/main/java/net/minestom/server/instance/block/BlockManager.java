@@ -25,21 +25,21 @@ public final class BlockManager {
 
     private final Set<String> dummyWarning = ConcurrentHashMap.newKeySet(); // Prevent warning spam
 
-    public void registerHandler(String namespace, Supplier<BlockHandler> handlerSupplier) {
+    public void registerHandler(@NotNull String namespace, @NotNull Supplier<@NotNull BlockHandler> handlerSupplier) {
         blockHandlerMap.put(namespace, handlerSupplier);
     }
 
-    public void registerHandler(NamespaceID namespace, Supplier<BlockHandler> handlerSupplier) {
+    public void registerHandler(@NotNull NamespaceID namespace, @NotNull Supplier<@NotNull BlockHandler> handlerSupplier) {
         registerHandler(namespace.toString(), handlerSupplier);
     }
 
-    public @Nullable BlockHandler getHandler(String namespace) {
+    public @Nullable BlockHandler getHandler(@NotNull String namespace) {
         final var handler = blockHandlerMap.get(namespace);
         return handler != null ? handler.get() : null;
     }
 
     @ApiStatus.Internal
-    public BlockHandler getHandlerOrDummy(String namespace) {
+    public @NotNull BlockHandler getHandlerOrDummy(@NotNull String namespace) {
         BlockHandler handler = getHandler(namespace);
         if (handler == null) {
             if (dummyWarning.add(namespace)) {
@@ -58,7 +58,7 @@ public final class BlockManager {
      * @param blockPlacementRule the block placement rule to register
      * @throws IllegalArgumentException if <code>blockPlacementRule</code> block id is negative
      */
-    public synchronized void registerBlockPlacementRule(BlockPlacementRule blockPlacementRule) {
+    public synchronized void registerBlockPlacementRule(@NotNull BlockPlacementRule blockPlacementRule) {
         final int id = blockPlacementRule.getBlock().id();
         Check.argCondition(id < 0, "Block ID must be >= 0, got: " + id);
         placementRuleMap.put(id, blockPlacementRule);
@@ -70,7 +70,7 @@ public final class BlockManager {
      * @param block the block to check
      * @return the block placement rule associated with the block, null if not any
      */
-    public synchronized @Nullable BlockPlacementRule getBlockPlacementRule(Block block) {
+    public synchronized @Nullable BlockPlacementRule getBlockPlacementRule(@NotNull Block block) {
         return placementRuleMap.get(block.id());
     }
 }

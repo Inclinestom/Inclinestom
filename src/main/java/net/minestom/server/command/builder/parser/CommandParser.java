@@ -20,9 +20,9 @@ import static net.minestom.server.command.builder.parser.ArgumentParser.validate
  */
 public final class CommandParser {
 
-    private static @Nullable CommandQueryResult recursiveCommandQuery(CommandDispatcher dispatcher,
+    private static @Nullable CommandQueryResult recursiveCommandQuery(@NotNull CommandDispatcher dispatcher,
                                                                       List<Command> parents,
-                                                                      @Nullable Command parentCommand, String commandName, String[] args) {
+                                                                      @Nullable Command parentCommand, @NotNull String commandName, @NotNull String[] args) {
         Command command = parentCommand == null ? dispatcher.findCommand(commandName) : parentCommand;
         if (command == null) return null;
 
@@ -41,7 +41,7 @@ public final class CommandParser {
         return commandQueryResult;
     }
 
-    public static @Nullable CommandQueryResult findCommand(CommandDispatcher dispatcher, String input) {
+    public static @Nullable CommandQueryResult findCommand(@NotNull CommandDispatcher dispatcher, @NotNull String input) {
         final String[] parts = input.split(StringUtils.SPACE);
         final String commandName = parts[0];
 
@@ -51,8 +51,8 @@ public final class CommandParser {
         return recursiveCommandQuery(dispatcher, parents, null, commandName, args);
     }
 
-    public static void parse(@Nullable CommandSyntax syntax, Argument<?>[] commandArguments, String[] inputArguments,
-                             String commandString,
+    public static void parse(@Nullable CommandSyntax syntax, @NotNull Argument<?>[] commandArguments, @NotNull String[] inputArguments,
+                             @NotNull String commandString,
                              @Nullable List<ValidSyntaxHolder> validSyntaxes,
                              @Nullable Int2ObjectRBTreeMap<CommandSuggestionHolder> syntaxesSuggestions) {
         final Map<Argument<?>, ArgumentParser.ArgumentResult> argumentValueMap = new HashMap<>();
@@ -106,8 +106,8 @@ public final class CommandParser {
      * @return the command syntax with all of its arguments correct and with the most arguments count, null if not any
      */
     @Nullable
-    public static ValidSyntaxHolder findMostCorrectSyntax(List<ValidSyntaxHolder> validSyntaxes,
-                                                          CommandContext context) {
+    public static ValidSyntaxHolder findMostCorrectSyntax(@NotNull List<ValidSyntaxHolder> validSyntaxes,
+                                                          @NotNull CommandContext context) {
         if (validSyntaxes.isEmpty()) {
             return null;
         }
@@ -145,7 +145,7 @@ public final class CommandParser {
     }
 
     @Nullable
-    public static ArgumentQueryResult findEligibleArgument(Command command, String[] args, String commandString,
+    public static ArgumentQueryResult findEligibleArgument(@NotNull Command command, String[] args, String commandString,
                                                            boolean trailingSpace, boolean forceCorrect,
                                                            Predicate<CommandSyntax> syntaxPredicate,
                                                            Predicate<Argument<?>> argumentPredicate) {

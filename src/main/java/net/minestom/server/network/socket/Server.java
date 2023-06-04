@@ -116,7 +116,7 @@ public final class Server {
     }
 
     @ApiStatus.Internal
-    public PacketProcessor packetProcessor() {
+    public @NotNull PacketProcessor packetProcessor() {
         return packetProcessor;
     }
 

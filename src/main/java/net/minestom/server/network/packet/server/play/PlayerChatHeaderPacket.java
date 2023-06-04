@@ -9,14 +9,14 @@ import org.jetbrains.annotations.NotNull;
 
 import static net.minestom.server.network.NetworkBuffer.BYTE_ARRAY;
 
-public record PlayerChatHeaderPacket(SignedMessageHeader messageHeader, MessageSignature signature,
+public record PlayerChatHeaderPacket(@NotNull SignedMessageHeader messageHeader, @NotNull MessageSignature signature,
                                      byte[] bodyDigest) implements ServerPacket {
-    public PlayerChatHeaderPacket(NetworkBuffer reader) {
+    public PlayerChatHeaderPacket(@NotNull NetworkBuffer reader) {
         this(new SignedMessageHeader(reader), new MessageSignature(reader), reader.read(BYTE_ARRAY));
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.write(messageHeader);
         writer.write(signature);
         writer.write(BYTE_ARRAY, bodyDigest);

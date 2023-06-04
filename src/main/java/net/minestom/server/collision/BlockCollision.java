@@ -22,9 +22,9 @@ final class BlockCollision {
      * Works by getting all the full blocks that an entity could interact with.
      * All bounding boxes inside the full blocks are checked for collisions with the entity.
      */
-    static PhysicsResult handlePhysics(BoundingBox boundingBox,
-                                       Vec velocity, Pos entityPosition,
-                                       Block.Getter getter,
+    static PhysicsResult handlePhysics(@NotNull BoundingBox boundingBox,
+                                       @NotNull Vec velocity, @NotNull Pos entityPosition,
+                                       @NotNull Block.Getter getter,
                                        @Nullable PhysicsResult lastPhysicsResult) {
         if (velocity.isZero()) {
             // TODO should return a constant
@@ -85,9 +85,9 @@ final class BlockCollision {
     }
 
 
-    private static PhysicsResult stepPhysics(BoundingBox boundingBox,
-                                             Vec velocity, Pos entityPosition,
-                                             Block.Getter getter) {
+    private static PhysicsResult stepPhysics(@NotNull BoundingBox boundingBox,
+                                             @NotNull Vec velocity, @NotNull Pos entityPosition,
+                                             @NotNull Block.Getter getter) {
         // Allocate once and update values
         SweepResult finalResult = new SweepResult(1 - Vec.EPSILON, 0, 0, 0, null);
 
@@ -135,11 +135,11 @@ final class BlockCollision {
                 foundCollisionX, foundCollisionY, foundCollisionZ, velocity, collisionYBlock, blockYType);
     }
 
-    private static PhysicsResult computePhysics(BoundingBox boundingBox,
-                                                Vec velocity, Pos entityPosition,
-                                                Block.Getter getter,
-                                                Vec[] allFaces,
-                                                SweepResult finalResult) {
+    private static PhysicsResult computePhysics(@NotNull BoundingBox boundingBox,
+                                                @NotNull Vec velocity, Pos entityPosition,
+                                                @NotNull Block.Getter getter,
+                                                @NotNull Vec[] allFaces,
+                                                @NotNull SweepResult finalResult) {
         // If the movement is small we don't need to run the expensive ray casting.
         // Positions of move less than one can have hardcoded blocks to check for every direction
         if (velocity.length() < 1) {
@@ -171,11 +171,11 @@ final class BlockCollision {
                 Vec.ZERO, finalResult.collidedShapePosition, finalResult.blockType);
     }
 
-    private static void slowPhysics(BoundingBox boundingBox,
-                                    Vec velocity, Pos entityPosition,
-                                    Block.Getter getter,
-                                    Vec[] allFaces,
-                                    SweepResult finalResult) {
+    private static void slowPhysics(@NotNull BoundingBox boundingBox,
+                                    @NotNull Vec velocity, Pos entityPosition,
+                                    @NotNull Block.Getter getter,
+                                    @NotNull Vec[] allFaces,
+                                    @NotNull SweepResult finalResult) {
         // When large moves are done we need to ray-cast to find all blocks that could intersect with the movement
         for (Vec point : allFaces) {
             BlockIterator iterator = new BlockIterator(Vec.fromPoint(point.add(entityPosition)), velocity, 0, velocity.length());
@@ -193,11 +193,11 @@ final class BlockCollision {
         }
     }
 
-    private static void fastPhysics(BoundingBox boundingBox,
-                                    Vec velocity, Pos entityPosition,
-                                    Block.Getter getter,
-                                    Vec[] allFaces,
-                                    SweepResult finalResult) {
+    private static void fastPhysics(@NotNull BoundingBox boundingBox,
+                                    @NotNull Vec velocity, Pos entityPosition,
+                                    @NotNull Block.Getter getter,
+                                    @NotNull Vec[] allFaces,
+                                    @NotNull SweepResult finalResult) {
         for (Vec point : allFaces) {
             final Vec pointBefore = point.add(entityPosition);
             final Vec pointAfter = point.add(entityPosition).add(velocity);

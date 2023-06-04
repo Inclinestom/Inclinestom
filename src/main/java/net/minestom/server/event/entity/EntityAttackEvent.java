@@ -13,13 +13,13 @@ public class EntityAttackEvent implements EntityInstanceEvent {
     private final Entity entity;
     private final Entity target;
 
-    public EntityAttackEvent(Entity source, Entity target) {
+    public EntityAttackEvent(@NotNull Entity source, @NotNull Entity target) {
         this.entity = source;
         this.target = target;
     }
 
     @Override
-    public Entity getEntity() {
+    public @NotNull Entity getEntity() {
         return entity;
     }
 

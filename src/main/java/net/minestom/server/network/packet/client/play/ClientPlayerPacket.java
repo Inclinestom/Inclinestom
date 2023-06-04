@@ -7,12 +7,12 @@ import org.jetbrains.annotations.NotNull;
 import static net.minestom.server.network.NetworkBuffer.BOOLEAN;
 
 public record ClientPlayerPacket(boolean onGround) implements ClientPacket {
-    public ClientPlayerPacket(NetworkBuffer reader) {
+    public ClientPlayerPacket(@NotNull NetworkBuffer reader) {
         this(reader.read(BOOLEAN));
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.write(BOOLEAN, onGround);
     }
 }

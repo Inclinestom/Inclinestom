@@ -10,15 +10,15 @@ import org.jglrxavpok.hephaistos.nbt.NBTCompound;
 
 import static net.minestom.server.network.NetworkBuffer.*;
 
-public record EntityEffectPacket(int entityId, Potion potion,
+public record EntityEffectPacket(int entityId, @NotNull Potion potion,
                                  @Nullable NBTCompound factorCodec) implements ServerPacket {
-    public EntityEffectPacket(NetworkBuffer reader) {
+    public EntityEffectPacket(@NotNull NetworkBuffer reader) {
         this(reader.read(VAR_INT), new Potion(reader),
                 reader.read(BOOLEAN) ? (NBTCompound) reader.read(NBT) : null);
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.write(VAR_INT, entityId);
         writer.write(potion);
         writer.writeOptional(NBT, factorCodec);

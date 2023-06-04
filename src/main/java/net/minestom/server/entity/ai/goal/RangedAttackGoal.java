@@ -41,7 +41,7 @@ public class RangedAttackGoal extends GoalSelector {
      * @param power          shot power (1 for normal).
      * @param timeUnit       the unit of the delay.
      */
-    public RangedAttackGoal(EntityCreature entityCreature, int delay, int attackRange, int desirableRange, boolean comeClose, double power, double spread, TemporalUnit timeUnit) {
+    public RangedAttackGoal(@NotNull EntityCreature entityCreature, int delay, int attackRange, int desirableRange, boolean comeClose, double power, double spread, @NotNull TemporalUnit timeUnit) {
         this(entityCreature, Duration.of(delay, timeUnit), attackRange, desirableRange, comeClose, power, spread);
     }
 
@@ -54,7 +54,7 @@ public class RangedAttackGoal extends GoalSelector {
      * @param spread         shot spread (0 for best accuracy).
      * @param power          shot power (1 for normal).
      */
-    public RangedAttackGoal(EntityCreature entityCreature, Duration delay, int attackRange, int desirableRange, boolean comeClose, double power, double spread) {
+    public RangedAttackGoal(@NotNull EntityCreature entityCreature, Duration delay, int attackRange, int desirableRange, boolean comeClose, double power, double spread) {
         super(entityCreature);
         this.delay = delay;
         this.attackRangeSquared = attackRange * attackRange;

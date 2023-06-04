@@ -19,7 +19,7 @@ public record FireworkEffectMeta(TagReadable readable) implements ItemMetaView<F
     }
 
     @Override
-    public <T> @UnknownNullability T getTag(Tag<T> tag) {
+    public <T> @UnknownNullability T getTag(@NotNull Tag<T> tag) {
         return readable.getTag(tag);
     }
 

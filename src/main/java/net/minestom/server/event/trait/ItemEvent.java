@@ -8,5 +8,5 @@ import org.jetbrains.annotations.NotNull;
  * Represents any event called about an {@link ItemStack}.
  */
 public interface ItemEvent extends Event {
-    ItemStack getItemStack();
+    @NotNull ItemStack getItemStack();
 }

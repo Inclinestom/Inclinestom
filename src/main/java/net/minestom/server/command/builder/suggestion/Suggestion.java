@@ -12,7 +12,7 @@ public class Suggestion {
     private int length;
     private final List<SuggestionEntry> suggestionEntries = new ArrayList<>();
 
-    public Suggestion(String input, int start, int length) {
+    public Suggestion(@NotNull String input, int start, int length) {
         this.input = input;
         this.start = start;
         this.length = length;
@@ -44,7 +44,7 @@ public class Suggestion {
         return suggestionEntries;
     }
 
-    public void addEntry(SuggestionEntry entry) {
+    public void addEntry(@NotNull SuggestionEntry entry) {
         this.suggestionEntries.add(entry);
     }
 

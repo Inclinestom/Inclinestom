@@ -6,14 +6,14 @@ import org.jetbrains.annotations.NotNull;
 
 import static net.minestom.server.network.NetworkBuffer.*;
 
-public record ClientUpdateCommandBlockMinecartPacket(int entityId, String command,
+public record ClientUpdateCommandBlockMinecartPacket(int entityId, @NotNull String command,
                                                      boolean trackOutput) implements ClientPacket {
-    public ClientUpdateCommandBlockMinecartPacket(NetworkBuffer reader) {
+    public ClientUpdateCommandBlockMinecartPacket(@NotNull NetworkBuffer reader) {
         this(reader.read(VAR_INT), reader.read(STRING), reader.read(BOOLEAN));
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.write(VAR_INT, entityId);
         writer.write(STRING, command);
         writer.write(BOOLEAN, trackOutput);

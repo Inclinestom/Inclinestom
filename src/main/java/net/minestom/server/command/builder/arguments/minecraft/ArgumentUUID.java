@@ -10,13 +10,13 @@ public class ArgumentUUID extends Argument<UUID> {
 
     public static final int INVALID_UUID = -1;
 
-    public ArgumentUUID(String id) {
+    public ArgumentUUID(@NotNull String id) {
         super(id);
     }
 
     @NotNull
     @Override
-    public UUID parse(String input) throws ArgumentSyntaxException {
+    public UUID parse(@NotNull String input) throws ArgumentSyntaxException {
         try {
             return UUID.fromString(input);
         } catch (IllegalArgumentException exception) {

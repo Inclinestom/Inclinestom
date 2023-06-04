@@ -13,7 +13,7 @@ public class SpectralArrowMeta extends AbstractArrowMeta implements ObjectDataPr
 
     private Entity shooter;
 
-    public SpectralArrowMeta(Entity entity, Metadata metadata) {
+    public SpectralArrowMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
         super(entity, metadata);
     }
 

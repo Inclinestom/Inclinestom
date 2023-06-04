@@ -34,7 +34,7 @@ public class CommandTest {
 
         var command = new Command("command") {
             @Override
-            public void globalListener(CommandSender sender, CommandContext context, String command) {
+            public void globalListener(@NotNull CommandSender sender, @NotNull CommandContext context, @NotNull String command) {
                 hasRun.set(true);
                 context.setArg("key", "value", "value");
             }

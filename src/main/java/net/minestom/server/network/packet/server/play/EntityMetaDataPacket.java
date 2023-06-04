@@ -17,17 +17,17 @@ import static net.minestom.server.network.NetworkBuffer.BYTE;
 import static net.minestom.server.network.NetworkBuffer.VAR_INT;
 
 public record EntityMetaDataPacket(int entityId,
-                                   Map<Integer, Metadata.Entry<?>> entries) implements ComponentHoldingServerPacket {
+                                   @NotNull Map<Integer, Metadata.Entry<?>> entries) implements ComponentHoldingServerPacket {
     public EntityMetaDataPacket {
         entries = Map.copyOf(entries);
     }
 
-    public EntityMetaDataPacket(NetworkBuffer reader) {
+    public EntityMetaDataPacket(@NotNull NetworkBuffer reader) {
         this(reader.read(VAR_INT), readEntries(reader));
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.write(VAR_INT, entityId);
         for (var entry : entries.entrySet()) {
             writer.write(BYTE, entry.getKey().byteValue());
@@ -36,7 +36,7 @@ public record EntityMetaDataPacket(int entityId,
         writer.write(BYTE, (byte) 0xFF); // End
     }
 
-    private static Map<Integer, Metadata.Entry<?>> readEntries(NetworkBuffer reader) {
+    private static Map<Integer, Metadata.Entry<?>> readEntries(@NotNull NetworkBuffer reader) {
         Map<Integer, Metadata.Entry<?>> entries = new HashMap<>();
         while (true) {
             final byte index = reader.read(BYTE);
@@ -55,7 +55,7 @@ public record EntityMetaDataPacket(int entityId,
     }
 
     @Override
-    public Collection<Component> components() {
+    public @NotNull Collection<Component> components() {
         return this.entries.values()
                 .stream()
                 .map(Metadata.Entry::value)
@@ -65,7 +65,7 @@ public record EntityMetaDataPacket(int entityId,
     }
 
     @Override
-    public ServerPacket copyWithOperator(UnaryOperator<Component> operator) {
+    public @NotNull ServerPacket copyWithOperator(@NotNull UnaryOperator<Component> operator) {
         final var entries = new HashMap<Integer, Metadata.Entry<?>>();
 
         this.entries.forEach((key, value) -> {

@@ -10,7 +10,7 @@ public class EntityPotionRemoveEvent implements EntityInstanceEvent {
     private final Entity entity;
     private final Potion potion;
 
-    public EntityPotionRemoveEvent(Entity entity, Potion potion) {
+    public EntityPotionRemoveEvent(@NotNull Entity entity, @NotNull Potion potion) {
         this.entity = entity;
         this.potion = potion;
     }
@@ -26,7 +26,7 @@ public class EntityPotionRemoveEvent implements EntityInstanceEvent {
     }
 
     @Override
-    public Entity getEntity() {
+    public @NotNull Entity getEntity() {
         return entity;
     }
 }

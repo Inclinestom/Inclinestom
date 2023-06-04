@@ -19,9 +19,9 @@ public class PlayerBlockBreakEvent implements PlayerInstanceEvent, BlockEvent, C
 
     private boolean cancelled;
 
-    public PlayerBlockBreakEvent(Player player,
-                                 Block block, Block resultBlock, Point blockPosition,
-                                 BlockFace blockFace) {
+    public PlayerBlockBreakEvent(@NotNull Player player,
+                                 @NotNull Block block, @NotNull Block resultBlock, @NotNull Point blockPosition,
+                                 @NotNull BlockFace blockFace) {
         this.player = player;
 
         this.block = block;
@@ -36,7 +36,7 @@ public class PlayerBlockBreakEvent implements PlayerInstanceEvent, BlockEvent, C
      * @return the block
      */
     @Override
-    public Block getBlock() {
+    public @NotNull Block getBlock() {
         return block;
     }
 
@@ -45,7 +45,7 @@ public class PlayerBlockBreakEvent implements PlayerInstanceEvent, BlockEvent, C
      *
      * @return the result block
      */
-    public Block getResultBlock() {
+    public @NotNull Block getResultBlock() {
         return resultBlock;
     }
 
@@ -54,7 +54,7 @@ public class PlayerBlockBreakEvent implements PlayerInstanceEvent, BlockEvent, C
      *
      * @return the block face
      */
-    public BlockFace getBlockFace() {
+    public @NotNull BlockFace getBlockFace() {
         return blockFace;
     }
 
@@ -63,7 +63,7 @@ public class PlayerBlockBreakEvent implements PlayerInstanceEvent, BlockEvent, C
      *
      * @param resultBlock the new block
      */
-    public void setResultBlock(Block resultBlock) {
+    public void setResultBlock(@NotNull Block resultBlock) {
         this.resultBlock = resultBlock;
     }
 
@@ -72,7 +72,7 @@ public class PlayerBlockBreakEvent implements PlayerInstanceEvent, BlockEvent, C
      *
      * @return the block position
      */
-    public Point getBlockPosition() {
+    public @NotNull Point getBlockPosition() {
         return blockPosition;
     }
 
@@ -87,7 +87,7 @@ public class PlayerBlockBreakEvent implements PlayerInstanceEvent, BlockEvent, C
     }
 
     @Override
-    public Player getPlayer() {
+    public @NotNull Player getPlayer() {
         return player;
     }
 }

@@ -22,54 +22,54 @@ final class BossBarHolder implements Viewable {
     final Set<Player> players = new CopyOnWriteArraySet<>();
     final BossBar bar;
 
-    BossBarHolder(BossBar bar) {
+    BossBarHolder(@NotNull BossBar bar) {
         this.bar = bar;
     }
 
-    BossBarPacket createRemovePacket() {
+    @NotNull BossBarPacket createRemovePacket() {
         return new BossBarPacket(uuid, new BossBarPacket.RemoveAction());
     }
 
-    BossBarPacket createAddPacket() {
+    @NotNull BossBarPacket createAddPacket() {
         return new BossBarPacket(uuid, new BossBarPacket.AddAction(bar));
     }
 
-    BossBarPacket createPercentUpdate(float newPercent) {
+    @NotNull BossBarPacket createPercentUpdate(float newPercent) {
         return new BossBarPacket(uuid, new BossBarPacket.UpdateHealthAction(newPercent));
     }
 
-    BossBarPacket createColorUpdate(BossBar.Color color) {
+    @NotNull BossBarPacket createColorUpdate(@NotNull BossBar.Color color) {
         return new BossBarPacket(uuid, new BossBarPacket.UpdateStyleAction(color, bar.overlay()));
     }
 
-    BossBarPacket createTitleUpdate(Component title) {
+    @NotNull BossBarPacket createTitleUpdate(@NotNull Component title) {
         return new BossBarPacket(uuid, new BossBarPacket.UpdateTitleAction(title));
     }
 
-    BossBarPacket createFlagsUpdate() {
+    @NotNull BossBarPacket createFlagsUpdate() {
         return createFlagsUpdate(bar.flags());
     }
 
-    BossBarPacket createFlagsUpdate(Set<BossBar.Flag> newFlags) {
+    @NotNull BossBarPacket createFlagsUpdate(@NotNull Set<BossBar.Flag> newFlags) {
         return new BossBarPacket(uuid, new BossBarPacket.UpdateFlagsAction(AdventurePacketConvertor.getBossBarFlagValue(newFlags)));
     }
 
-    BossBarPacket createOverlayUpdate(BossBar.Overlay overlay) {
+    @NotNull BossBarPacket createOverlayUpdate(@NotNull BossBar.Overlay overlay) {
         return new BossBarPacket(uuid, new BossBarPacket.UpdateStyleAction(bar.color(), overlay));
     }
 
     @Override
-    public boolean addViewer(Player player) {
+    public boolean addViewer(@NotNull Player player) {
         return this.players.add(player);
     }
 
     @Override
-    public boolean removeViewer(Player player) {
+    public boolean removeViewer(@NotNull Player player) {
         return this.players.remove(player);
     }
 
     @Override
-    public Set<Player> getViewers() {
+    public @NotNull Set<Player> getViewers() {
         return Collections.unmodifiableSet(this.players);
     }
 }

@@ -21,7 +21,7 @@ public final class NamespaceID implements CharSequence, Key {
     private final String path;
     private final String full;
 
-    public static NamespaceID from(String namespace) {
+    public static @NotNull NamespaceID from(@NotNull String namespace) {
         return CACHE.get(namespace, id -> {
             final int index = id.indexOf(':');
             final String domain;
@@ -38,11 +38,11 @@ public final class NamespaceID implements CharSequence, Key {
         });
     }
 
-    public static NamespaceID from(String domain, String path) {
+    public static @NotNull NamespaceID from(@NotNull String domain, @NotNull String path) {
         return from(domain + ":" + path);
     }
 
-    public static NamespaceID from(Key key) {
+    public static @NotNull NamespaceID from(@NotNull Key key) {
         return from(key.asString());
     }
 
@@ -55,11 +55,11 @@ public final class NamespaceID implements CharSequence, Key {
         assert path.matches(legalPathLetters) : "Illegal character in path (" + full + "). Must match " + legalPathLetters;
     }
 
-    public String domain() {
+    public @NotNull String domain() {
         return domain;
     }
 
-    public String path() {
+    public @NotNull String path() {
         return path;
     }
 
@@ -86,28 +86,28 @@ public final class NamespaceID implements CharSequence, Key {
     }
 
     @Override
-    public CharSequence subSequence(int start, int end) {
+    public @NotNull CharSequence subSequence(int start, int end) {
         return full.subSequence(start, end);
     }
 
     @Override
-    public String toString() {
+    public @NotNull String toString() {
         return full;
     }
 
     @Override
     @Pattern("[a-z0-9_\\-.]+")
-    public String namespace() {
+    public @NotNull String namespace() {
         return this.domain;
     }
 
     @Override
-    public String value() {
+    public @NotNull String value() {
         return this.path;
     }
 
     @Override
-    public String asString() {
+    public @NotNull String asString() {
         return this.full;
     }
 

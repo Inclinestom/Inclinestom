@@ -21,8 +21,8 @@ import java.time.Duration;
 import java.util.*;
 import java.util.function.Function;
 
-record BlockImpl(Registry.BlockEntry registry,
-                 byte [] propertiesArray,
+record BlockImpl(@NotNull Registry.BlockEntry registry,
+                 byte @NotNull [] propertiesArray,
                  @Nullable NBTCompound nbt,
                  @Nullable BlockHandler handler) implements Block {
     // Block state -> block object
@@ -97,11 +97,11 @@ record BlockImpl(Registry.BlockEntry registry,
         POSSIBLE_STATES.trim();
     }
 
-    static Block get(String namespace) {
+    static Block get(@NotNull String namespace) {
         return CONTAINER.get(namespace);
     }
 
-    static Block getSafe(String namespace) {
+    static Block getSafe(@NotNull String namespace) {
         return CONTAINER.getSafe(namespace);
     }
 
@@ -118,7 +118,7 @@ record BlockImpl(Registry.BlockEntry registry,
     }
 
     @Override
-    public Block withProperty(String property, String value) {
+    public @NotNull Block withProperty(@NotNull String property, @NotNull String value) {
         final PropertyType[] propertyTypes = PROPERTIES_TYPE.get(id());
         assert propertyTypes != null;
         final byte keyIndex = findKeyIndex(propertyTypes, property, this);
@@ -129,7 +129,7 @@ record BlockImpl(Registry.BlockEntry registry,
     }
 
     @Override
-    public Block withProperties(Map<String, String> properties) {
+    public @NotNull Block withProperties(@NotNull Map<@NotNull String, @NotNull String> properties) {
         if (properties.isEmpty()) return this;
         final PropertyType[] propertyTypes = PROPERTIES_TYPE.get(id());
         assert propertyTypes != null;
@@ -143,7 +143,7 @@ record BlockImpl(Registry.BlockEntry registry,
     }
 
     @Override
-    public <T> Block withTag(Tag<T> tag, @Nullable T value) {
+    public @NotNull <T> Block withTag(@NotNull Tag<T> tag, @Nullable T value) {
         var temporaryNbt = new MutableNBTCompound(Objects.requireNonNullElse(nbt, NBTCompound.EMPTY));
         tag.write(temporaryNbt, value);
         final var finalNbt = temporaryNbt.getSize() > 0 ? NBT_CACHE.get(temporaryNbt.toCompound(), Function.identity()) : null;
@@ -151,17 +151,17 @@ record BlockImpl(Registry.BlockEntry registry,
     }
 
     @Override
-    public Block withNbt(@Nullable NBTCompound compound) {
+    public @NotNull Block withNbt(@Nullable NBTCompound compound) {
         return new BlockImpl(registry, propertiesArray, compound, handler);
     }
 
     @Override
-    public Block withHandler(@Nullable BlockHandler handler) {
+    public @NotNull Block withHandler(@Nullable BlockHandler handler) {
         return new BlockImpl(registry, propertiesArray, nbt, handler);
     }
 
     @Override
-    public @Unmodifiable Map<String, String> properties() {
+    public @Unmodifiable @NotNull Map<String, String> properties() {
         final PropertyType[] propertyTypes = PROPERTIES_TYPE.get(id());
         assert propertyTypes != null;
         final int length = propertyTypes.length;
@@ -177,12 +177,12 @@ record BlockImpl(Registry.BlockEntry registry,
     }
 
     @Override
-    public Collection<Block> possibleStates() {
+    public @NotNull Collection<@NotNull Block> possibleStates() {
         return Collection.class.cast(possibleProperties().values());
     }
 
     @Override
-    public <T> @UnknownNullability T getTag(Tag<T> tag) {
+    public <T> @UnknownNullability T getTag(@NotNull Tag<T> tag) {
         return tag.read(Objects.requireNonNullElse(nbt, NBTCompound.EMPTY));
     }
 

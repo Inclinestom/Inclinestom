@@ -21,7 +21,7 @@ public class AttributeModifier {
      * @param amount    the value of this modifier
      * @param operation the operation to apply this modifier with
      */
-    public AttributeModifier(String name, double amount, AttributeOperation operation) {
+    public AttributeModifier(@NotNull String name, double amount, @NotNull AttributeOperation operation) {
         this(UUID.randomUUID(), name, amount, operation);
     }
 
@@ -33,7 +33,7 @@ public class AttributeModifier {
      * @param amount    the value of this modifier
      * @param operation the operation to apply this modifier with
      */
-    public AttributeModifier(UUID id, String name, double amount, AttributeOperation operation) {
+    public AttributeModifier(@NotNull UUID id, @NotNull String name, double amount, @NotNull AttributeOperation operation) {
         this.id = id;
         this.name = name;
         this.amount = amount;

@@ -10,16 +10,16 @@ import java.util.UUID;
 
 import static net.minestom.server.network.NetworkBuffer.*;
 
-public record SpawnPlayerPacket(int entityId, UUID playerUuid,
-                                Pos position) implements ServerPacket {
-    public SpawnPlayerPacket(NetworkBuffer reader) {
+public record SpawnPlayerPacket(int entityId, @NotNull UUID playerUuid,
+                                @NotNull Pos position) implements ServerPacket {
+    public SpawnPlayerPacket(@NotNull NetworkBuffer reader) {
         this(reader.read(VAR_INT), reader.read(UUID),
                 new Pos(reader.read(DOUBLE), reader.read(DOUBLE), reader.read(DOUBLE),
                         (reader.read(BYTE) * 360f) / 256f, (reader.read(BYTE) * 360f) / 256f));
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.write(VAR_INT, entityId);
         writer.write(UUID, playerUuid);
         writer.write(DOUBLE, position.x());

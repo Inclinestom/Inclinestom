@@ -10,7 +10,7 @@ import java.util.List;
 import static net.minestom.server.network.NetworkBuffer.STRING;
 import static net.minestom.server.network.NetworkBuffer.VAR_INT;
 
-public record ClientEditBookPacket(int slot, List<String> pages,
+public record ClientEditBookPacket(int slot, @NotNull List<String> pages,
                                    @Nullable String title) implements ClientPacket {
     public ClientEditBookPacket {
         pages = List.copyOf(pages);
@@ -19,13 +19,13 @@ public record ClientEditBookPacket(int slot, List<String> pages,
         }
     }
 
-    public ClientEditBookPacket(NetworkBuffer reader) {
+    public ClientEditBookPacket(@NotNull NetworkBuffer reader) {
         this(reader.read(VAR_INT), reader.readCollection(STRING),
                 reader.readOptional(STRING));
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.write(VAR_INT, slot);
         writer.writeCollection(STRING, pages);
         writer.writeOptional(STRING, title);

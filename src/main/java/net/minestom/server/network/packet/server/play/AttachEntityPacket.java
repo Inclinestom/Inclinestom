@@ -10,16 +10,16 @@ import org.jetbrains.annotations.Nullable;
 import static net.minestom.server.network.NetworkBuffer.INT;
 
 public record AttachEntityPacket(int attachedEntityId, int holdingEntityId) implements ServerPacket {
-    public AttachEntityPacket(Entity attachedEntity, @Nullable Entity holdingEntity) {
+    public AttachEntityPacket(@NotNull Entity attachedEntity, @Nullable Entity holdingEntity) {
         this(attachedEntity.getEntityId(), holdingEntity != null ? holdingEntity.getEntityId() : -1);
     }
 
-    public AttachEntityPacket(NetworkBuffer reader) {
+    public AttachEntityPacket(@NotNull NetworkBuffer reader) {
         this(reader.read(INT), reader.read(INT));
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.write(INT, attachedEntityId);
         writer.write(INT, holdingEntityId);
     }

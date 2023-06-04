@@ -48,7 +48,7 @@ public class CombinedAttackGoal extends GoalSelector {
      * @param desirableRange the desirable range: the entity will try to stay no further than this distance.
      * @param comeClose      if entity should go as close as possible to the target whether target is not in line of sight for a ranged attack.
      */
-    public CombinedAttackGoal(EntityCreature entityCreature,
+    public CombinedAttackGoal(@NotNull EntityCreature entityCreature,
                               int meleeRange, int rangedRange, double rangedPower, double rangedSpread,
                               int delay, TemporalUnit timeUnit,
                               int desirableRange, boolean comeClose) {
@@ -70,7 +70,7 @@ public class CombinedAttackGoal extends GoalSelector {
      * @param desirableRange the desirable range: the entity will try to stay no further than this distance.
      * @param comeClose      if entity should go as close as possible to the target whether target is not in line of sight for a ranged attack.
      */
-    public CombinedAttackGoal(EntityCreature entityCreature,
+    public CombinedAttackGoal(@NotNull EntityCreature entityCreature,
                               int meleeRange, int rangedRange, double rangedPower, double rangedSpread,
                               Duration delay,
                               int desirableRange, boolean comeClose) {
@@ -95,7 +95,7 @@ public class CombinedAttackGoal extends GoalSelector {
      * @param desirableRange the desirable range: the entity will try to stay no further than this distance.
      * @param comeClose      if entity should go as close as possible to the target whether target is not in line of sight for a ranged attack.
      */
-    public CombinedAttackGoal(EntityCreature entityCreature,
+    public CombinedAttackGoal(@NotNull EntityCreature entityCreature,
                               int meleeRange, int meleeDelay, TemporalUnit meleeTimeUnit,
                               int rangedRange, double rangedPower, double rangedSpread, int rangedDelay, TemporalUnit rangedTimeUnit,
                               int desirableRange, boolean comeClose) {
@@ -114,7 +114,7 @@ public class CombinedAttackGoal extends GoalSelector {
      * @param desirableRange the desirable range: the entity will try to stay no further than this distance.
      * @param comeClose      if entity should go as close as possible to the target whether target is not in line of sight for a ranged attack.
      */
-    public CombinedAttackGoal(EntityCreature entityCreature,
+    public CombinedAttackGoal(@NotNull EntityCreature entityCreature,
                               int meleeRange, Duration meleeDelay,
                               int rangedRange, double rangedPower, double rangedSpread, Duration rangedDelay,
                               int desirableRange, boolean comeClose) {

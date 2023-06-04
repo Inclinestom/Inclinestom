@@ -14,7 +14,7 @@ public class PlayerChunkUnloadEvent implements PlayerInstanceEvent {
     private final Player player;
     private final int chunkX, chunkZ;
 
-    public PlayerChunkUnloadEvent(Player player, int chunkX, int chunkZ) {
+    public PlayerChunkUnloadEvent(@NotNull Player player, int chunkX, int chunkZ) {
         this.player = player;
         this.chunkX = chunkX;
         this.chunkZ = chunkZ;
@@ -39,7 +39,7 @@ public class PlayerChunkUnloadEvent implements PlayerInstanceEvent {
     }
 
     @Override
-    public Player getPlayer() {
+    public @NotNull Player getPlayer() {
         return player;
     }
 }

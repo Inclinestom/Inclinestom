@@ -14,7 +14,7 @@ public class SmallFireballMeta extends ItemContainingMeta implements ObjectDataP
 
     private Entity shooter;
 
-    public SmallFireballMeta(Entity entity, Metadata metadata) {
+    public SmallFireballMeta(@NotNull Entity entity, @NotNull Metadata metadata) {
         super(entity, metadata, Material.FIRE_CHARGE);
     }
 

@@ -30,7 +30,7 @@ public class BasicQueryResponse implements Writeable {
      *
      * @return the motd
      */
-    public String getMotd() {
+    public @NotNull String getMotd() {
         return this.motd;
     }
 
@@ -39,7 +39,7 @@ public class BasicQueryResponse implements Writeable {
      *
      * @param motd the motd
      */
-    public void setMotd(String motd) {
+    public void setMotd(@NotNull String motd) {
         this.motd = Objects.requireNonNull(motd, "motd");
     }
 
@@ -48,7 +48,7 @@ public class BasicQueryResponse implements Writeable {
      *
      * @return the gametype
      */
-    public String getGametype() {
+    public @NotNull String getGametype() {
         return this.gametype;
     }
 
@@ -57,7 +57,7 @@ public class BasicQueryResponse implements Writeable {
      *
      * @param gametype the gametype
      */
-    public void setGametype(String gametype) {
+    public void setGametype(@NotNull String gametype) {
         this.gametype = Objects.requireNonNull(gametype, "gametype");
     }
 
@@ -66,7 +66,7 @@ public class BasicQueryResponse implements Writeable {
      *
      * @return the map
      */
-    public String getMap() {
+    public @NotNull String getMap() {
         return this.map;
     }
 
@@ -75,7 +75,7 @@ public class BasicQueryResponse implements Writeable {
      *
      * @param map the map
      */
-    public void setMap(String map) {
+    public void setMap(@NotNull String map) {
         this.map = Objects.requireNonNull(map, "map");
     }
 
@@ -84,7 +84,7 @@ public class BasicQueryResponse implements Writeable {
      *
      * @return the number of players
      */
-    public String getNumPlayers() {
+    public @NotNull String getNumPlayers() {
         return this.numPlayers;
     }
 
@@ -93,7 +93,7 @@ public class BasicQueryResponse implements Writeable {
      *
      * @param numPlayers the number of players
      */
-    public void setNumPlayers(String numPlayers) {
+    public void setNumPlayers(@NotNull String numPlayers) {
         this.numPlayers = Objects.requireNonNull(numPlayers, "numPlayers");
     }
 
@@ -112,7 +112,7 @@ public class BasicQueryResponse implements Writeable {
      *
      * @return the max number of players
      */
-    public String getMaxPlayers() {
+    public @NotNull String getMaxPlayers() {
         return this.maxPlayers;
     }
 
@@ -121,7 +121,7 @@ public class BasicQueryResponse implements Writeable {
      *
      * @param maxPlayers the max number of players
      */
-    public void setMaxPlayers(String maxPlayers) {
+    public void setMaxPlayers(@NotNull String maxPlayers) {
         this.maxPlayers = Objects.requireNonNull(maxPlayers, "maxPlayers");
     }
 
@@ -136,7 +136,7 @@ public class BasicQueryResponse implements Writeable {
     }
 
     @Override
-    public void write(BinaryWriter writer) {
+    public void write(@NotNull BinaryWriter writer) {
         writer.writeNullTerminatedString(this.motd, Query.CHARSET);
         writer.writeNullTerminatedString(this.gametype, Query.CHARSET);
         writer.writeNullTerminatedString(this.map, Query.CHARSET);

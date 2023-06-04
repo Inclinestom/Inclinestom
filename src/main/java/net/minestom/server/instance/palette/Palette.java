@@ -25,19 +25,19 @@ public interface Palette extends NetworkBuffer.Writer {
 
     int get(int x, int y, int z);
 
-    void getAll(EntryConsumer consumer);
+    void getAll(@NotNull EntryConsumer consumer);
 
-    void getAllPresent(EntryConsumer consumer);
+    void getAllPresent(@NotNull EntryConsumer consumer);
 
     void set(int x, int y, int z, int value);
 
     void fill(int value);
 
-    void setAll(EntrySupplier supplier);
+    void setAll(@NotNull EntrySupplier supplier);
 
-    void replace(int x, int y, int z, IntUnaryOperator operator);
+    void replace(int x, int y, int z, @NotNull IntUnaryOperator operator);
 
-    void replaceAll(EntryFunction function);
+    void replaceAll(@NotNull EntryFunction function);
 
     /**
      * Returns the number of entries in this palette.
@@ -61,7 +61,7 @@ public interface Palette extends NetworkBuffer.Writer {
         return dimension * dimension * dimension;
     }
 
-    Palette clone();
+    @NotNull Palette clone();
 
     @FunctionalInterface
     interface EntrySupplier {

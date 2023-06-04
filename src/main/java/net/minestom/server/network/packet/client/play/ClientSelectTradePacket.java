@@ -7,12 +7,12 @@ import org.jetbrains.annotations.NotNull;
 import static net.minestom.server.network.NetworkBuffer.VAR_INT;
 
 public record ClientSelectTradePacket(int selectedSlot) implements ClientPacket {
-    public ClientSelectTradePacket(NetworkBuffer reader) {
+    public ClientSelectTradePacket(@NotNull NetworkBuffer reader) {
         this(reader.read(VAR_INT));
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.write(VAR_INT, selectedSlot);
     }
 }

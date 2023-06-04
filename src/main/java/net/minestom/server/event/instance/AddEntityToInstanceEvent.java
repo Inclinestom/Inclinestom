@@ -18,13 +18,13 @@ public class AddEntityToInstanceEvent implements InstanceEvent, EntityEvent, Can
 
     private boolean cancelled;
 
-    public AddEntityToInstanceEvent(Instance instance, Entity entity) {
+    public AddEntityToInstanceEvent(@NotNull Instance instance, @NotNull Entity entity) {
         this.instance = instance;
         this.entity = entity;
     }
 
     @Override
-    public Instance getInstance() {
+    public @NotNull Instance getInstance() {
         return instance;
     }
 

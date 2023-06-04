@@ -18,7 +18,7 @@ public class ArgumentPotionEffect extends ArgumentRegistry<PotionEffect> {
     }
 
     @Override
-    public PotionEffect getRegistry(String value) {
+    public PotionEffect getRegistry(@NotNull String value) {
         return PotionEffect.fromNamespaceId(value);
     }
 

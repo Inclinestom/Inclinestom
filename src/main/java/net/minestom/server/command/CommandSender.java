@@ -20,7 +20,7 @@ public interface CommandSender extends PermissionHandler, Audience, Taggable, Id
      *
      * @param message the message to send
      */
-    default void sendMessage(String message) {
+    default void sendMessage(@NotNull String message) {
         this.sendMessage(Component.text(message));
     }
 
@@ -29,7 +29,7 @@ public interface CommandSender extends PermissionHandler, Audience, Taggable, Id
      *
      * @param messages the messages to send
      */
-    default void sendMessage(String [] messages) {
+    default void sendMessage(@NotNull String @NotNull [] messages) {
         for (String message : messages) {
             sendMessage(message);
         }

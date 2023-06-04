@@ -21,11 +21,11 @@ public final class CachedPacket implements SendablePacket {
     private final Supplier<ServerPacket> packetSupplier;
     private volatile SoftReference<FramedPacket> packet;
 
-    public CachedPacket(Supplier<ServerPacket> packetSupplier) {
+    public CachedPacket(@NotNull Supplier<@NotNull ServerPacket> packetSupplier) {
         this.packetSupplier = packetSupplier;
     }
 
-    public CachedPacket(ServerPacket packet) {
+    public CachedPacket(@NotNull ServerPacket packet) {
         this(() -> packet);
     }
 
@@ -33,7 +33,7 @@ public final class CachedPacket implements SendablePacket {
         this.packet = null;
     }
 
-    public ServerPacket packet() {
+    public @NotNull ServerPacket packet() {
         FramedPacket cache = updatedCache();
         return cache != null ? cache.packet() : packetSupplier.get();
     }

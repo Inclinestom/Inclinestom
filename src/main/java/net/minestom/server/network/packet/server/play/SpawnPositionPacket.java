@@ -9,13 +9,13 @@ import org.jetbrains.annotations.NotNull;
 import static net.minestom.server.network.NetworkBuffer.BLOCK_POSITION;
 import static net.minestom.server.network.NetworkBuffer.FLOAT;
 
-public record SpawnPositionPacket(Point position, float angle) implements ServerPacket {
-    public SpawnPositionPacket(NetworkBuffer reader) {
+public record SpawnPositionPacket(@NotNull Point position, float angle) implements ServerPacket {
+    public SpawnPositionPacket(@NotNull NetworkBuffer reader) {
         this(reader.read(BLOCK_POSITION), reader.read(FLOAT));
     }
 
     @Override
-    public void write(NetworkBuffer writer) {
+    public void write(@NotNull NetworkBuffer writer) {
         writer.write(BLOCK_POSITION, position);
         writer.write(FLOAT, angle);
     }
