@@ -14,7 +14,7 @@ public final class KeepAliveListener {
             player.kick(KICK_MESSAGE);
             return;
         }
-        player.refreshAnswerKeepAlive(true);
+        player.refreshAnswerKeepAlive();
         // Update latency
         final int latency = (int) (System.currentTimeMillis() - packetId);
         player.refreshLatency(latency);

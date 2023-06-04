@@ -310,6 +310,7 @@ public final class ChunkUtils {
         Int2ObjectOpenHashMap<Block> entries = new Int2ObjectOpenHashMap<>();
         for (Point point : chunkArea) {
             Block block = blockStorage.getBlock(point);
+            if (block == null) block = Block.AIR;
             entries.put(block.stateId(), block);
         }
         return new ChunkData(heightmapsNBT, data, entries);

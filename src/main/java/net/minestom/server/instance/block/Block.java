@@ -218,11 +218,11 @@ public sealed interface Block extends ProtocolObject, TagReadable, Blocks permit
         }
 
         default Block getBlock(int x, int y, int z) {
-            return Objects.requireNonNull(getBlock(x, y, z, Condition.NONE));
+            return getBlock(x, y, z, Condition.NONE);
         }
 
         default Block getBlock(Point point) {
-            return Objects.requireNonNull(getBlock(point, Condition.NONE));
+            return getBlock(point, Condition.NONE);
         }
 
         /**

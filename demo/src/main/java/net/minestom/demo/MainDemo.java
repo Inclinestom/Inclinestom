@@ -8,13 +8,9 @@ import net.minestom.server.entity.GameMode;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.GlobalEventHandler;
 import net.minestom.server.event.player.PlayerLoginEvent;
-import net.minestom.server.instance.AnvilLoader;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.InstanceManager;
 import net.minestom.server.instance.block.Block;
-import net.minestom.server.utils.NamespaceID;
-import net.minestom.server.world.biomes.Biome;
-import net.minestom.server.world.biomes.BiomeManager;
 
 public class MainDemo {
 
@@ -29,7 +25,7 @@ public class MainDemo {
         // Create the instance
         InstanceContainer instanceContainer = instanceManager.createInstanceContainer();
         // Set the WorldViewGenerator
-        instanceContainer.setGenerator(unit -> unit.modifier().setAll((x, y, z) -> Block.STONE));
+        instanceContainer.setGenerator(unit -> unit.modifier().fillHeight(0, 32, Block.STONE));
 
         // Add an event callback to specify the spawning instance (and the spawn position)
         GlobalEventHandler globalEventHandler = MinecraftServer.getGlobalEventHandler();
@@ -38,7 +34,7 @@ public class MainDemo {
             player.setPermissionLevel(2);
             event.setSpawningInstance(instanceContainer);
             player.setRespawnPoint(new Pos(0, 42, 0));
-            player.setGameMode(GameMode.CREATIVE);
+            player.setGameMode(GameMode.SPECTATOR);
         });
 
         // Start the server on port 25565

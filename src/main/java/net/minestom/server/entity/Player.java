@@ -193,7 +193,7 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
         setCanPickupItem(true); // By default
 
         // Allow the server to send the next keep alive packet
-        refreshAnswerKeepAlive(true);
+        refreshAnswerKeepAlive();
 
         this.gameMode = GameMode.SURVIVAL;
         this.dimensionType = DimensionType.OVERWORLD; // Default dimension
@@ -1752,8 +1752,8 @@ public class Player extends LivingEntity implements CommandSender, Localizable, 
         return answerKeepAlive;
     }
 
-    public void refreshAnswerKeepAlive(boolean answerKeepAlive) {
-        this.answerKeepAlive = answerKeepAlive;
+    public void refreshAnswerKeepAlive() {
+        this.answerKeepAlive = true;
     }
 
     /**
